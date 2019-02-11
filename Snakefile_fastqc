@@ -1,0 +1,46 @@
+import os
+
+FASTQC_DIR = os.path.join(config['results'], 'fastqc')
+
+#Recursive generator function to get child values from nested dict in config
+def d_values(d, depth):
+    if depth == 1:
+        for i in d.values():
+            yield i
+    else:
+        for v in d.values():
+            if isinstance(v, dict):
+                for i in d_values(v, depth-1):
+                    yield i
+
+# Load modules
+
+#The loaded software versions are explicitly stated here. 
+#shell.prefix("module load fastqc/0.11.5")
+
+
+# Rules
+
+rule all:
+	input:
+		expand(os.path.join(FASTQC_DIR, "{library}_merged_fastqc.zip"), library=config['lib_paths'].keys())
+
+rule fastq_merge:
+	input:
+		lambda wildcards: list(d_values(config['lib_paths'][wildcards.library], 2))
+		#Get all fastqs for each library, regardless of lane or read direction (2 levels deep in nested dict)
+	output:
+		temp(os.path.join(FASTQC_DIR, "{library}_merged.fastq.gz"))
+	shell:
+		"cat {input} > {output}"
+
+rule fastqc:
+	input:
+		expand(os.path.join(FASTQC_DIR, "{library}_merged.fastq.gz"), library=config['lib_paths'].keys())
+	output:
+		expand(os.path.join(FASTQC_DIR, "{library}_merged_fastqc.zip"), library=config['lib_paths'].keys())
+	params:
+		outdir = FASTQC_DIR
+	threads: 4
+	shell:
+		"fastqc -t {threads} -o {params.outdir} --noextract {input}"

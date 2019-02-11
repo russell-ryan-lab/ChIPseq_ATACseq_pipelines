@@ -1,0 +1,41 @@
+{
+	"__default__" : {
+		"name" : "{rule}_{wildcards.library}",
+		"account" : "rjhryan_fluxod",
+		"queue" : "fluxod",
+		"env" : "-j oe -V",
+		"nodes" : "1",
+		"ntask" : "1",
+		"memory" : "6gb",
+		"time" : "00:30:00"
+	},
+	"bwa_aln" : {
+		"name" : "{rule}_{wildcards.library}_L{wildcards.lane}_R{wildcards.read}",
+		"ntask" : "8",
+		"memory" : "16gb",
+		"time" : "01:00:00"
+	},
+	"bwa_sampe" : {
+		"name" : "{rule}_{wildcards.library}_L{wildcards.lane}",
+		"time" : "04:00:00"
+	},
+	"picard_sort" : {
+		"name" : "{rule}_{wildcards.library}_L{wildcards.lane}"
+	},
+	"bwa_mem" : {
+		"name" : "{rule}_{wildcards.library}_L{wildcards.lane}",
+		"ntask" : "8",
+		"memory" : "16gb",
+		"time" : "01:00:00"
+	},
+	"mark_duplicates" : {
+		"ntask" : "2",
+		"memory" : "16gb",
+		"time" : "02:00:00"
+	},
+	"fastqc" : {
+		"name" : "{rule}",
+		"ntask" : "8", 
+		"time" : "01:00:00"
+	}
+}
