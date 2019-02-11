@@ -12,7 +12,7 @@ These snakefiles are designed so that input fastqs and their associated wildcard
 
 This will generate the config ATAC_2369_config.json
 
-Next, run the fastqc snakefile - this combines the fastq inputs for each sample, merges them, and runs fastqc on the merged sample fastqs.
+Next, run the fastqc snakefile - this combines the fastq inputs for each sample, and runs fastqc on the merged sample fastqs.
 
     #Run fastqc snakefile on the flux cluster (To run on cluster, make sure shell.prefix is uncommented in Snakefile):
     snakemake -j 20 --snakefile Snakefile_fastqc --configfile example/ATAC_2369_config.json --latency-wait 60 --cluster-config flux_config_ATACseq.json --cluster "qsub -N {cluster.name} -A {cluster.account} -q {cluster.queue} -l nodes={cluster.nodes}:ppn={cluster.ntask} -l mem={cluster.memory} -l walltime={cluster.time} {cluster.env}"
