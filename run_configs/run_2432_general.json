@@ -15,5 +15,6 @@
 	"X0_pair_filter_params" : "-x 2 -m both",
     "igvtools_count_params" : "--includeDuplicates --pairs",
 	"makeTagDir_params" : "-keepAll -checkGC",
-	"homer_findPeaks_params" : "-style histone"
+	"homer_findPeaks_params" : "-style histone",
+	"homer_fmg_params" : ""
 }

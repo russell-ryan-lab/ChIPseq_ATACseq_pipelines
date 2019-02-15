@@ -14,6 +14,7 @@
     },
     "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/tmp/run_2432/logs",
     "homer_findPeaks_params" : "-style histone",
+    "homer_fmg_params" : "",
     "igvtools_count_params" : "--includeDuplicates --pairs",
     "lib_genome" : {
         "113159" : "hg19",
@@ -34,6 +35,16 @@
         "113174" : "hg19",
         "113175" : "mm10",
         "113176" : "mm10"
+    },
+    "lib_input" : {
+        "113167" : "113159",
+        "113168" : "113160",
+        "113169" : "113161",
+        "113170" : "113162",
+        "113171" : "113163",
+        "113172" : "113164",
+        "113173" : "113165",
+        "113174" : "113166"
     },
     "lib_paths" : {
         "113159" : {
