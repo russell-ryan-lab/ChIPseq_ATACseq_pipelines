@@ -35,7 +35,7 @@ def parse_per_lib(lib_table):
 	for c in othercols:
 		two_cols = ['lib', c]
 		combined_name = "_".join(two_cols)
-		col_dict = dict(lib_table[two_cols].values)
+		col_dict = dict(lib_table[two_cols].dropna().values)
 		per_lib_dict[combined_name] = col_dict
 
 	return(per_lib_dict)
@@ -85,6 +85,7 @@ if __name__ == '__main__':
 	parser.add_argument('-g', '--general_input', required=True, help="json file with general config information (results location, reference paths, etc)")
 	parser.add_argument('-p', '--per_lib_input', required=True, help="CSV file with per-lib information")
 	parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
+	parser.add_argument('-l', '--log_dir', help="Log directory to use in the config. Defaults to results_dir/logs")
 	parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
 
 
@@ -93,7 +94,12 @@ if __name__ == '__main__':
 	with open(args.general_input) as general:
 		config_dict = json.load(general)
 
-	config_dict.update({'results' : args.results_dir, 'tmpdir' : args.temp_dir})
+	if not args.log_dir:
+		log_dir = os.path.join(args.results_dir, "logs")
+	else:
+		log_dir = args.log_dir
+
+	config_dict.update({'results' : args.results_dir, 'flux_log_dir' : log_dir, 'tmpdir' : args.temp_dir})
 
 	per_lib = parse_per_lib(pd.read_csv(args.per_lib_input))
 
