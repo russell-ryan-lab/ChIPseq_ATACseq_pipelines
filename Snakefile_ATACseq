@@ -110,9 +110,10 @@ rule prune:
 		bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
 		bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
 	params:
-		incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)]
+		incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
+		flags = config['samtools_prune_flags']
 	shell:
-		"samtools view -b -f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x400 -F 0x800 {input.bam} {params.incl_chr} > {output.bam} ; "
+		"samtools view -b {params.flags} {input.bam} {params.incl_chr} > {output.bam} ; "
 		"samtools index {output.bam} {output.bai}"
 
 rule igvtools_count_wig:
@@ -121,9 +122,10 @@ rule igvtools_count_wig:
 	output:
 		temp(os.path.join(DISP_DIR, "{library}.wig"))
 	params:
-		genome = lambda wildcards: get_genome(wildcards.library)
+		genome = lambda wildcards: get_genome(wildcards.library),
+		args = config['igvtools_count_params']
 	shell:
-		"igvtools count --includeDuplicates --pairs {input} {output} {params.genome}"
+		"igvtools count {params.args} {input} {output} {params.genome}"
 
 rule wigToBigWig:
 	input:
