@@ -8,6 +8,8 @@
     "chrom_sizes" : {
         "hg19" : "/nfs/turbo/path-rjhryan-turbo/lab-members/Travis/chrom.sizes"
     },
+    "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/tmp/run_2369_test/logs",
+    "igvtools_count_params" : "--includeDuplicates --pairs",
     "lib_genome" : {
         "111051" : "hg19",
         "111052" : "hg19",
@@ -334,7 +336,8 @@
         "111065" : "TMD8_rep2_60min",
         "111066" : "OciLy3_rep2_60min"
     },
-    "results" : "/scratch/rjhryan_fluxod/trsaari/example_ATAC_2369/",
+    "results" : "/scratch/rjhryan_fluxod/trsaari/tmp/run_2369_test/",
+    "samtools_prune_flags" : "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x400 -F 0x800",
     "tmpdir" : "/scratch/rjhryan_fluxod/trsaari/tmp/",
     "tss" : {
         "hg19" : "/nfs/turbo/path-rjhryan-turbo/data-public/databases/refGene_TSS/refGene_hg19_TSS.bed"

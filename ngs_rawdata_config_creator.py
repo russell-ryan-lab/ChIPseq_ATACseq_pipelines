@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
 	config_dict.update({'results' : args.results_dir, 'flux_log_dir' : log_dir, 'tmpdir' : args.temp_dir})
 
-	per_lib = parse_per_lib(pd.read_csv(args.per_lib_input))
+	per_lib = parse_per_lib(pd.read_csv(args.per_lib_input, dtype=str))
 
 	config_dict.update(per_lib)
 
