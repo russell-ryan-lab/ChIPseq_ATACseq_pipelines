@@ -1,8 +1,8 @@
 lib,samplename,genome,input,homer_fmg_genome,basepath
 118842,S0_2_Ets1,hg19,118850,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118842
 118843,5591_2_Ets1,hg19,118850,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118843
-118844,S0_1_Rbpj,hg19,,,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118844
-118845,5591_1_Rbpj,hg19,,,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118845
+118844,S0_1_Rbpj,hg19,118851,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118844
+118845,5591_1_Rbpj,hg19,118851,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118845
 118846,S0_1_Zmiz1,hg19,118850,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118846
 118847,S0_2_Zmiz1,hg19,118850,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118847
 118848,5591_1_Zmiz1,hg19,118850,hg19r,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/ryan/Sample_118848
