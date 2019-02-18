@@ -100,7 +100,7 @@ rule samtools_prune:
 		bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
 		bai = os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
 	output:
-		bam = os.path.join(PRUNE_DIR, "{library}.stpruned.bam")
+		bam = temp(os.path.join(PRUNE_DIR, "{library}.stpruned.bam"))
 	params:
 		incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
 		flags = config['samtools_prune_flags']
@@ -111,7 +111,7 @@ rule namesort_st_pruned:
 	input:
 		os.path.join(PRUNE_DIR, "{library}.stpruned.bam")
 	output:
-		os.path.join(PRUNE_DIR, "{library}.ns.bam")
+		temp(os.path.join(PRUNE_DIR, "{library}.ns.bam"))
 	shell:
 		"samtools sort -n -o {output} {input}"
 
@@ -119,7 +119,7 @@ rule X0_pair_filter:
 	input:
 		os.path.join(PRUNE_DIR, "{library}.ns.bam")
 	output:
-		os.path.join(PRUNE_DIR, "{library}.x0_filtered.bam")
+		temp(os.path.join(PRUNE_DIR, "{library}.x0_filtered.bam"))
 	params:
 		config['X0_pair_filter_params']
 	shell:
