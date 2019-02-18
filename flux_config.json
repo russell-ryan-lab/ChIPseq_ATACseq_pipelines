@@ -37,5 +37,8 @@
 		"name" : "{rule}",
 		"ntask" : "8", 
 		"time" : "01:00:00"
+	},
+	"findMotifsGenome" : {
+		"time" : "04:00:00"
 	}
 }
