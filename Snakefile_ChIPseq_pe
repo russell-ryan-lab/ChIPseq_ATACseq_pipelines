@@ -63,10 +63,8 @@ workdir:
 rule all:
 	input:
 		expand(os.path.join(DISP_DIR, "{library}.bw"), library=config['lib_paths'].keys()), #Create bigwigs for all samples
-		expand(os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks"), library=config['lib_input'].keys()) #Call peaks for all samples with matched inputs
-
-		#Other possibilities
-		#expand(os.path.join(HOMERMOTIF_DIR, "{library}"), library=config['lib_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
+		expand(os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks"), library=config['lib_input'].keys()), #Call peaks for all samples with matched inputs
+		expand(os.path.join(HOMERMOTIF_DIR, "{library}"), library=config['lib_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
 
 
 include:
