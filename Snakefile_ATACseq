@@ -65,6 +65,10 @@ software_strings = [
 shell.prefix("".join(software_strings))
 
 
+# Set workdir - If running on Flux cluster, logs will be placed in this location
+workdir:
+	config['flux_log_dir']
+
 
 # Rules
 
