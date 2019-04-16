@@ -33,20 +33,19 @@ shell.prefix("".join(software_strings))
 
 # Helper Functions
 
-def expt_df_json(expt_dict, basepath, file_suffix):
+def expt_df_json(expt_name, expt_dict, basepath, file_suffix):
 	'''
 	Creates json string to load information from config['expt_libs']
 	as a dataframe for input into counts_to_results.py
 	'''
 	rows = []
 	#Gather rows of data
-	for expt in expt_dict:
-		for timepoint in expt_dict[expt]:
-			for rep in expt_dict[expt][timepoint]:
-				lib_id = expt_dict[expt][timepoint][rep]
-				file = os.path.join(basepath, lib_id + file_suffix)
-				sr = pd.Series((expt, timepoint, rep, file))
-				rows.append(sr)
+	for timepoint in expt_dict:
+		for rep in expt_dict[timepoint]:
+			lib_id = expt_dict[timepoint][rep]
+			file = os.path.join(basepath, lib_id + file_suffix)
+			sr = pd.Series((expt_name, timepoint, rep, file))
+			rows.append(sr)
 	#Create pandas df
 	df = pd.concat(rows, axis=1, ignore_index=True).transpose()
 	df.columns = ['expt_name', 'timepoint', 'replicate', 'countsfilepath']
@@ -76,19 +75,19 @@ rule all:
 		expand(os.path.join(RESULTS_DIR, "{expt}_9col.bed"), expt=config['expt_libs'].keys()),
 		expand(os.path.join(RESULTS_DIR, "{expt}_sig_windows.bed"), expt=config['expt_libs'].keys())
 
-rule cutadapt:
-	input:
-		lambda wildcards: config['lib_filepath'][wildcards.library]
-	output:
-		temp(os.path.join(FASTQ_DIR, "{library}_trimmed.fastq.gz"))
-	params:
-		params = config['cutadapt_params']
-	shell:
-		"cutadapt {params.params} -o {output} {input}"
+#rule cutadapt:
+#	input:
+#		lambda wildcards: config['lib_filepath'][wildcards.library]
+#	output:
+#		temp(os.path.join(FASTQ_DIR, "{library}_trimmed.fastq.gz"))
+#	params:
+#		params = config['cutadapt_params']
+#	shell:
+#		"cutadapt {params.params} -o {output} {input}"
 
 rule bowtie:
 	input:
-		os.path.join(FASTQ_DIR, "{library}_trimmed.fastq.gz")
+		lambda wildcards: config['lib_filepath'][wildcards.library]
 	output:
 		temp(os.path.join(SAM_DIR, "{library}.sam"))
 	threads: 8
@@ -123,7 +122,7 @@ rule counts_to_results:
 	params:
 		params = config['counts_to_results_params'],
 		outdir = RESULTS_DIR,
-		input_json = expt_df_json(config['expt_libs'], COUNTS_DIR, ".counts")
+		input_json = lambda wildcards: expt_df_json(wildcards.expt, config['expt_libs'][wildcards.expt], COUNTS_DIR, ".counts")
 	shell:
 		"counts_to_results.py {params.params} -o {params.outdir} -j '{params.input_json}'"
 
