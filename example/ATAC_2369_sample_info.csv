@@ -1,17 +1,5 @@
 lib,samplename,genome,basepath
 111051,WSUDLCL2_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111051/
 111052,DB_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111052/
-111053,Pfeiffer_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111053/
-111054,Karpas422_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111054/
 111055,WSUDLCL2_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111055/
 111056,DB_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111056/
-111057,Pfeiffer_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111057/
-111058,Karpas422_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111058/
-111059,SUDHL4_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111059/
-111060,BJAB_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111060/
-111061,TMD8_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111061/
-111062,Ocily3_rep1_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111062/
-111063,SUDHL4_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111063/
-111064,BJAB_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111064/
-111065,TMD8_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111065/
-111066,OciLy3_rep2_60min,hg19,/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2369_ATACseq/ryan/Sample_111066/
