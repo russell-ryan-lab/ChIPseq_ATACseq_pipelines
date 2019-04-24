@@ -98,7 +98,7 @@
         }
     },
     "tiling_region_beds" : {
-        "MYC" : "/home/trsaari/testData/MYC_lite_tiling.bed"
+        "MYC" : "/nfs/turbo/path-rjhryan-turbo/lab-members/Travis/projects/CRISPRi_screen_processing/MYC_lite_tiling_region.bed"
     },
     "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/tmp/BROAD_CRISPRi_Screens/logs",
     "results" : "/scratch/rjhryan_fluxod/trsaari/tmp/BROAD_CRISPRi_Screens/",
