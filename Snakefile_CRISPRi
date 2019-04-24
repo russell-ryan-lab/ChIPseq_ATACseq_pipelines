@@ -75,19 +75,21 @@ rule all:
 		expand(os.path.join(RESULTS_DIR, "{expt}_9col.bed"), expt=config['expt_libs'].keys()),
 		expand(os.path.join(RESULTS_DIR, "{expt}_sig_windows.bed"), expt=config['expt_libs'].keys())
 
-#rule cutadapt:
-#	input:
-#		lambda wildcards: config['lib_filepath'][wildcards.library]
-#	output:
-#		temp(os.path.join(FASTQ_DIR, "{library}_trimmed.fastq.gz"))
-#	params:
-#		params = config['cutadapt_params']
-#	shell:
-#		"cutadapt {params.params} -o {output} {input}"
+rule cutadapt:
+	input:
+		lambda wildcards: config['lib_filepath'][wildcards.library]
+	output:
+		temp(os.path.join(FASTQ_DIR, "{library}_trimmed.fastq.gz"))
+	params:
+		params = config['cutadapt_params']
+	shell:
+		"cutadapt {params.params} -o {output} {input}"
 
 rule bowtie:
 	input:
-		lambda wildcards: config['lib_filepath'][wildcards.library]
+		os.path.join(FASTQ_DIR, "{library}_trimmed.fastq.gz")
+		#If trimming is not needed, comment-out cutadapt rule and use line below for input to start pipeline from here
+		#lambda wildcards: config['lib_filepath'][wildcards.library]
 	output:
 		temp(os.path.join(SAM_DIR, "{library}.sam"))
 	threads: 8
