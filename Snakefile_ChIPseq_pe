@@ -26,7 +26,7 @@ def get_genome(library):
 prefix_results = functools.partial(os.path.join, config['results'])
 ALIGN_DIR = prefix_results('aligned')
 PRUNE_DIR = prefix_results('pruned')
-DISP_DIR = prefix_results('bigwig')
+DISP_DIR = prefix_results('display_tracks')
 HOMERTAG_DIR = prefix_results('tag')
 HOMERPEAK_DIR = prefix_results('peaks')
 HOMERMOTIF_DIR = prefix_results('homer_motifs')
@@ -48,7 +48,8 @@ software_strings = [
 	"module load weblogo/2.8.2 ; ", #Weblogo, blat, ghostscript, samtools, are prerequisites for homer module
 	"module load blat/34x1 ; ",
 	"module load ghostscript/9.19 ;",
-	"module load homer/4.8 ;"
+	"module load homer/4.8 ;",
+	"module load python-anaconda3/latest-3.6 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 
@@ -62,7 +63,8 @@ workdir:
 
 rule all:
 	input:
-		expand(os.path.join(DISP_DIR, "{library}.bw"), library=config['lib_paths'].keys()), #Create bigwigs for all samples
+		expand(os.path.join(DISP_DIR, "{library}.tdf"), library=config['lib_paths'].keys()), #Create tdfs for all samples
+		expand(os.path.join(DISP_DIR, "{library}.1m.bw"), library=config['lib_paths'].keys()), #Create bigwigs for all samples
 		expand(os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks"), library=config['lib_input'].keys()), #Call peaks for all samples with matched inputs
 		expand(os.path.join(HOMERMOTIF_DIR, "{library}"), library=config['lib_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
 
@@ -133,26 +135,28 @@ rule coordsort_index_final_pruned:
 		"samtools sort -o {output.bam} {input} ;"
 		"samtools index {output.bam} {output.bai}"
 
-rule igvtools_count_wig:
+rule igvtools_count_tdf:
 	input:
 		os.path.join(PRUNE_DIR, "{library}.pruned.bam")
 	output:
-		temp(os.path.join(DISP_DIR, "{library}.wig"))
+		os.path.join(DISP_DIR, "{library}.tdf")
 	params:
 		genome = lambda wildcards: get_genome(wildcards.library),
 		args = config['igvtools_count_params']
 	shell:
 		"igvtools count {params.args} {input} {output} {params.genome}"
 
-rule wigToBigWig:
+rule deeptools_bamcoverage_bw:
 	input:
-		os.path.join(DISP_DIR, "{library}.wig")
+		bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
+		bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
 	output:
-		os.path.join(DISP_DIR, "{library}.bw")
+		os.path.join(DISP_DIR, "{library}.1m.bw")
 	params:
-		chromsizes = lambda wildcards: config['chrom_sizes'][get_genome(wildcards.library)]
+		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
+		args = config['deeptools_bamcoverage_params']
 	shell:
-		"wigToBigWig {input} {params.chromsizes} {output}"
+		"bamCoverage --bam {input.bam} -o {output} -bl {params.blacklist} {params.args}"
 
 rule makeTagDirectory:
 	input:

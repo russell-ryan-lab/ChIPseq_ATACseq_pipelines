@@ -12,6 +12,7 @@
         "hg19" : "/nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/hg19.chromsizes",
         "mm10" : "/nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/mm10.chromsizes"
     },
+    "deeptools_bamcoverage_params" : "--binSize 25 --normalizeUsing CPM --extendReads",
     "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/tmp/run_2531/logs",
     "homer_findPeaks_params" : "-style factor",
     "homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_fluxod/trsaari/tmp/",
