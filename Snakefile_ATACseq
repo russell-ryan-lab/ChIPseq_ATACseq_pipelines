@@ -60,7 +60,8 @@ software_strings = [
 	"module load samtools/1.9 ;",
 	"module load bwa/0.7.15 ;",
 	"module load macs2/2.1.0 ;",
-	"module load bedtools2/2.20.1 ;"
+	"module load bedtools2/2.20.1 ;",
+	"module load python-anaconda3/latest-3.6 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 
@@ -77,7 +78,7 @@ rule all:
 		expand(os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"), library=config['lib_paths'].keys()),
 		expand(os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed"), library=config['lib_paths'].keys()),
 		expand(os.path.join(ATAQV_DIR, "{library}.ataqv.out"), library=config['lib_paths'].keys()),
-		expand(os.path.join(DISP_DIR, "{library}.bw"), library=config['lib_paths'].keys()),
+		expand(os.path.join(DISP_DIR, "{library}.1m.bw"), library=config['lib_paths'].keys()),
 
 
 include:
@@ -120,26 +121,17 @@ rule prune:
 		"samtools view -b {params.flags} {input.bam} {params.incl_chr} > {output.bam} ; "
 		"samtools index {output.bam} {output.bai}"
 
-rule igvtools_count_wig:
+rule deeptools_bamcoverage_bw:
 	input:
-		os.path.join(PRUNE_DIR, "{library}.pruned.bam")
+		bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
+		bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
 	output:
-		temp(os.path.join(DISP_DIR, "{library}.wig"))
+		os.path.join(DISP_DIR, "{library}.1m.bw")
 	params:
-		genome = lambda wildcards: get_genome(wildcards.library),
-		args = config['igvtools_count_params']
+		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
+		args = config['deeptools_bamcoverage_params']
 	shell:
-		"igvtools count {params.args} {input} {output} {params.genome}"
-
-rule wigToBigWig:
-	input:
-		os.path.join(DISP_DIR, "{library}.wig")
-	output:
-		os.path.join(DISP_DIR, "{library}.bw")
-	params:
-		chromsizes = lambda wildcards: config['chrom_sizes'][get_genome(wildcards.library)]
-	shell:
-		"wigToBigWig {input} {params.chromsizes} {output}"
+		"bamCoverage --bam {input.bam} -o {output} -bl {params.blacklist} {params.args}"
 
 rule peaks:
 	input:
