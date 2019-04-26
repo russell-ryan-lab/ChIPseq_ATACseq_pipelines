@@ -11,6 +11,12 @@
 		"111207" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111207/111207_AGTTGCTT_S2_L003_R1_001.fastq.gz",
 		"111208" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111208/111208_CATGCTTA_S3_L003_R1_001.fastq.gz",
 		"111209" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111209/111209_CCAGTTAG_S4_L003_R1_001.fastq.gz",
+		"111210" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111210/111210_CTACCAGG_S5_L003_R1_001.fastq.gz",
+		"111211" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111211/111211_TGCTCGAC_S6_L003_R1_001.fastq.gz",
+		"111214" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111214/111214_TTGAGCCT_S8_L004_R1_001.fastq.gz",
+		"111215" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111215/111215_CTACCAGG_S9_L004_R1_001.fastq.gz",
+		"111217" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111217/111217_CATGCTTA_S10_L004_R1_001.fastq.gz",
+		"111218" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111218/111218_CCAGTTAG_S11_L004_R1_001.fastq.gz",
 		"111594" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111594/111594_CTACCAGG_S12_L005_R1_001.fastq.gz",
 		"111595" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111595/111595_GCACATCT_S13_L005_R1_001.fastq.gz",
 		"111596" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_raw_data/20180523_Run_2334_juhi_crispri/ryan/Sample_111596/111596_TGCTCGAC_S14_L005_R1_001.fastq.gz",
@@ -26,6 +32,26 @@
 			"END" : {
 				"1" : "111208",
 				"2" : "111209"
+			}
+		},
+		"REH_R1_T0" : {
+			"START" : {
+				"1" : "111215",
+				"2" : "111215"
+			},
+			"END" : {
+				"1" : "111217",
+				"2" : "111218"
+			}
+		},
+		"SEM_R1_T0" : {
+			"START" : {
+				"1" : "111210",
+				"2" : "111210"
+			},
+			"END" : {
+				"1" : "111211",
+				"2" : "111214"
 			}
 		},
 		"BJAB" : {
