@@ -21,7 +21,7 @@ RESULTS_DIR = prefix_results('results')
 software_strings = [
 	"module load cutadapt/1.14 ;",
 	"module load bowtie/1.0.0 ;",
-	"module load python-anaconda3/201704 ;", #Python3 pre-req for python scripts (must also have their prereq python libraries installed)
+	"module load python-anaconda3/latest-3.6 ;", #Python3 pre-req for python scripts (must also have their prereq python libraries installed)
 	"module load R/3.4.1; export R_LIBS_USER=$HOME/local_R;", #Pre-requisite for CalculateTilingStatistic.R. Must also have installed prereq libraries (In this case in $HOME/local_R)
 	"function counts_to_results.py() {{ python3 /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/CRISPRi_processing/CRISPRi_counts_to_results.py $@ ; }} ;", #CRISPRi_processing commit 4211bbb
 	"function bedgraph_rolling_means.py() {{ python3 /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/CRISPRi_processing/CRISPRi_bedgraph_rolling_means.py $@ ; }} ;", #CRISPRi_processing commit 333343d
