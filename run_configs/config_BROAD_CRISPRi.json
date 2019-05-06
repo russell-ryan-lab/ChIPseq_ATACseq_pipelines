@@ -1,7 +1,7 @@
 {
     "bedgraph_rolling_means_params" : "--n_guides 20 --subtract_background",
     "bowtie_index" : "/nfs/turbo/path-rjhryan-turbo/data-collaborators/lander_lab/BROAD_CRISPR_screens/BowtieIndex/MYCLNCOligoArrays.21",
-    "counts_to_results_params" : "--T0_mincount 50 --median_ratio_normalize --data_file /nfs/turbo/path-rjhryan-turbo/data-collaborators/lander_lab/BROAD_CRISPR_screens/160501_MycLncTiling_design_reqCols_sorted.txt",
+    "counts_to_results_params" : "--T0_mincount 50 --readcount_normalize --data_file /nfs/turbo/path-rjhryan-turbo/data-collaborators/lander_lab/BROAD_CRISPR_screens/160501_MycLncTiling_design_reqCols_sorted.txt",
     "sig_window_col" : "fdr.utest",
     "sig_window_thres" : "0.05",
     "tiling_statistic_params" : "--grnaWindowSize 20 --minOffTargetScore 50 --minT0count 50 --T0columns rep1_START,rep2_START --codeDir /nfs/turbo/path-rjhryan-turbo/software/crispri_lander/region_scoring --scoreColumn mean_log2FC",
