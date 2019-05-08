@@ -1,4 +1,3 @@
 .snakemake/*
-run_configs/homer_only_test1_general.json
 flux_config_ChIPseq.json
 .gitignore
