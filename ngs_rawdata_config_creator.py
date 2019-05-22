@@ -50,7 +50,11 @@ def assign_libpaths(lib_basepaths):
 	libpaths_dict = dict()
 	for row in lib_basepaths:
 		lib, path = row
-		libpaths_dict[lib] = basepath_to_filepathsdict(path, "*.fastq.gz", ".*_L(\d+)_R(\d+).*\.fastq\.gz")
+		if args.simulate_single_lane:
+			#If samples do not contain lane information, use different capture regex which only captures read number
+			libpaths_dict[lib] = basepath_to_filepathsdict(path, "*.fastq.gz", ".*_R(\d+).*\.fastq\.gz")
+		else:
+			libpaths_dict[lib] = basepath_to_filepathsdict(path, "*.fastq.gz", ".*_L(\d+)_R(\d+).*\.fastq\.gz")
 	return(libpaths_dict)
 
 
@@ -71,8 +75,16 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
 		basename = os.path.basename(fq)
 		rmatch = re.match(capture_regex, basename)
 		if rmatch.group(0) == basename:
-			lane = rmatch.group(1)
-			read = rmatch.group(2)
+			#If samples do not contain lane information, treat them all as lane 001
+			if args.simulate_single_lane:
+				lane = "001"
+				read = rmatch.group(1)
+				if len(all_fastqs) != 2:
+					raise ValueError("--simulate_single_lane flag can only be used if there are two fastq's per sample. There are " + str(len(all_fastqs)) + " in " + basepath)
+			else:
+				lane = rmatch.group(1)
+				read = rmatch.group(2)
+			#Add fastq to dict
 			readgroups[lane][read] = fq
 
 	return(readgroups)
@@ -87,6 +99,7 @@ if __name__ == '__main__':
 	parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
 	parser.add_argument('-l', '--log_dir', help="Log directory to use in the config. Defaults to results_dir/logs")
 	parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
+	parser.add_argument('-s', '--simulate_single_lane', action='store_true', help="If sample fastq's don't contain lane information, treat them all as a single lane")
 
 
 	args = parser.parse_args()
