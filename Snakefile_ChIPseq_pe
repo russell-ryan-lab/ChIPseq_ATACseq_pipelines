@@ -34,22 +34,22 @@ HOMERMOTIF_DIR = prefix_results('homer_motifs')
 
 # Load modules
 
-#The loaded software versions are explicitly stated here. 
+#The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function picard-tools() {{ java -Xmx12g -jar /sw/med/centos7/picard/2.4.1/picard.jar $@ ; }} ;",
 	"function igvtools() {{ java -jar /nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar $@ ; }} ;",
 	"function wigToBigWig() {{ /nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig $@ ; }} ;", #Version: wigToBigWig v 4
 	"function X0_pair_filter() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/X0_pair_filter.py $@ ; }} ;", #ryanlab_scripts commit 1503d23
 	"function keepBedEntriesInHpeaks() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/keepBedEntriesInHpeaks.py $@ ; }} ;", #ryanlab_scripts commit 01fc999
-	"module load bwa/0.7.15 ;",
-	"module load samtools/1.9 ;",
-	"module load bedtools2/2.20.1 ;",
+    "module load picard-tools/2.8.1"
+    "module load bwa/0.7.15 ;",
+	"module load samtools/1.5 ;",
+	"module load bedtools2/2.25.0 ;",
 	"module load weblogo/2.8.2 ; ", #Weblogo, blat, ghostscript, samtools, are prerequisites for homer module
 	"module load blat/34x1 ; ",
-	"module load ghostscript/9.19 ;",
+	"module load ghostscript/9.27 ;",
 	"module load homer/4.8 ;",
-	"module load python-anaconda3/latest-3.6 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
+	"module load python-anaconda3/2019.03 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 

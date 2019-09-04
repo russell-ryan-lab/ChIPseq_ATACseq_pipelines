@@ -50,18 +50,18 @@ DISP_DIR = prefix_results('bigwig')
 
 # Load modules
 
-#The loaded software versions are explicitly stated here. 
+#The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function picard-tools() {{ java -Xmx12g -jar /sw/med/centos7/picard/2.4.1/picard.jar $@ ; }} ;",
 	"function igvtools() {{ java -jar /nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar $@ ; }} ;",
 	"function wigToBigWig() {{ /nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig $@ ; }} ;", #Version: wigToBigWig v 4
 	"function ataqv() {{ /nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv $@ ; }} ;",
-	"module load samtools/1.9 ;",
+    "module load picard-tools/2.8.1 ;",
+	"module load samtools/1.5 ;",
 	"module load bwa/0.7.15 ;",
-	"module load macs2/2.1.0 ;",
-	"module load bedtools2/2.20.1 ;",
-	"module load python-anaconda3/latest-3.6 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
+	"module load macs2/2.1.2 ;",
+	"module load bedtools2/2.25.0 ;",
+	"module load python-anaconda3/2019.03 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 
@@ -174,4 +174,3 @@ rule ataqv:
 		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
 	shell:
 		"ataqv --peak-file {input.peaks} --name {params.samplename} --metrics-file {output.metrics} --excluded-region-file {params.blacklist} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"
-

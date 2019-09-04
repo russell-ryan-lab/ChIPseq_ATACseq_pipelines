@@ -19,10 +19,10 @@ RESULTS_DIR = prefix_results('results')
 # Load Modules
 
 software_strings = [
-	"module load cutadapt/1.14 ;",
-	"module load bowtie/1.0.0 ;",
-	"module load python-anaconda3/latest-3.6 ;", #Python3 pre-req for python scripts (must also have their prereq python libraries installed)
-	"module load R/3.4.1; export R_LIBS_USER=$HOME/local_R;", #Pre-requisite for CalculateTilingStatistic.R. Must also have installed prereq libraries (In this case in $HOME/local_R)
+	"module load cutadapt/1.18 ;",
+	"module load bowtie/1.2.2 ;",
+	"module load python-anaconda3/2019.03 ;", #Python3 pre-req for python scripts (must also have their prereq python libraries installed)
+	"module load R/3.6.1; export R_LIBS_USER=$HOME/local_R;", #Pre-requisite for CalculateTilingStatistic.R. Must also have installed prereq libraries (In this case in $HOME/local_R)
 	"function counts_to_results.py() {{ python3 /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/CRISPRi_processing/CRISPRi_counts_to_results.py $@ ; }} ;", #CRISPRi_processing commit 4211bbb
 	"function bedgraph_rolling_means.py() {{ python3 /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/CRISPRi_processing/CRISPRi_bedgraph_rolling_means.py $@ ; }} ;", #CRISPRi_processing commit 333343d
 	"function CalculateTilingStatistic.R() {{ Rscript /nfs/turbo/path-rjhryan-turbo/software/crispri_lander/region_scoring/src/CRISPRScreen/CalculateTilingStatistic.R $@ ; }} ;"
@@ -187,8 +187,3 @@ rule significant_windows:
 		sig['strand'] = "."
 		windows = sig[['chr', 'start', 'end', 'name', params.sig_col, 'strand']].copy() #Note: includes sig_col as the bed file score
 		windows.to_csv(output[0], sep='\t', header=False, index=False)
-		
-
-
-
-
