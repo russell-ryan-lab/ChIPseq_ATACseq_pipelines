@@ -32,16 +32,27 @@ HOMERPEAK_DIR = prefix_results('peaks')
 HOMERMOTIF_DIR = prefix_results('homer_motifs')
 
 
-# Load modules
+# Load modules and setup software
+
+#Setup for non-module software
+try:
+    igvtools_loc = config['non_module_software']['igvtools']
+    wigToBigWig_loc = config['non_module_software']['wigToBigWig']
+except:
+    logger.info("Cannot find software locations in config. Defaulting to rjhryan_turbo locations")
+
+    igvtools_loc = "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar"
+    wigToBigWig_loc = "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
+
 
 #The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function igvtools() {{ java -jar /nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar $@ ; }} ;",
-	"function wigToBigWig() {{ /nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig $@ ; }} ;", #Version: wigToBigWig v 4
+	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
+	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
 	"function X0_pair_filter() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/X0_pair_filter.py $@ ; }} ;", #ryanlab_scripts commit 1503d23
 	"function keepBedEntriesInHpeaks() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/keepBedEntriesInHpeaks.py $@ ; }} ;", #ryanlab_scripts commit 01fc999
-    "module load picard-tools/2.8.1"
+    "module load picard-tools/2.8.1",
     "module load bwa/0.7.15 ;",
 	"module load samtools/1.5 ;",
 	"module load bedtools2/2.25.0 ;",
@@ -123,7 +134,7 @@ rule X0_pair_filter:
 	params:
 		config['X0_pair_filter_params']
 	shell:
-		"X0_pair_filter {params} -b {input} -o {output}"
+		"python scripts/X0_pair_filter.py {params} -b {input} -o {output}"
 
 rule coordsort_index_final_pruned:
 	input:
@@ -205,7 +216,7 @@ rule keepBedEntriesInHpeaks:
 	output:
 		os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
 	shell:
-		"keepBedEntriesInHpeaks -i {input.allhpeaks} -b {input.filtbed} -o {output}"
+		"python scripts/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
 rule findMotifsGenome:
 	input:
