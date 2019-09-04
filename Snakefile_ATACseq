@@ -48,14 +48,27 @@ ATAQV_DIR = prefix_results('ataqv')
 DISP_DIR = prefix_results('bigwig')
 
 
-# Load modules
+# Load modules and setup software
+
+#Setup for non-module software
+try:
+    igvtools_loc = config['non_module_software']['igvtools']
+    wigToBigWig_loc = config['non_module_software']['wigToBigWig']
+    ataqv_loc = config['non_module_software']['ataqv']
+except:
+    logger.info("Cannot find software locations in config. Defaulting to rjhryan_turbo locations")
+
+    igvtools_loc = "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar"
+    wigToBigWig_loc = "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
+    ataqv_loc = "/nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv"
 
 #The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function igvtools() {{ java -jar /nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar $@ ; }} ;",
-	"function wigToBigWig() {{ /nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig $@ ; }} ;", #Version: wigToBigWig v 4
-	"function ataqv() {{ /nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv $@ ; }} ;",
+	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
+	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
+	"function ataqv() " + ataqv_loc + " $@ ; }} ;",
+    "module load Bioinformatics ;",
     "module load picard-tools/2.8.1 ;",
 	"module load samtools/1.5 ;",
 	"module load bwa/0.7.15 ;",

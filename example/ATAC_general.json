@@ -15,5 +15,10 @@
     "samtools_prune_flags" : "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x400 -F 0x800",
     "tss": {
         "hg19": "/nfs/turbo/path-rjhryan-turbo/data-public/databases/refGene_TSS/refGene_hg19_TSS.bed"
+    },
+    "non_module_software" : {
+        "igvtools" : "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar",
+        "wigToBigWig" : "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig",
+        "ataqv" : "/nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv"
     }
 }
