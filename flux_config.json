@@ -19,6 +19,10 @@
 		"name" : "{rule}_{wildcards.library}_L{wildcards.lane}",
 		"time" : "04:00:00"
 	},
+        "bwa_samse" : {
+                "name" : "{rule}_{wildcards.library}_L{wildcards.lane}",
+                "time" : "04:00:00"
+        },
 	"picard_sort" : {
 		"name" : "{rule}_{wildcards.library}_L{wildcards.lane}"
 	},
