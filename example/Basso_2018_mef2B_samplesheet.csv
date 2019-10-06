@@ -1,0 +1,11 @@
+lib,samplename,genome,input,homer_fmg_genome,basepath
+SRR6730191,CB4_Input,hg19,,,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730191
+SRR6730192,CB4_MEF2B,hg19,SRR6730191,hg19r,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730192
+SRR6730193,CB5_Input,hg19,,,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730193
+SRR6730194,CB5_MEF2B,hg19,SRR6730193,hg19r,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730194
+SRR6730195,SUD10-MEF2B-WT_Input,hg19,,,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730195
+SRR6730196,SUD10-MEF2B-WT_MEF2B,hg19,SRR6730195,hg19r,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730196
+SRR6730197,SUD10-MEF2B-WT_HAFLAG,hg19,SRR6730195,hg19r,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730197
+SRR6730198,SUD10-MEF2B-D83V_Input,hg19,,,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730198
+SRR6730199,SUD10-MEF2B-D83V_MEF2B,hg19,SRR6730198,hg19r,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730199
+SRR6730200,SUD10-MEF2B-D83V_HAFLAG,hg19,SRR6730198,hg19r,/scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730200
