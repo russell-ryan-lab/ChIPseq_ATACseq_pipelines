@@ -67,7 +67,7 @@ except:
 software_strings = [
 	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
 	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
-	"function ataqv() " + ataqv_loc + " $@ ; }} ;",
+	"function ataqv() {{ " + ataqv_loc + " $@ ; }} ;",
     "module load Bioinformatics ;",
     "module load picard-tools/2.8.1 ;",
 	"module load samtools/1.5 ;",
@@ -79,7 +79,7 @@ software_strings = [
 shell.prefix("".join(software_strings))
 
 
-# Set workdir - If running on Flux cluster, logs will be placed in this location
+# Set workdir - If running on cluster, logs will be placed in this location
 workdir:
 	config['flux_log_dir']
 
@@ -106,7 +106,8 @@ rule mark_duplicates:
 	params:
 		tmpdir = config['tmpdir']
 	shell:
-		"picard-tools MarkDuplicates I={input} O={output.bam} "
+		"export JAVA_OPTIONS=-Xmx12g ; "
+		"PicardCommandLine MarkDuplicates I={input} O={output.bam} "
 		"METRICS_FILE={output.metric} "
 		"ASSUME_SORTED=True "
 		"VALIDATION_STRINGENCY=LENIENT "

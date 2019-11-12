@@ -50,10 +50,8 @@ except:
 software_strings = [
 	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
 	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
-	"function X0_pair_filter() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/X0_pair_filter.py $@ ; }} ;", #ryanlab_scripts commit 1503d23
-	"function keepBedEntriesInHpeaks() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/keepBedEntriesInHpeaks.py $@ ; }} ;", #ryanlab_scripts commit 01fc999
-    "module load Bioinformatics"
-    "module load picard-tools/2.8.1",
+    "module load Bioinformatics ;"
+    "module load picard-tools/2.8.1 ;",
     "module load bwa/0.7.15 ;",
 	"module load samtools/1.5 ;",
 	"module load bedtools2/2.25.0 ;",
@@ -65,8 +63,10 @@ software_strings = [
 ]
 shell.prefix("".join(software_strings))
 
+SCRIPTS_DIR = os.path.join(os.getcwd(), 'scripts')
 
-# Set workdir - If running on Flux cluster, logs will be placed in this location
+
+# Set workdir - If running on cluster, logs will be placed in this location
 workdir:
 	config['flux_log_dir']
 
@@ -93,7 +93,8 @@ rule mark_duplicates:
 	params:
 		tmpdir = config['tmpdir']
 	shell:
-		"picard-tools MarkDuplicates I={input} O={output.bam} "
+		"export JAVA_OPTIONS=-Xmx12g ; "
+		"PicardCommandLine MarkDuplicates I={input} O={output.bam} "
 		"METRICS_FILE={output.metric} "
 		"ASSUME_SORTED=True "
 		"VALIDATION_STRINGENCY=LENIENT "
@@ -135,7 +136,7 @@ rule X0_pair_filter:
 	params:
 		config['X0_pair_filter_params']
 	shell:
-		"python scripts/X0_pair_filter.py {params} -b {input} -o {output}"
+		"python {SCRIPTS_DIR}/X0_pair_filter.py {params} -b {input} -o {output}"
 
 rule coordsort_index_final_pruned:
 	input:
@@ -217,7 +218,7 @@ rule keepBedEntriesInHpeaks:
 	output:
 		os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
 	shell:
-		"python scripts/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
+		"python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
 rule findMotifsGenome:
 	input:
