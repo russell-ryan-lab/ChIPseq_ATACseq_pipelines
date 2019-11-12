@@ -52,6 +52,7 @@ software_strings = [
 	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
 	"function X0_pair_filter() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/X0_pair_filter.py $@ ; }} ;", #ryanlab_scripts commit 1503d23
 	"function keepBedEntriesInHpeaks() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/keepBedEntriesInHpeaks.py $@ ; }} ;", #ryanlab_scripts commit 01fc999
+    "module load Bioinformatics"
     "module load picard-tools/2.8.1",
     "module load bwa/0.7.15 ;",
 	"module load samtools/1.5 ;",
@@ -60,7 +61,7 @@ software_strings = [
 	"module load blat/34x1 ; ",
 	"module load ghostscript/9.27 ;",
 	"module load homer/4.8 ;",
-	"module load python-anaconda3/2019.03 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
+	"module load python3.7-anaconda/2019.07 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 
