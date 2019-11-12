@@ -28,7 +28,7 @@ def parse_per_lib(lib_table):
 	per_lib_dict = dict()
 
 	lib_basepaths = lib_table[['lib', 'basepath']].values
-	
+
 	per_lib_dict['lib_paths'] = assign_libpaths(lib_basepaths)
 
 	othercols = lib_table.columns.drop(['lib', 'basepath'])
@@ -43,7 +43,7 @@ def parse_per_lib(lib_table):
 
 def assign_libpaths(lib_basepaths):
 	"""
-	Takes an array of arrays as input, each inner array having two items, 
+	Takes an array of arrays as input, each inner array having two items,
 	library name and basepath. Calls basepath_to_filepathsdict for each library
 	and adds each libraries' filepathsdict to the libpaths dict
 	"""
@@ -51,10 +51,16 @@ def assign_libpaths(lib_basepaths):
 	for row in lib_basepaths:
 		lib, path = row
 		if args.simulate_single_lane:
+			#If simulating single lane and capture regex is default, replace it (disregard lane)
+			if args.capture_regex == ".*_L(\d+)_R(\d+).*\.fastq\.gz":
+				capture_regex = ".*_R(\d+).*\.fastq\.gz"
+			#Otherwise, use user-specified capture_regex
+			else:
+				capture_regex = args.capture_regex
 			#If samples do not contain lane information, use different capture regex which only captures read number
-			libpaths_dict[lib] = basepath_to_filepathsdict(path, "*.fastq.gz", ".*_R(\d+).*\.fastq\.gz")
+			libpaths_dict[lib] = basepath_to_filepathsdict(path, args.file_glob, capture_regex)
 		else:
-			libpaths_dict[lib] = basepath_to_filepathsdict(path, "*.fastq.gz", ".*_L(\d+)_R(\d+).*\.fastq\.gz")
+			libpaths_dict[lib] = basepath_to_filepathsdict(path, args.file_glob, args.capture_regex)
 	return(libpaths_dict)
 
 
@@ -79,8 +85,8 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
 			if args.simulate_single_lane:
 				lane = "001"
 				read = rmatch.group(1)
-				if len(all_fastqs) != 2:
-					raise ValueError("--simulate_single_lane flag can only be used if there are two fastq's per sample. There are " + str(len(all_fastqs)) + " in " + basepath)
+				if not len(all_fastqs) in [1,2]:
+					raise ValueError("--simulate_single_lane flag can only be used if there are one or two fastq's per sample. There are " + str(len(all_fastqs)) + " in " + basepath)
 			else:
 				lane = rmatch.group(1)
 				read = rmatch.group(2)
@@ -100,7 +106,8 @@ if __name__ == '__main__':
 	parser.add_argument('-l', '--log_dir', help="Log directory to use in the config. Defaults to results_dir/logs")
 	parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
 	parser.add_argument('-s', '--simulate_single_lane', action='store_true', help="If sample fastq's don't contain lane information, treat them all as a single lane")
-
+	parser.add_argument('--file_glob', help="Override default file glob of '*.fastq.gz'", default='*.fastq.gz')
+	parser.add_argument('--capture_regex', help="Override default capture regex of '.*_L(\d+)_R(\d+).*\.fastq\.gz'", default='.*_L(\d+)_R(\d+).*\.fastq\.gz')
 
 	args = parser.parse_args()
 
