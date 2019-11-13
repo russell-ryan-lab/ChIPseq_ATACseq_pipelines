@@ -47,52 +47,52 @@
     "lib_paths" : {
         "SRR6730191" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730191/SRR6730191_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730191/SRR6730191_L001_R1.fastq.gz"
             }
         },
         "SRR6730192" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730192/SRR6730192_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730192/SRR6730192_L001_R1.fastq.gz"
             }
         },
         "SRR6730193" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730193/SRR6730193_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730193/SRR6730193_L001_R1.fastq.gz"
             }
         },
         "SRR6730194" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730194/SRR6730194_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730194/SRR6730194_L001_R1.fastq.gz"
             }
         },
         "SRR6730195" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730195/SRR6730195_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730195/SRR6730195_L001_R1.fastq.gz"
             }
         },
         "SRR6730196" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730196/SRR6730196_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730196/SRR6730196_L001_R1.fastq.gz"
             }
         },
         "SRR6730197" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730197/SRR6730197_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730197/SRR6730197_L001_R1.fastq.gz"
             }
         },
         "SRR6730198" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730198/SRR6730198_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730198/SRR6730198_L001_R1.fastq.gz"
             }
         },
         "SRR6730199" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730199/SRR6730199_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730199/SRR6730199_L001_R1.fastq.gz"
             }
         },
         "SRR6730200" : {
             "001" : {
-                "1" : "/nfs/turbo/umms-tomaszc/public-datasets/Basso_Mef2B_nongz/SRR6730200/SRR6730200_1.fastq"
+                "1" : "/scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_Mef2B/SRR6730200/SRR6730200_L001_R1.fastq.gz"
             }
         }
     },
@@ -111,5 +111,5 @@
     "makeTagDir_params" : "-keepAll -checkGC",
     "results" : "/scratch/rjhryan_root/rjhryan/trsaari/Basso_2018_mef2B",
     "samtools_prune_flags" : "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800",
-    "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp"
+    "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp/"
 }
