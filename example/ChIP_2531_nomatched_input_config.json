@@ -13,9 +13,9 @@
         "mm10" : "/nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/mm10.chromsizes"
     },
     "deeptools_bamcoverage_params" : "--binSize 25 --normalizeUsing CPM --extendReads",
-    "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/example_ChIP_2531_nomatched_input/logs",
+    "flux_log_dir" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ChIP_2531_nomatched_input/logs",
     "homer_findPeaks_params" : "-style factor",
-    "homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_fluxod/trsaari/tmp/",
+    "homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_root/rjhryan/trsaari/tmp/",
     "igvtools_count_params" : "--includeDuplicates --pairs",
     "lib_genome" : {
         "118842" : "hg19",
@@ -66,7 +66,7 @@
         "118843" : "5591_2_Ets1"
     },
     "makeTagDir_params" : "-keepAll -checkGC",
-    "results" : "/scratch/rjhryan_fluxod/trsaari/example_ChIP_2531_nomatched_input/",
+    "results" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ChIP_2531_nomatched_input/",
     "samtools_prune_flags" : "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x200 -F 0x400 -F 0x800",
-    "tmpdir" : "/scratch/rjhryan_fluxod/trsaari/tmp"
+    "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp"
 }

@@ -12,9 +12,9 @@
         "mm10" : "/nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/mm10.chromsizes"
     },
     "deeptools_bamcoverage_params" : "--binSize 25 --normalizeUsing CPM --extendReads 150",
-    "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/Basso_2018_mef2B/logs",
+    "flux_log_dir" : "/scratch/rjhryan_root/rjhryan/trsaari/Basso_2018_mef2B/logs",
     "homer_findPeaks_params" : "-style factor",
-    "homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_fluxod/trsaari/tmp/",
+    "homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_root/rjhryan/trsaari/tmp/",
     "igvtools_count_params" : "--includeDuplicates",
     "lib_genome" : {
         "SRR6730191" : "hg19",
@@ -109,7 +109,7 @@
         "SRR6730200" : "SUD10-MEF2B-D83V_HAFLAG"
     },
     "makeTagDir_params" : "-keepAll -checkGC",
-    "results" : "/scratch/rjhryan_fluxod/trsaari/Basso_2018_mef2B",
+    "results" : "/scratch/rjhryan_root/rjhryan/trsaari/Basso_2018_mef2B",
     "samtools_prune_flags" : "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800",
-    "tmpdir" : "/scratch/rjhryan_fluxod/trsaari/tmp"
+    "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp"
 }
