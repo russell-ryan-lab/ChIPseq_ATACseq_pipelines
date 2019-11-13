@@ -79,7 +79,7 @@ rule all:
 
 
 include:
-	"Snakefile_alignment_bwa_aln"
+	"Snakefile_alignment_bwa_aln_pe"
 
 rule mark_duplicates:
 	input:
