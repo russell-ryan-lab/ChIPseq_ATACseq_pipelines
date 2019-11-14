@@ -80,6 +80,13 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
 	for fq in all_fastqs:
 		basename = os.path.basename(fq)
 		rmatch = re.match(capture_regex, basename)
+		if not rmatch:
+			msg_fmt = ("\nFile {} did not match regular expression {}. "
+				"Could not capture desired group(s).\n"
+				"If filenames resemble sample_R1.fastq.gz, use --simulate_single_lane flag. "
+				"Note that all input files should be formatted consistently. "
+				"File glob and capture regex can be controlled with --file_glob and --capture_regex if desired.")
+			raise RuntimeError(msg_fmt.format(basename, capture_regex))
 		if rmatch.group(0) == basename:
 			#If samples do not contain lane information, treat them all as lane 001
 			if args.simulate_single_lane:
