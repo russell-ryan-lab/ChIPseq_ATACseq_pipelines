@@ -12,7 +12,7 @@
         "mm10" : "/nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/mm10.chromsizes"
     },
     "deeptools_bamcoverage_params" : "--binSize 25 --normalizeUsing CPM --extendReads",
-    "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/example_ATAC_2369/logs",
+    "flux_log_dir" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/logs",
     "lib_genome" : {
         "111051" : "hg19",
         "111052" : "hg19",
@@ -99,9 +99,14 @@
         "111055" : "WSUDLCL2_rep2_60min",
         "111056" : "DB_rep2_60min"
     },
-    "results" : "/scratch/rjhryan_fluxod/trsaari/example_ATAC_2369/",
+    "non_module_software" : {
+        "ataqv" : "/nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv",
+        "igvtools" : "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar",
+        "wigToBigWig" : "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
+    },
+    "results" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/",
     "samtools_prune_flags" : "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x400 -F 0x800",
-    "tmpdir" : "/scratch/rjhryan_fluxod/trsaari/tmp/",
+    "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp/",
     "tss" : {
         "hg19" : "/nfs/turbo/path-rjhryan-turbo/data-public/databases/refGene_TSS/refGene_hg19_TSS.bed"
     }

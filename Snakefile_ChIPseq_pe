@@ -32,29 +32,38 @@ HOMERPEAK_DIR = prefix_results('peaks')
 HOMERMOTIF_DIR = prefix_results('homer_motifs')
 
 
-# Load modules
+# Load modules and setup software
 
-#The loaded software versions are explicitly stated here. 
+#Setup for non-module software
+try:
+    igvtools_loc = config['non_module_software']['igvtools']
+    wigToBigWig_loc = config['non_module_software']['wigToBigWig']
+except:
+    logger.info("Cannot find software locations in config. Defaulting to rjhryan_turbo locations")
+
+    igvtools_loc = "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar"
+    wigToBigWig_loc = "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
+
+
+#The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function picard-tools() {{ java -Xmx12g -jar /sw/med/centos7/picard/2.4.1/picard.jar $@ ; }} ;",
-	"function igvtools() {{ java -jar /nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar $@ ; }} ;",
-	"function wigToBigWig() {{ /nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig $@ ; }} ;", #Version: wigToBigWig v 4
-	"function X0_pair_filter() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/X0_pair_filter.py $@ ; }} ;", #ryanlab_scripts commit 1503d23
-	"function keepBedEntriesInHpeaks() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/keepBedEntriesInHpeaks.py $@ ; }} ;", #ryanlab_scripts commit 01fc999
-	"module load bwa/0.7.15 ;",
-	"module load samtools/1.9 ;",
-	"module load bedtools2/2.20.1 ;",
-	"module load weblogo/2.8.2 ; ", #Weblogo, blat, ghostscript, samtools, are prerequisites for homer module
-	"module load blat/34x1 ; ",
-	"module load ghostscript/9.19 ;",
+	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
+	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
+    "module load Bioinformatics ;"
+    "module load picard-tools/2.8.1 ;",
+    "module load bwa/0.7.15 ;",
+	"module load samtools/1.5 ;",
+	"module load bedtools2/2.25.0 ;",
 	"module load homer/4.8 ;",
-	"module load python-anaconda3/latest-3.6 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
+	"module load python3.7-anaconda/2019.07 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 
+SCRIPTS_DIR = os.path.join(os.getcwd(), 'scripts')
 
-# Set workdir - If running on Flux cluster, logs will be placed in this location
+
+# Set workdir - If running on cluster, logs will be placed in this location
 workdir:
 	config['flux_log_dir']
 
@@ -70,7 +79,7 @@ rule all:
 
 
 include:
-	"Snakefile_alignment_bwa_aln"
+	"Snakefile_alignment_bwa_aln_pe"
 
 rule mark_duplicates:
 	input:
@@ -81,7 +90,8 @@ rule mark_duplicates:
 	params:
 		tmpdir = config['tmpdir']
 	shell:
-		"picard-tools MarkDuplicates I={input} O={output.bam} "
+		"export JAVA_OPTIONS=-Xmx12g ; "
+		"PicardCommandLine MarkDuplicates I={input} O={output.bam} "
 		"METRICS_FILE={output.metric} "
 		"ASSUME_SORTED=True "
 		"VALIDATION_STRINGENCY=LENIENT "
@@ -123,7 +133,7 @@ rule X0_pair_filter:
 	params:
 		config['X0_pair_filter_params']
 	shell:
-		"X0_pair_filter {params} -b {input} -o {output}"
+		"python {SCRIPTS_DIR}/X0_pair_filter.py {params} -b {input} -o {output}"
 
 rule coordsort_index_final_pruned:
 	input:
@@ -205,7 +215,7 @@ rule keepBedEntriesInHpeaks:
 	output:
 		os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
 	shell:
-		"keepBedEntriesInHpeaks -i {input.allhpeaks} -b {input.filtbed} -o {output}"
+		"python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
 rule findMotifsGenome:
 	input:

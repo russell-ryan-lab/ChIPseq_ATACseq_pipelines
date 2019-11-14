@@ -12,15 +12,15 @@
 		"118843" : "hg19r"
 	},
 	"lib_sample_tagdir" : {
-		"118842" : "/scratch/rjhryan_fluxod/trsaari/example_ChIP_2531_nomatched_input/tag/118842",
-		"118843" : "/scratch/rjhryan_fluxod/trsaari/example_ChIP_2531_nomatched_input/tag/118843"
+		"118842" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ChIP_2531_nomatched_input/tag/118842",
+		"118843" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ChIP_2531_nomatched_input/tag/118843"
 	},
 	"lib_input_tagdir" : {
 		"118842" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_processed_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/tag/DSG_Input_118850",
 		"118843" : "/nfs/turbo/path-rjhryan-turbo/data-ryanlab/ngs_processed_data/20181019_Run_2531_cREL_and_ChiangLab_ChIPseq/tag/DSG_Input_118850"
 	},
-    "flux_log_dir" : "/scratch/rjhryan_fluxod/trsaari/example_ChIP_2531_nomatched_input/logs",
-    "results" : "/scratch/rjhryan_fluxod/trsaari/example_ChIP_2531_nomatched_input",
+    "flux_log_dir" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ChIP_2531_nomatched_input/logs",
+    "results" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ChIP_2531_nomatched_input",
 	"homer_findPeaks_params" : "-style factor",
-	"homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_fluxod/trsaari/tmp/"
+	"homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_root/rjhryan/trsaari/tmp/"
 }

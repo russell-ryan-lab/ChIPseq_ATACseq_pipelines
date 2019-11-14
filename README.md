@@ -1,32 +1,66 @@
-## Snakemake NGS pipelines for the Ryan Lab
+## Snakemake pipelines for the Ryan Lab
 
-This repo contains snakefiles, configuration files, and a config generator script for processing NGS experiments
+This repo contains snakefiles, configuration files, and a config generator script for processing ATACseq and ChIPseq experiments
 
-These snakefiles are designed so that input fastqs and their associated wildcards are explicitly defined in the config, rather than implicitly determined by filename. This provides the flexibility allowing input files to be named in any fashion, and stored in any location. The easiest way to process a new experiment after receiving the data from the UMich sequencing core is to use the config generator script. The config generator script can be modified as needed to facilitate loading of differently named/stored inputs, or configs could even be manually edited.
+These snakefiles are designed so that input fastqs and their associated wildcards are explicitly defined in the config, rather than implicitly determined by filename. This provides the flexibility allowing input files to be named in any fashion, and stored in any location. The easiest way to process a new experiment after receiving the data from the UMich sequencing core is to use the config generator script. The config generator script can be modified as needed to facilitate loading of differently named/stored inputs, or configs could even be manually edited
 
-#### Example: Processing the results of ATACseq experiment
+### Before Starting
 
-##### First, generate a config file:
+Using snakemake requires first loading the python3.7-anaconda module on the cluster, which gives access to python3 and a large number of commonly-used libraries. Each new user who runs the pipelines must also first update some libraries in python. The pipelines have been tested using snakemake version 5.4.5
 
-    ./ngs_rawdata_config_creator.py --general_input example/config_general.json --per_lib_input example/ATAC_2369_sample_info.csv --results_dir /scratch/rjhryan_fluxod/trsaari/example_ATAC_2369/ --temp_dir /scratch/rjhryan_fluxod/trsaari/tmp/ > example/ATAC_2369_config.json
+    #On the cluster, load the python module
+    module load python3.7-anaconda/2019.07
+    #Update snakemake, installing the update to user’s local directory
+    pip install snakemake -U --user
+    #Update deeptools, installing the update to user’s local directory
+    pip install deeptools -U --user
 
-This will generate the config ATAC_2369_config.json
+Note - other labs using these pipelines must modify the "account" line of cluster_config.json to use their own HPC account
 
-Next, run the fastqc snakefile - this combines the fastq inputs for each sample, and runs fastqc on the merged sample fastqs.
+### Installing
 
-    #Run fastqc snakefile on the flux cluster (To run on cluster, make sure shell.prefix is uncommented in Snakefile):
-    snakemake -j 20 --snakefile Snakefile_fastqc --configfile example/ATAC_2369_config.json --latency-wait 60 --cluster-config flux_config_ATACseq.json --cluster "qsub -N {cluster.name} -A {cluster.account} -q {cluster.queue} -l nodes={cluster.nodes}:ppn={cluster.ntask} -l mem={cluster.memory} -l walltime={cluster.time} {cluster.env}"
+    #Navigate to where you want this pipeline to be located
+    cd /nfs/turbo/path-rjhryan-turbo/lab-members/Travis/
+    git clone https://github.com/russell-ryan-lab/ChIPseq_ATACseq_pipelines
 
-##### Inspect the results of fastqc:
+### Quick-start example: Processing the results of ATACseq experiment
 
-* If read-trimming is needed, perform as necessary and generate a new config for the trimmed input fastq files
-* If not, continue on with the ATACseq snakefile
+First, generate a config file. The ngs_rawdata_config_creator script will automatically generate a snakemake-ready configuration file by combining:
 
-##### Continuing with ATACseq pipeline
+1. General configuration details from a partial config file
+2. Parameters specified for each separate library in a .csv file.
 
-This pipeline has built-in flexibility regarding the aligners used to create the requisite merged, aligned BAM files. Currently BWA aln and BWA mem are implemented and can be included in the ATACseq snakefile. From there, duplicates are marked, bams are pruned, bigwigs are generated, peaks are called using MACS2, called peaks are filtered against blacklist regions, and ATAQV is run to gather and summarize quality metrics.
+Along with this quick example, there are several more configuration files which are included in the example subdirectory. These may be useful for tutorial purposes, and general (partial) configs can be re-used for analyses with similar parameter requirements.
 
-    #Running ATACseq snakefile on the flux cluster
-    snakemake -j 20 --snakefile Snakefile_ATACseq --configfile example/ATAC_2369_config.json --latency-wait 60 --cluster-config flux_config_ATACseq.json --cluster "qsub -N {cluster.name} -A {cluster.account} -q {cluster.queue} -l nodes={cluster.nodes}:ppn={cluster.ntask} -l mem={cluster.memory} -l walltime={cluster.time} {cluster.env}"
+    #Use the config creator script
+    ./ngs_rawdata_config_creator.py --general_input example/ATAC_general.json \
+    --per_lib_input example/ATAC_2369_abridged_sample_info.csv \
+    --results_dir /scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/ \
+    --temp_dir /scratch/rjhryan_root/rjhryan/trsaari/tmp/ \
+      > example/ATAC_2369_config.json
 
+This will generate the file example/ATAC_2369_config.json
 
+It may be instructive to open the example general input, per-lib input, and the resulting configuration file to understand what the config creator script has done. Using modified versions of the example CSVs and/or general configs in this same manner should allow users to create pipeline-ready configuration files for their experiments.
+
+### Continuing with ATACseq pipeline
+
+    #Running a dry-run (-n flag)
+    snakemake -n --snakefile Snakefile_ATACseq --configfile example/ATAC_2369_config.json
+
+    #If the dry-run succeeds, then proceed to run the ATACseq pipeline on the cluster
+    #First start a persistent session with screen or tmux
+    screen
+    #Then launch the pipeline
+    snakemake -p --snakefile Snakefile_ATACseq --configfile example/ATAC_2369_config.json \
+    --latency-wait 60 --cluster-config cluster_config.json \
+    --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=%x-%j.out'
+
+### Results
+
+Results will be located where they were specified in the config - in this example, they are located in `/scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/`. These include bams (aligned, filtered), called peaks, display files, ataqv results, and cluster logs.
+
+### Further reading and examples
+
+1. [Example with SRA data](doc/Example_running_SE_ChIPseq_from_SRA.md) - running single-end ChIPseq through se pipeline
+2. Example with in-house ChIPseq data - running paired-end ChIPseq reads through pe pipeline

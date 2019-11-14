@@ -16,5 +16,5 @@
     "igvtools_count_params" : "--includeDuplicates",
 	"makeTagDir_params" : "-keepAll -checkGC",
 	"homer_findPeaks_params" : "-style factor",
-	"homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_fluxod/trsaari/tmp/"
+	"homer_fmg_params" : "-bits -preparsedDir /scratch/rjhryan_root/rjhryan/trsaari/tmp/"
 }

@@ -48,25 +48,38 @@ ATAQV_DIR = prefix_results('ataqv')
 DISP_DIR = prefix_results('bigwig')
 
 
-# Load modules
+# Load modules and setup software
 
-#The loaded software versions are explicitly stated here. 
+#Setup for non-module software
+try:
+    igvtools_loc = config['non_module_software']['igvtools']
+    wigToBigWig_loc = config['non_module_software']['wigToBigWig']
+    ataqv_loc = config['non_module_software']['ataqv']
+except:
+    logger.info("Cannot find software locations in config. Defaulting to rjhryan_turbo locations")
+
+    igvtools_loc = "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar"
+    wigToBigWig_loc = "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
+    ataqv_loc = "/nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv"
+
+#The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function picard-tools() {{ java -Xmx12g -jar /sw/med/centos7/picard/2.4.1/picard.jar $@ ; }} ;",
-	"function igvtools() {{ java -jar /nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar $@ ; }} ;",
-	"function wigToBigWig() {{ /nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig $@ ; }} ;", #Version: wigToBigWig v 4
-	"function ataqv() {{ /nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv $@ ; }} ;",
-	"module load samtools/1.9 ;",
+	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
+	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
+	"function ataqv() {{ " + ataqv_loc + " $@ ; }} ;",
+    "module load Bioinformatics ;",
+    "module load picard-tools/2.8.1 ;",
+	"module load samtools/1.5 ;",
 	"module load bwa/0.7.15 ;",
-	"module load macs2/2.1.0 ;",
-	"module load bedtools2/2.20.1 ;",
-	"module load python-anaconda3/latest-3.6 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
+	"module load macs2/2.1.2 ;",
+	"module load bedtools2/2.25.0 ;",
+	"module load python3.7-anaconda/2019.07 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
 ]
 shell.prefix("".join(software_strings))
 
 
-# Set workdir - If running on Flux cluster, logs will be placed in this location
+# Set workdir - If running on cluster, logs will be placed in this location
 workdir:
 	config['flux_log_dir']
 
@@ -82,7 +95,7 @@ rule all:
 
 
 include:
-	"Snakefile_alignment_bwa_aln"
+	"Snakefile_alignment_bwa_aln_pe"
 
 rule mark_duplicates:
 	input:
@@ -93,7 +106,8 @@ rule mark_duplicates:
 	params:
 		tmpdir = config['tmpdir']
 	shell:
-		"picard-tools MarkDuplicates I={input} O={output.bam} "
+		"export JAVA_OPTIONS=-Xmx12g ; "
+		"PicardCommandLine MarkDuplicates I={input} O={output.bam} "
 		"METRICS_FILE={output.metric} "
 		"ASSUME_SORTED=True "
 		"VALIDATION_STRINGENCY=LENIENT "
@@ -174,4 +188,3 @@ rule ataqv:
 		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
 	shell:
 		"ataqv --peak-file {input.peaks} --name {params.samplename} --metrics-file {output.metrics} --excluded-region-file {params.blacklist} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"
-

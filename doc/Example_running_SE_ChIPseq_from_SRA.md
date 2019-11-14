@@ -3,13 +3,20 @@
 ## Download files from SRA, prepare them
 
     #Load the toolkit and navigate to where we want to store the raw fastqs
+    module load Bioinformatics
     module load sratoolkit
-    cd /scratch/rjhryan_fluxod/trsaari/SRA_fastqs/Basso_2018_mef2B/
-    #Download them
-    for i in $(seq 6730191 1 6730200) ; do echo $i ; fastq-dump --split-files SRR${i} ; done
-    #
-    #These are single-end data, with all of the samples in this directory. Move these into subdirs like so
-    for i in *_1.fastq ; do SAMPLENAME=$(basename $i "_1.fastq") ; echo $SAMPLENAME ; mkdir $SAMPLENAME && mv $i ${SAMPLENAME}/${SAMPLENAME}_1.fastq ; done
+    cd /scratch/rjhryan_root/rjhryan/trsaari/SRA_fastqs/Basso_2018_mef2B/
+    #Download them (Just download 10M spots for this example with -N & -X)
+    for i in $(seq 6730191 1 6730200) ; do echo $i ; fastq-dump -N 10000 -X 10010000 --split-files SRR${i} ; done
+
+The ngs_rawdata_config_creator script expects sample fastq's to have the format {Sample}_L{lanenum}_R{readnum}.fastq.gz
+Although this script has flexibility to allow for other naming formats, for simplicity in this example we'll just restructure them into the expected format.
+It also expects each sample's fastqs to be contained within a subdirectory. The following will accomplish both of the above.
+
+    #These are single-end data, with all of the samples in this directory. For this example, we can move these into subdirs & rename them like so
+    for i in *_1.fastq ; do SAMPLENAME=$(basename $i "_1.fastq") ; echo $SAMPLENAME ; mkdir $SAMPLENAME && mv $i ${SAMPLENAME}/${SAMPLENAME}_L001_R1.fastq ; done
+    #Now gzip them
+    find . -type f -name "*.fastq" -exec gzip {} \;
 
 ## Put together a sample sheet .csv file
 
@@ -19,19 +26,18 @@ See `example/Basso_2018_mef2B_samplesheet.csv` for an example
 
     ngs_rawdata_config_creator.py -g example/ChIP_TF_se_general.json \
       -p example/Basso_2018_mef2B_samplesheet.csv \
-      -r /scratch/rjhryan_fluxod/trsaari/Basso_2018_mef2B \
-      --file_glob "*.fastq" \
-      --capture_regex ".*_(\d)\.fastq"\
-      --simulate_single_lane \
+      -r /scratch/rjhryan_root/rjhryan/trsaari/Basso_2018_mef2B \
+      -t /scratch/rjhryan_root/rjhryan/trsaari/tmp \
         > example/Basso_2018_mef2B_config.json
 
-      #--file_glob and --capture_regex are set because our files are in non-default form:
-      # SRA files form - Sample_1.fastq, default is Sample_R1_L001.fastq.gz
-      #--simulate_single_lane - Used if fastqs are not split by sequencing lane, assign SE or PE fastq(s) to single lane
+## Try running a dry-run
+
+    snakemake --snakefile Snakefile_alignment_bwa_aln_se --configfile example/Basso_2018_mef2B_config.json -n -p
 
 ## Run the pipeline
 
-    #Run as you normally would - use gnu screen or tmux to create a persistent session, then call snakemake:
+    #Use gnu screen or tmux to create a persistent session, then call snakemake:
+    screen
     snakemake -j 100 --snakefile Snakefile_ChIPseq_se --configfile example/Basso_2018_mef2B_config.json \
-      --latency-wait 60 --cluster-config flux_config.json \
-      --cluster "qsub -N {cluster.name} -A {cluster.account} -q {cluster.queue} -l nodes={cluster.nodes}:ppn={cluster.ntask} -l mem={cluster.memory} -l walltime={cluster.time} {cluster.env}"
+      --latency-wait 60 --cluster-config cluster_config.json \
+      --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time}'

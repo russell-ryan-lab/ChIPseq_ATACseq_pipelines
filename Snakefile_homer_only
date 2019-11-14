@@ -18,15 +18,12 @@ HOMERMOTIF_DIR = prefix_results('homer_motifs')
 
 # Load modules
 
-#The loaded software versions are explicitly stated here. 
+#The loaded software versions are explicitly stated here.
 #If additional functions are added above without explicit versions in the string, add inline comments to indicate
 software_strings = [
-	"function keepBedEntriesInHpeaks() {{ /nfs/turbo/path-rjhryan-turbo/software/ryanlab_scripts/keepBedEntriesInHpeaks.py $@ ; }} ;", #ryanlab_scripts commit 01fc999
+	"module load Bioinformatics ; "
 	"module load samtools/1.9 ;",
-	"module load bedtools2/2.20.1 ;",
-	"module load weblogo/2.8.2 ; ", #Weblogo, blat, ghostscript, samtools, are prerequisites for homer module
-	"module load blat/34x1 ; ",
-	"module load ghostscript/9.19 ;",
+	"module load bedtools2/2.25.0 ;",
 	"module load homer/4.8 ;"
 ]
 shell.prefix("".join(software_strings))
@@ -82,7 +79,7 @@ rule keepBedEntriesInHpeaks:
 	output:
 		os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
 	shell:
-		"keepBedEntriesInHpeaks -i {input.allhpeaks} -b {input.filtbed} -o {output}"
+		"python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
 rule findMotifsGenome:
 	input:
