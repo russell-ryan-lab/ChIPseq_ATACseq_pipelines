@@ -13,4 +13,10 @@ ${repo_dir}/ngs_rawdata_config_creator.py \
     --temp_dir ${test_dir}/tmp \
     > ${test_dir}/config.json
 
-snakemake --snakefile ${repo_dir}/Snakefile_ATACseq --configfile config.json --use-conda -np
+# On comps
+snakemake --snakefile ${repo_dir}/Snakefile_ATACseq --configfile config.json --use-conda
+
+# On GL
+snakemake -p --snakefile ${repo_dir}/Snakefile_ATACseq --configfile ${test_dir}/config.json \
+    --latency-wait 60 --jobs 144 --cluster-config ${repo_dir}/cluster_config.json --use-conda \
+    --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=%x-%j.out'

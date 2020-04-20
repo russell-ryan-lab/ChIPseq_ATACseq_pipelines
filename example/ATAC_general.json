@@ -4,8 +4,8 @@
         "mm10" : "/nfs/turbo/epicore-active/rcavalca/repos/develop/Orochi_atac/data/mm10_blacklist.bed.gz"
     },
     "bwa_index" : {
-        "hg19" : "/nfs/turbo/epicore-active/genomes/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex",
-        "mm10" : "/nfs/turbo/epicore-active/genomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex"
+        "hg19" : "/nfs/turbo/epicore-active/genomes/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex/genome.fa",
+        "mm10" : "/nfs/turbo/epicore-active/genomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa"
     },
     "chrom_sizes" : {
         "hg19" : "/nfs/turbo/epicore-active/genomes/Homo_sapiens/UCSC/hg19/hg19.chrom.sizes",
@@ -16,10 +16,5 @@
     "tss": {
         "hg19": "/nfs/turbo/epicore-active/rcavalca/repos/develop/Orochi_atac/data/hg19_tss.bed",
         "mm10": "/nfs/turbo/epicore-active/rcavalca/repos/develop/Orochi_atac/data/mm10_tss.bed"
-    },
-    "non_module_software" : {
-        "igvtools" : "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar",
-        "wigToBigWig" : "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig",
-        "ataqv" : "/nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv"
     }
 }
