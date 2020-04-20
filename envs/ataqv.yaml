@@ -1,0 +1,6 @@
+name: ataqv
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - ataqv=1.1.1

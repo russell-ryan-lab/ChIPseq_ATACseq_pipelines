@@ -13,6 +13,7 @@ rule bwa_aln:
 	params:
 		index = lambda wildcards: config['bwa_index'][config['lib_genome'][wildcards.library]] #nested config call identical functionality to config['bwa_index'][get_genome(wildcards.library)]
 	threads: 8
+	conda: "envs/bwa.yaml"
 	shell:
 		"bwa aln -t {threads} {params.index} {input} > {output}"
 
@@ -27,6 +28,7 @@ rule bwa_sampe:
 	params:
 		index = lambda wildcards: config['bwa_index'][config['lib_genome'][wildcards.library]],
 		rg = lambda wildcards: expand('\\t'.join(["@RG", "ID:{library}_L{lane}", "SM:{samplename}", "LB:{library}"]), library=wildcards.library, lane=wildcards.lane, samplename=config['lib_samplename'][wildcards.library] )
+	conda: "envs/bwa.yaml"
 	shell:
 		"bwa sampe -r \'{params.rg}\' {params.index} {input.sai_left} {input.sai_right} {input.fq_left} {input.fq_right} > {output}"
 
@@ -35,13 +37,15 @@ rule picard_sort:
 		os.path.join(ALIGN_DIR, "{library}_L{lane}.aligned.sam")
 	output:
 		temp(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.sam"))
+	conda: "envs/picard.yaml"
 	shell:
 		"picard-tools SortSam I={input} O={output} SO=coordinate VALIDATION_STRINGENCY=LENIENT"
 
-rule merge_library: 
+rule merge_library:
 	input:
 		lambda wildcards: expand(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.sam"), library=wildcards.library, lane=config['lib_paths'][wildcards.library].keys())
 	output:
 		os.path.join(ALIGN_DIR, "{library}.merged.bam")
+	conda: "envs/samtools.yaml"
 	shell:
 		"samtools merge {output} {input}"

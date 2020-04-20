@@ -35,7 +35,7 @@ MACS2_GENOME_SIZE = {
 # Helper functions
 
 def get_genome(library):
-	return(config['lib_genome'][library])
+    return(config['lib_genome'][library])
 
 
 # RESULT PATHS
@@ -48,143 +48,119 @@ ATAQV_DIR = prefix_results('ataqv')
 DISP_DIR = prefix_results('bigwig')
 
 
-# Load modules and setup software
-
-#Setup for non-module software
-try:
-    igvtools_loc = config['non_module_software']['igvtools']
-    wigToBigWig_loc = config['non_module_software']['wigToBigWig']
-    ataqv_loc = config['non_module_software']['ataqv']
-except:
-    logger.info("Cannot find software locations in config. Defaulting to rjhryan_turbo locations")
-
-    igvtools_loc = "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar"
-    wigToBigWig_loc = "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
-    ataqv_loc = "/nfs/turbo/path-rjhryan-turbo/software/ataqv-1.0.0/bin/ataqv"
-
-#The loaded software versions are explicitly stated here.
-#If additional functions are added above without explicit versions in the string, add inline comments to indicate
-software_strings = [
-	"function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
-	"function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
-	"function ataqv() {{ " + ataqv_loc + " $@ ; }} ;",
-    "module load Bioinformatics ;",
-    "module load picard-tools/2.8.1 ;",
-	"module load samtools/1.5 ;",
-	"module load bwa/0.7.15 ;",
-	"module load macs2/2.1.2 ;",
-	"module load bedtools2/2.25.0 ;",
-	"module load python3.7-anaconda/2019.07 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
-]
-shell.prefix("".join(software_strings))
-
-
 # Set workdir - If running on cluster, logs will be placed in this location
 workdir:
-	config['flux_log_dir']
+    config['flux_log_dir']
 
 
 # Rules
 
 rule all:
-	input:
-		expand(os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"), library=config['lib_paths'].keys()),
-		expand(os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed"), library=config['lib_paths'].keys()),
-		expand(os.path.join(ATAQV_DIR, "{library}.ataqv.out"), library=config['lib_paths'].keys()),
-		expand(os.path.join(DISP_DIR, "{library}.1m.bw"), library=config['lib_paths'].keys()),
+    input:
+        expand(os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"), library=config['lib_paths'].keys()),
+        expand(os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed"), library=config['lib_paths'].keys()),
+        expand(os.path.join(ATAQV_DIR, "{library}.ataqv.out"), library=config['lib_paths'].keys()),
+        expand(os.path.join(DISP_DIR, "{library}.1m.bw"), library=config['lib_paths'].keys()),
 
 
 include:
-	"Snakefile_alignment_bwa_aln_pe"
+    "Snakefile_alignment_bwa_aln_pe"
 
 rule mark_duplicates:
-	input:
-		os.path.join(ALIGN_DIR, "{library}.merged.bam")
-	output:
-		bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-		metric = os.path.join(ALIGN_DIR, "{library}.mrkdup.metric")
-	params:
-		tmpdir = config['tmpdir']
-	shell:
-		"export JAVA_OPTIONS=-Xmx12g ; "
-		"PicardCommandLine MarkDuplicates I={input} O={output.bam} "
-		"METRICS_FILE={output.metric} "
-		"ASSUME_SORTED=True "
-		"VALIDATION_STRINGENCY=LENIENT "
-		"TMP_DIR={params.tmpdir}"
+    input:
+        os.path.join(ALIGN_DIR, "{library}.merged.bam")
+    output:
+        bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
+        metric = os.path.join(ALIGN_DIR, "{library}.mrkdup.metric")
+    params:
+        tmpdir = config['tmpdir']
+    conda: "envs/picard.yaml"
+    shell:
+        "export JAVA_OPTIONS=-Xmx12g ; "
+        "PicardCommandLine MarkDuplicates I={input} O={output.bam} "
+        "METRICS_FILE={output.metric} "
+        "ASSUME_SORTED=True "
+        "VALIDATION_STRINGENCY=LENIENT "
+        "TMP_DIR={params.tmpdir}"
 
 rule index_dupmarked_bams:
-	input:
-		os.path.join(ALIGN_DIR, "{library}.mrkdup.bam")
-	output:
-		os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
-	shell:
-		"samtools index {input} {output}"
+    input:
+        os.path.join(ALIGN_DIR, "{library}.mrkdup.bam")
+    output:
+        os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+    conda: "envs/samtools.yaml"
+    shell:
+        "samtools index {input} {output}"
 
 rule prune:
-	input:
-		bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-		bai = os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
-	output:
-		bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
-		bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
-	params:
-		incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
-		flags = config['samtools_prune_flags']
-	shell:
-		"samtools view -b {params.flags} {input.bam} {params.incl_chr} > {output.bam} ; "
-		"samtools index {output.bam} {output.bai}"
+    input:
+        bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
+        bai = os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+    output:
+        bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
+        bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+    params:
+        incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
+        flags = config['samtools_prune_flags']
+    conda: "envs/samtools.yaml"
+    shell:
+        "samtools view -b {params.flags} {input.bam} {params.incl_chr} > {output.bam} ; "
+        "samtools index {output.bam} {output.bai}"
 
 rule deeptools_bamcoverage_bw:
-	input:
-		bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
-		bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
-	output:
-		os.path.join(DISP_DIR, "{library}.1m.bw")
-	params:
-		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
-		args = config['deeptools_bamcoverage_params']
-	shell:
-		"bamCoverage --bam {input.bam} -o {output} -bl {params.blacklist} {params.args}"
+    input:
+        bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
+        bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+    output:
+        os.path.join(DISP_DIR, "{library}.1m.bw")
+    params:
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
+        args = config['deeptools_bamcoverage_params']
+    conda: "envs/deeptools.yaml"
+    shell:
+        "bamCoverage --bam {input.bam} -o {output} -bl {params.blacklist} {params.args}"
 
 rule peaks:
-	input:
-		os.path.join(PRUNE_DIR, "{library}.pruned.bam")
-	output:
-		temp(os.path.join(MACS2_DIR, "{library}_peaks.narrowPeak")),
-		os.path.join(MACS2_DIR, "{library}_peaks.xls"),
-		temp(os.path.join(MACS2_DIR, "{library}_summits.bed"))
-	params:
-		name = "{library}",
-		genome = lambda wildcards: MACS2_GENOME_SIZE[get_genome(wildcards.library)],
-		outdir = MACS2_DIR
-	shell:
-		"macs2 callpeak -t {input} --outdir {params.outdir} -n {params.name} -f BAMPE -g {params.genome} --keep-dup all"
+    input:
+        os.path.join(PRUNE_DIR, "{library}.pruned.bam")
+    output:
+        temp(os.path.join(MACS2_DIR, "{library}_peaks.narrowPeak")),
+        os.path.join(MACS2_DIR, "{library}_peaks.xls"),
+        temp(os.path.join(MACS2_DIR, "{library}_summits.bed"))
+    params:
+        name = "{library}",
+        genome = lambda wildcards: MACS2_GENOME_SIZE[get_genome(wildcards.library)],
+        outdir = MACS2_DIR
+    conda: "envs/macs2.yaml"
+    shell:
+        "macs2 callpeak -t {input} --outdir {params.outdir} -n {params.name} -f BAMPE -g {params.genome} --keep-dup all"
 
 rule blacklist_filter:
-	input:
-		narrowpeak = os.path.join(MACS2_DIR, "{library}_peaks.narrowPeak"),
-		summits = os.path.join(MACS2_DIR, "{library}_summits.bed")
-	output:
-		narrowpeak = os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"),
-		summits = os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed")
-	params:
-		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
-	shell:
-		"bedtools intersect -a {input.narrowpeak} -b {params.blacklist} -v > {output.narrowpeak} ; "
-		"bedtools intersect -a {input.summits} -b {params.blacklist} -v > {output.summits} ; "
+    input:
+        narrowpeak = os.path.join(MACS2_DIR, "{library}_peaks.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{library}_summits.bed")
+    output:
+        narrowpeak = os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed")
+    params:
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+    conda: "envs/bedtools.yaml"
+    shell:
+        "bedtools intersect -a {input.narrowpeak} -b {params.blacklist} -v > {output.narrowpeak} ; "
+        "bedtools intersect -a {input.summits} -b {params.blacklist} -v > {output.summits} ; "
 
 rule ataqv:
-	input:
-		md_bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-		peaks = os.path.join(MACS2_DIR, '{library}_peaks.narrowPeak')
-	output:
-		metrics = os.path.join(ATAQV_DIR, '{library}.ataqv.json.gz'),
-		stdout_destination = os.path.join(ATAQV_DIR, '{library}.ataqv.out')
-	params:
-		samplename = lambda wildcards: config['lib_samplename'][wildcards.library],
-		organism = lambda wildcards: ORGANISMS[get_genome(wildcards.library)],
-		tss_file = lambda wildcards: config['tss'][get_genome(wildcards.library)],
-		blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
-	shell:
-		"ataqv --peak-file {input.peaks} --name {params.samplename} --metrics-file {output.metrics} --excluded-region-file {params.blacklist} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"
+    input:
+        md_bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
+        peaks = os.path.join(MACS2_DIR, '{library}_peaks.narrowPeak')
+    output:
+        metrics = os.path.join(ATAQV_DIR, '{library}.ataqv.json.gz'),
+        stdout_destination = os.path.join(ATAQV_DIR, '{library}.ataqv.out')
+    params:
+        samplename = lambda wildcards: config['lib_samplename'][wildcards.library],
+        organism = lambda wildcards: ORGANISMS[get_genome(wildcards.library)],
+        tss_file = lambda wildcards: config['tss'][get_genome(wildcards.library)],
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+    conda: "envs/ataqv.yaml"
+    shell:
+        "ataqv --peak-file {input.peaks} --name {params.samplename} --metrics-file {output.metrics} --excluded-region-file {params.blacklist} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"

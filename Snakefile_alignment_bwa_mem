@@ -6,22 +6,24 @@ import os
 # Rules
 
 rule bwa_mem:
-	input:
-		lambda wildcards: config['lib_paths'][wildcards.library][wildcards.lane].values()
-	output:
-		temp(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.bam"))
-	params:
-		index = lambda wildcards: config['bwa_index'][config['lib_genome'][wildcards.library]],  #nested config call has identical functionality to config['bwa_index'][get_genome(wildcards.library)]
-		sort_tmp = os.path.join(config['tmpdir'], '{library}_L{lane}.sort.tmp'),
-		rg = lambda wildcards: expand('\\t'.join(["@RG", "ID:{library}_L{lane}", "SM:{samplename}", "LB:{library}"]), library=wildcards.library, lane=wildcards.lane, samplename=config['lib_samplename'][wildcards.library] )
-	threads: 8
-	shell:
-		"bwa mem -M -R \'{params.rg}\' -t {threads} {params.index} {input} | samtools sort -m 1g -@ {threads} -O bam -T {params.sort_tmp} -o {output} -"
+    input:
+        lambda wildcards: config['lib_paths'][wildcards.library][wildcards.lane].values()
+    output:
+        temp(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.bam"))
+    params:
+        index = lambda wildcards: config['bwa_index'][config['lib_genome'][wildcards.library]],  #nested config call has identical functionality to config['bwa_index'][get_genome(wildcards.library)]
+        sort_tmp = os.path.join(config['tmpdir'], '{library}_L{lane}.sort.tmp'),
+        rg = lambda wildcards: expand('\\t'.join(["@RG", "ID:{library}_L{lane}", "SM:{samplename}", "LB:{library}"]), library=wildcards.library, lane=wildcards.lane, samplename=config['lib_samplename'][wildcards.library] )
+    threads: 8
+    conda: "envs/bwa.yaml"
+    shell:
+        "bwa mem -M -R \'{params.rg}\' -t {threads} {params.index} {input} | samtools sort -m 1g -@ {threads} -O bam -T {params.sort_tmp} -o {output} -"
 
-rule merge_library: 
-	input:
-		lambda wildcards: expand(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.bam"), library=wildcards.library, lane=config['lib_paths'][wildcards.library].keys())
-	output:
-		os.path.join(ALIGN_DIR, "{library}.merged.bam")
-	shell:
-		"samtools merge {output} {input}"
+rule merge_library:
+    input:
+        lambda wildcards: expand(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.bam"), library=wildcards.library, lane=config['lib_paths'][wildcards.library].keys())
+    output:
+        os.path.join(ALIGN_DIR, "{library}.merged.bam")
+    conda: "envs/samtools.yaml"
+    shell:
+        "samtools merge {output} {input}"

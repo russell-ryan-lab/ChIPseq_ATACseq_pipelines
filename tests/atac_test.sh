@@ -13,4 +13,4 @@ ${repo_dir}/ngs_rawdata_config_creator.py \
     --temp_dir ${test_dir}/tmp \
     > ${test_dir}/config.json
 
-snakemake --snakefile ${repo_dir}/Snakefile_ATACseq --configfile config.json -np
+snakemake --snakefile ${repo_dir}/Snakefile_ATACseq --configfile config.json --use-conda -np
