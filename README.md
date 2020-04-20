@@ -6,16 +6,42 @@ These snakefiles are designed so that input fastqs and their associated wildcard
 
 ### Before Starting
 
-Using snakemake requires first loading the python3.7-anaconda module on the cluster, which gives access to python3 and a large number of commonly-used libraries. Each new user who runs the pipelines must also first update some libraries in python. The pipelines have been tested using snakemake version 5.4.5
+The pipelines manage software dependencies using [conda](https://docs.conda.io/en/latest/miniconda.html). In order to get started, you'll need a conda environment with snakemake and pandas installed. If you don't have conda installed, you can install miniconda to your home directory on GreatLakes by following the instructions below, based on the [miniconda installation instructions](https://docs.conda.io/en/latest/miniconda.html):
 
-    #On the cluster, load the python module
-    module load python3.7-anaconda/2019.07
-    #Update snakemake, installing the update to user’s local directory
-    pip install snakemake -U --user
-    #Update deeptools, installing the update to user’s local directory
-    pip install deeptools -U --user
+    # Download for 64-bit linux to your home directory:
+    cd ~
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    # Run the installer (choosing default options is fine)
+    bash Miniconda3-latest-Linux-x86_64.sh
 
-Note - other labs using these pipelines must modify the "account" line of cluster_config.json to use their own HPC account
+
+After that is set up, you can create a snakemake environment by running:
+
+    conda create -n snakemake -c bioconda snakemake=5.10.0 pandas=0.24.2
+
+Then when you want you use snakemake, you can activate that environment by running:
+
+    conda activate snakemake
+
+At that point, you should be able to run snakemake. Test it by running:
+
+    snakemake --version
+
+The result should be `5.10.0`, the latest snakemake release (as of 2/20/2020)
+
+
+You can deactivate the environment with:
+
+    conda deactivate
+
+
+### Lab-specific customizations
+
+The file cluster_config.yaml contains information that high-performance computing clusters need for submitting jobs. One field that other labs using these pipelines must modify is the "account" section of cluster_config.json. This should be changed from `rjhryan` to the lab's own HPC account.
+
+The general configuration files within `example/` contain paths to references (.e.g bwa indices, blacklist regions, etc.) which are managed by individuals. These paths should also be updated with new locations that are accessible to your lab.
+
+TODO: add links to web locations with e.g. blacklists.
 
 ### Installing
 
@@ -52,7 +78,7 @@ It may be instructive to open the example general input, per-lib input, and the 
     #First start a persistent session with screen or tmux
     screen
     #Then launch the pipeline
-    snakemake -p --snakefile Snakefile_ATACseq --configfile example/ATAC_2369_config.json \
+    snakemake -p --use-conda --snakefile Snakefile_ATACseq --configfile example/ATAC_2369_config.json \
     --latency-wait 60 --cluster-config cluster_config.json \
     --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=%x-%j.out'
 
