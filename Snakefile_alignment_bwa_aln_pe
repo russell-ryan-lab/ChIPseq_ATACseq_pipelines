@@ -39,7 +39,7 @@ rule picard_sort:
 		temp(os.path.join(ALIGN_DIR, "{library}_L{lane}.sorted.sam"))
 	conda: "envs/picard.yaml"
 	shell:
-		"picard-tools SortSam I={input} O={output} SO=coordinate VALIDATION_STRINGENCY=LENIENT"
+		"picard SortSam I={input} O={output} SO=coordinate VALIDATION_STRINGENCY=LENIENT"
 
 rule merge_library:
 	input:
