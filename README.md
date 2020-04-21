@@ -59,7 +59,7 @@ First, generate a config file. The ngs_rawdata_config_creator script will automa
 Along with this quick example, there are several more configuration files which are included in the example subdirectory. These may be useful for tutorial purposes, and general (partial) configs can be re-used for analyses with similar parameter requirements.
 
     #Use the config creator script
-    ./ngs_rawdata_config_creator.py --general_input example/ATAC_general.json \
+    ./scripts/ngs_rawdata_config_creator.py --general_input example/ATAC_general.json \
     --per_lib_input example/ATAC_2369_abridged_sample_info.csv \
     --results_dir /scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/ \
     --temp_dir /scratch/rjhryan_root/rjhryan/trsaari/tmp/ \

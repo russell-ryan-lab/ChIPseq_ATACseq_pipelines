@@ -7,6 +7,8 @@ import json
 import os
 import pandas as pd
 import re
+import sys
+import yaml
 
 
 #https://stackoverflow.com/a/5369814
@@ -75,7 +77,8 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
     if len(all_fastqs) == 0:
         raise RuntimeError("Input files not found in the directory " + basepath + "\nNote that inputs are found using the following shell glob: " + glob_regex)
 
-    readgroups = Tree()
+    nested_dict = lambda: defaultdict(nested_dict)
+    readgroups = nested_dict()
 
     for fq in all_fastqs:
         basename = os.path.basename(fq)
@@ -102,12 +105,28 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
 
     return(readgroups)
 
+def read_input(input_filename):
+    if input_filename.endswith('.yaml') or input_filename.endswith('.yml'):
+        try:
+            with open(input_filename) as infile:
+                config_dict = yaml.load(infile, Loader=yaml.SafeLoader)
+        except:
+            print("Could not load input file {}. Assuming YAML input.".format(input_filename))
+
+    elif input_filename.endswith('.json'):
+        try:
+            with open(input_filename) as infile:
+                config_dict = json.load(infile)
+        except:
+            print("Could not load input file {}. Assuming JSON input.".format(input_filename))
+
+    return config_dict
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(prog='python ngs_rawdata_config_creator.py', description = "")
-    parser.add_argument('-g', '--general_input', required=True, help="json file with general config information (results location, reference paths, etc)")
+    parser.add_argument('-g', '--general_input', required=True, help="json or yaml file with general config information (results location, reference paths, etc)")
     parser.add_argument('-p', '--per_lib_input', required=True, help="CSV file with per-lib information")
     parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
     parser.add_argument('-l', '--log_dir', help="Log directory to use in the config. Defaults to results_dir/logs")
@@ -118,8 +137,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    with open(args.general_input) as general:
-        config_dict = json.load(general)
+    config_dict = read_input(args.general_input)
 
     if not args.log_dir:
         log_dir = os.path.join(args.results_dir, "logs")
@@ -132,4 +150,6 @@ if __name__ == '__main__':
 
     config_dict.update(per_lib)
 
-    print(json.dumps(config_dict, sort_keys=True, indent=4, separators=(',', " : ")))
+    config_dict = json.loads(json.dumps(config_dict)) #Standardize dict type throughout object by using json as intermediate
+
+    yaml.dump(config_dict, sys.stdout, default_flow_style=False)

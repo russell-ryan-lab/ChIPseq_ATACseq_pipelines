@@ -6,7 +6,7 @@ mkdir -p ${test_dir}/tmp
 
 cd ${test_dir}
 
-${repo_dir}/ngs_rawdata_config_creator.py \
+${repo_dir}/scripts/ngs_rawdata_config_creator.py \
     --general_input ${repo_dir}/example/ATAC_general.json \
     --per_lib_input ${repo_dir}/tests/atac_test_samplesheet.csv \
     --results_dir ${test_dir} \
