@@ -11,7 +11,7 @@ def get_genome(library):
 
 # RESULT PATHS
 
-prefix_results = functools.partial(os.path.join, config['results'])
+prefix_results = functools.partial(os.path.join, config['results_dir'])
 HOMERPEAK_DIR = prefix_results('peaks')
 HOMERMOTIF_DIR = prefix_results('homer_motifs')
 

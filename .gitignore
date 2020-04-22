@@ -1,3 +1,4 @@
 .snakemake/*
 flux_config_ChIPseq.json
-.gitignore
+*__pycache__*
+

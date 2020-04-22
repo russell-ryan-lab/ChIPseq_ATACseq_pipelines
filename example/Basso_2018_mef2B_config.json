@@ -109,7 +109,7 @@
         "SRR6730200" : "SUD10-MEF2B-D83V_HAFLAG"
     },
     "makeTagDir_params" : "-keepAll -checkGC",
-    "results" : "/scratch/rjhryan_root/rjhryan/trsaari/Basso_2018_mef2B",
+    'results_dir' : "/scratch/rjhryan_root/rjhryan/trsaari/Basso_2018_mef2B",
     "samtools_prune_flags" : "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800",
     "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp/"
 }

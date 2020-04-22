@@ -8,15 +8,12 @@ cd ${test_dir}
 
 ${repo_dir}/scripts/ngs_rawdata_config_creator.py \
     --general_input ${repo_dir}/config/ATAC_general.yaml \
-    --per_lib_input ${repo_dir}/tests/atac_test_samplesheet.csv \
+    --per_lib_input ${repo_dir}/data/atac_test/data/atac_test_samplesheet.csv \
     --results_dir ${test_dir} \
     --temp_dir ${test_dir}/tmp \
     > ${test_dir}/config.yaml
 
-# On comps
-snakemake --snakefile ${repo_dir}/Snakefile_ATACseq --configfile config.json --use-conda
-
 # On GL
 snakemake -p --snakefile ${repo_dir}/Snakefile_ATACseq --configfile ${test_dir}/config.yaml \
     --latency-wait 60 --jobs 144 --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \
-    --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=%x-%j.out'
+    --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'

@@ -23,7 +23,7 @@ def get_genome(library):
 
 # RESULT PATHS
 
-prefix_results = functools.partial(os.path.join, config['results'])
+prefix_results = functools.partial(os.path.join, config['results_dir'])
 ALIGN_DIR = prefix_results('aligned')
 PRUNE_DIR = prefix_results('pruned')
 DISP_DIR = prefix_results('display_tracks')

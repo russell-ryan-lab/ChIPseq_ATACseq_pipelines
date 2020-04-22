@@ -80,7 +80,7 @@ It may be instructive to open the example general input, per-lib input, and the 
     #Then launch the pipeline
     snakemake -p --use-conda --snakefile Snakefile_ATACseq --configfile example/ATAC_2369_config.json \
     --latency-wait 60 --cluster-config cluster_config.json \
-    --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=%x-%j.out'
+    --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
 
 ### Results
 

@@ -112,14 +112,14 @@ def read_input(input_filename):
                 config_dict = yaml.load(infile, Loader=yaml.SafeLoader)
         except:
             print("Could not load input file {}. Assuming YAML input.".format(input_filename))
-
+#
     elif input_filename.endswith('.json'):
         try:
             with open(input_filename) as infile:
                 config_dict = json.load(infile)
         except:
             print("Could not load input file {}. Assuming JSON input.".format(input_filename))
-
+#
     return config_dict
 
 
@@ -129,7 +129,6 @@ if __name__ == '__main__':
     parser.add_argument('-g', '--general_input', required=True, help="json or yaml file with general config information (results location, reference paths, etc)")
     parser.add_argument('-p', '--per_lib_input', required=True, help="CSV file with per-lib information")
     parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
-    parser.add_argument('-l', '--log_dir', help="Log directory to use in the config. Defaults to results_dir/logs")
     parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
     parser.add_argument('-s', '--simulate_single_lane', action='store_true', help="If sample fastq's don't contain lane information, treat them all as a single lane")
     parser.add_argument('--file_glob', help="Override default file glob of '*.fastq.gz'", default='*.fastq.gz')
@@ -139,12 +138,7 @@ if __name__ == '__main__':
 
     config_dict = read_input(args.general_input)
 
-    if not args.log_dir:
-        log_dir = os.path.join(args.results_dir, "logs")
-    else:
-        log_dir = args.log_dir
-
-    config_dict.update({'results' : args.results_dir, 'flux_log_dir' : log_dir, 'tmpdir' : args.temp_dir})
+    config_dict.update({'results_dir' : args.results_dir, 'tmpdir' : args.temp_dir})
 
     per_lib = parse_per_lib(pd.read_csv(args.per_lib_input, dtype=str))
 

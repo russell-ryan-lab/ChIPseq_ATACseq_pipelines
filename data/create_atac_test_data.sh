@@ -7,7 +7,7 @@ singularity shell -B /nfs/med-bfx-activeprojects /nfs/turbo/epicore-active/commo
 
 
 ORIG_DIR=/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run
-CORE_DIR=/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/tests/atac_test_data
+CORE_DIR=/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data
 
 mkdir -p ${CORE_DIR}
 cd ${CORE_DIR}
@@ -21,7 +21,7 @@ cd ${CORE_DIR}
 find ${ORIG_DIR}/aligned -name "*merged.bam" | sort | xargs -I{} basename {} ".merged.bam" | \
     xargs -n 1 -P 18 -I{} sh -c '\
         bedtools intersect \
-            -a /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/tests/atac_test_data_regions.bed \
+            -a /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data_regions.bed \
             -b "${2}/aligned/${1}.merged.bam" \
             -sorted \
             -g /nfs/turbo/epicore-active/genomes/Mus_musculus/UCSC/mm10/mm10.chrom.sizes.fa.sort \

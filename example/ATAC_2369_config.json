@@ -104,7 +104,7 @@
         "igvtools" : "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar",
         "wigToBigWig" : "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
     },
-    "results" : "/scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/",
+    'results_dir' : "/scratch/rjhryan_root/rjhryan/trsaari/example_ATAC_2369/",
     "samtools_prune_flags" : "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x400 -F 0x800",
     "tmpdir" : "/scratch/rjhryan_root/rjhryan/trsaari/tmp/",
     "tss" : {
