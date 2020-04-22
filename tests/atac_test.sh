@@ -3,12 +3,13 @@ test_dir=${base_dir}/atac_test_run2
 repo_dir=${base_dir}/ChIPseq_ATACseq_pipelines
 
 mkdir -p ${test_dir}/tmp
+mkdir -p ${test_dir}/logs
 
 cd ${test_dir}
 
 ${repo_dir}/scripts/ngs_rawdata_config_creator.py \
     --general_input ${repo_dir}/config/ATAC_general.yaml \
-    --per_lib_input ${repo_dir}/data/atac_test/data/atac_test_samplesheet.csv \
+    --per_lib_input ${repo_dir}/data/atac_test_data/atac_test_samplesheet.csv \
     --results_dir ${test_dir} \
     --temp_dir ${test_dir}/tmp \
     > ${test_dir}/config.yaml
