@@ -1,13 +1,14 @@
 import os
 import shutil
 import subprocess
+import tempfile
 import unittest
 
 import pandas as pd
-from testfixtures import TempDirectory
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 PIPELINE_BASE_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
+TEST_TMP_DIR = '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/tmp'
 
 class SnakemakeFunctionalTests(unittest.TestCase):
     def setUp(self):
@@ -28,11 +29,12 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
 
     def test_dryrun_passes(self):
-        with TempDirectory() as temp_dir:
-            os.chdir(temp_dir.path)
+        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+            os.chdir(temp_dir)
 
             example_data_dir = os.path.join(PIPELINE_BASE_DIR, 'data')
-            results_dir = os.path.join(temp_dir.path, 'results')
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
             atac_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.yaml')
 
             ########################################
@@ -40,9 +42,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'ngs_rawdata_config_creator.py')
             general_input = atac_general_config
             per_lib_input = os.path.join(example_data_dir, 'atac_test_data', 'atac_test_samplesheet.csv')
-            results_dir = results_dir
-            results_temp_dir = os.path.join(results_dir, 'tmp')
-            outputfile_config = os.path.join(temp_dir.path, 'config_test.yaml')
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
 
             with open(outputfile_config, 'w') as outfile_handle:
                 cfg_create_return_code = subprocess.call([
@@ -58,7 +58,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             ########################################
             # Dryrun test
             snakefile = os.path.join(PIPELINE_BASE_DIR, 'Snakefile_ATACseq')
-            configfile = os.path.join(temp_dir.path, 'config_test.yaml')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
 
             dryrun_return_code = subprocess.call([
                 'snakemake',
@@ -70,26 +70,26 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             self.assertEqual(0, dryrun_return_code)
 
     def test_endtoend_passes(self):
-        with TempDirectory() as temp_dir:
-            os.chdir(temp_dir.path)
+        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+            os.chdir(temp_dir)
 
             example_data_dir = os.path.join(PIPELINE_BASE_DIR, 'data')
-            results_dir = os.path.join(temp_dir.path, 'results')
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            results_log_dir = os.path.join(results_dir, 'logs')
             atac_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.yaml')
-            cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')
 
-            # Create /logs and /tmp folder in temp_dir
-            os.mkdir(os.path.join(temp_dir.path, 'logs'))
-            os.mkdir(os.path.join(temp_dir.path, 'tmp'))
+            # Create /logs and /tmp folder in results_dir
+            os.mkdir(results_dir)
+            os.mkdir(results_temp_dir)
+            os.mkdir(results_log_dir)
 
             ########################################
             # Create the configfile
             config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'ngs_rawdata_config_creator.py')
             general_input = atac_general_config
             per_lib_input = os.path.join(example_data_dir, 'atac_test_data', 'atac_test_samplesheet.csv')
-            results_dir = results_dir
-            results_temp_dir = os.path.join(results_dir, 'tmp')
-            outputfile_config = os.path.join(temp_dir.path, 'config_test.yaml')
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
 
             with open(outputfile_config, 'w') as outfile_handle:
                 cfg_create_return_code = subprocess.call([
@@ -105,9 +105,9 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             ########################################
             # End-to-end test
             snakefile = os.path.join(PIPELINE_BASE_DIR, 'Snakefile_ATACseq')
-            configfile = os.path.join(temp_dir.path, 'config_test.yaml')
-            cluster_config = cluster_config
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
             slurm_status_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'slurm_status.py')
+            cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')
 
             endtoend_return_code = subprocess.call([
                 'snakemake',
