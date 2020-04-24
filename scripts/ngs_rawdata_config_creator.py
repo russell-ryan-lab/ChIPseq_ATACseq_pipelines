@@ -110,8 +110,13 @@ def read_input(input_filename):
         try:
             with open(input_filename) as infile:
                 config_dict = yaml.load(infile, Loader=yaml.SafeLoader)
-        except:
-            print("Could not load input file {}. Assuming YAML input.".format(input_filename))
+        except yaml.parser.ParserError as e:
+            print(e.msg)
+            raise
+        except FileNotFoundError as e:
+            print(e.msg)
+            # print("Could not load input file {}. Assuming YAML input.".format(input_filename))
+            raise
 #
     elif input_filename.endswith('.json'):
         try:
@@ -121,6 +126,9 @@ def read_input(input_filename):
             print("Could not load input file {}. Assuming JSON input.".format(input_filename))
 #
     return config_dict
+
+def validate_config_dict(config_dict):
+    foo = 'bar'
 
 
 if __name__ == '__main__':
