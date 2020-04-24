@@ -7,7 +7,7 @@ mkdir -p ${test_dir}/logs
 
 cd ${test_dir}
 
-${repo_dir}/scripts/ngs_rawdata_config_creator.py \
+${repo_dir}/scripts/config_creator.py \
     --general_input ${repo_dir}/config/ATAC_general.yaml \
     --per_lib_input ${repo_dir}/data/atac_test_data/atac_test_samplesheet.csv \
     --results_dir ${test_dir} \

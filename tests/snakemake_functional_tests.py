@@ -39,7 +39,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
             ########################################
             # Create the configfile
-            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'ngs_rawdata_config_creator.py')
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
             general_input = atac_general_config
             per_lib_input = os.path.join(example_data_dir, 'atac_test_data', 'atac_test_samplesheet.csv')
             outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
@@ -86,7 +86,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
             ########################################
             # Create the configfile
-            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'ngs_rawdata_config_creator.py')
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
             general_input = atac_general_config
             per_lib_input = os.path.join(example_data_dir, 'atac_test_data', 'atac_test_samplesheet.csv')
             outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
