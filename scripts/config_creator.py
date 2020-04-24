@@ -124,6 +124,7 @@ def read_input(input_filename):
                 config_dict = json.load(infile)
         except:
             print("Could not load input file {}. Assuming JSON input.".format(input_filename))
+            raise
 #
     return config_dict
 

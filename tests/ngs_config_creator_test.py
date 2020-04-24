@@ -1,11 +1,23 @@
+import json
+import os
 import tempfile
 import unittest
+import yaml
 
 import pandas as pd
+try:
+    #pylint: disable=locally-disabled,unused-import
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 import scripts.config_creator as config_creator
 
+TEST_DIR = os.path.realpath(os.path.dirname(__file__))
+PIPELINE_BASE_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
 
-class SnakemakeFunctionalTests(unittest.TestCase):
+
+class ConfigCreatorTests(unittest.TestCase):
     def setUp(self):
         self.original_wd = os.getcwd()
         self.addTypeEqualityFunc(pd.DataFrame, self.assertDataframeEqualEnough)
@@ -23,7 +35,10 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             raise self.failureException(msg) from e
 
     def test_read_input(self):
-        invalid_yaml = '@: foo'
-        invalid_json = 'foo: bar'
+        invalid_yaml = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'invalid.yaml')
+        invalid_json = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'invalid.json')
 
-        loaded_input = config_creator.read_input()
+        yaml_errors = (yaml.parser.ParserError, yaml.scanner.ScannerError)
+
+        self.assertRaises(yaml_errors, config_creator.read_input, invalid_yaml)
+        self.assertRaises(json.decoder.JSONDecodeError, config_creator.read_input, invalid_json)
