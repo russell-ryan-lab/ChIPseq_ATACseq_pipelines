@@ -17,6 +17,12 @@ class Tree(defaultdict):
         super(Tree, self).__init__(Tree)
         self.value = value
 
+class _InputValidationError(Exception):
+    """Raised for problematic input data."""
+
+    def __init__(self, msg, *args):
+        super(_InputValidationError, self).__init__(msg, *args)
+
 
 def parse_per_lib(lib_table):
     """
@@ -110,21 +116,19 @@ def read_input(input_filename):
         try:
             with open(input_filename) as infile:
                 config_dict = yaml.load(infile, Loader=yaml.SafeLoader)
-        except yaml.parser.ParserError as e:
-            print(e.msg)
-            raise
-        except FileNotFoundError as e:
-            print(e.msg)
-            # print("Could not load input file {}. Assuming YAML input.".format(input_filename))
-            raise
+        except (yaml.parser.ParserError, yaml.scanner.ScannerError) as e:
+            print(e)
+            msg = "Error: Error loading YAML. Assuming YAML input based on file extension."
+            sys.exit(str(msg))
 #
     elif input_filename.endswith('.json'):
         try:
             with open(input_filename) as infile:
                 config_dict = json.load(infile)
-        except:
-            print("Could not load input file {}. Assuming JSON input.".format(input_filename))
-            raise
+        except json.decoder.JSONDecodeError as e:
+            print(e)
+            msg = "Error: Error loading JSON. Assuming JSON input based on file extension."
+            sys.exit(str(msg))
 #
     return config_dict
 
