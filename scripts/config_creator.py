@@ -84,8 +84,7 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
     if len(all_fastqs) == 0:
         raise RuntimeError("Input files not found in the directory " + basepath + "\nNote that inputs are found using the following shell glob: " + glob_regex)
 
-    nested_dict = lambda: defaultdict(nested_dict)
-    readgroups = nested_dict()
+    readgroups = defaultdict(list)
 
     for fq in all_fastqs:
         basename = os.path.basename(fq)
@@ -93,22 +92,13 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
         if not rmatch:
             msg_fmt = ("\nFile {} did not match regular expression {}. "
                 "Could not capture desired group(s).\n"
-                "If filenames resemble sample_R1.fastq.gz, use --simulate_single_lane flag. "
                 "Note that all input files should be formatted consistently. "
                 "File glob and capture regex can be controlled with --file_glob and --capture_regex if desired.")
             raise RuntimeError(msg_fmt.format(basename, capture_regex))
         if rmatch.group(0) == basename:
-            #If samples do not contain lane information, treat them all as lane 001
-            if args.simulate_single_lane:
-                lane = "001"
-                read = rmatch.group(1)
-                if not len(all_fastqs) in [1,2]:
-                    raise ValueError("--simulate_single_lane flag can only be used if there are one or two fastq's per sample. There are " + str(len(all_fastqs)) + " in " + basepath)
-            else:
-                lane = rmatch.group(1)
-                read = rmatch.group(2)
+            readnum = rmatch.group(1)
             #Add fastq to dict
-            readgroups[lane][read] = fq
+            readgroups[readnum].append(fq)
 
     return(readgroups)
 
@@ -157,9 +147,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--per_lib_input', required=True, help="CSV file with per-lib information")
     parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
     parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
-    parser.add_argument('-s', '--simulate_single_lane', action='store_true', help="If sample fastq's don't contain lane information, treat them all as a single lane")
     parser.add_argument('--file_glob', help="Override default file glob of '*.fastq.gz'", default='*.fastq.gz')
-    parser.add_argument('--capture_regex', help="Override default capture regex of '.*_L(\d+)_R(\d+).*\.fastq\.gz'", default='.*_L(\d+)_R(\d+).*\.fastq\.gz')
+    parser.add_argument('--capture_regex', help="Override default capture regex of '.*_R(\d+).*\.fastq\.gz'", default='.*_R(\d+).*\.fastq\.gz')
 
     args = parser.parse_args()
 

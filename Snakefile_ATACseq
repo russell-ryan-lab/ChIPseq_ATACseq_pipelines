@@ -41,6 +41,7 @@ def get_genome(library):
 # RESULT PATHS
 
 prefix_results = functools.partial(os.path.join, config['results_dir'])
+CONCAT_READS_DIR = prefix_results('concat_reads')
 ALIGN_DIR = prefix_results('aligned')
 PRUNE_DIR = prefix_results('pruned')
 MACS2_DIR = prefix_results('macs2')
@@ -48,7 +49,7 @@ ATAQV_DIR = prefix_results('ataqv')
 DISP_DIR = prefix_results('bigwig')
 
 
-# Set workdir - Snakemake will be run from this location. 
+# Set workdir - Snakemake will be run from this location.
 workdir:
     config['results_dir']
 
@@ -66,9 +67,19 @@ rule all:
 include:
     "Snakefile_alignment_bwa_aln_pe"
 
+
+rule concatenate_reads:
+    input:
+        lambda wildcards: config['lib_paths'][wildcards.library][wildcards.read]
+    output:
+        os.path.join(CONCAT_READS_DIR, "{library}_R{read}.fastq.gz")
+    shell:
+        "cat {input} > {output}"
+
 rule mark_duplicates:
     input:
-        os.path.join(ALIGN_DIR, "{library}.merged.bam")
+        # This input comes from rule included alignment module e.g. Snakefile_alignment_bwa_aln_pe
+        os.path.join(ALIGN_DIR, "{library}.sorted.bam")
     output:
         bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
         metric = os.path.join(ALIGN_DIR, "{library}.mrkdup.metric")
