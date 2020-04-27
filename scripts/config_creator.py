@@ -4,6 +4,7 @@ import argparse
 from collections import defaultdict
 import glob
 import json
+import jsonschema
 import os
 import pandas as pd
 import re
@@ -120,7 +121,7 @@ def read_input(input_filename):
             print(e)
             msg = "Error: Error loading YAML. Assuming YAML input based on file extension."
             sys.exit(str(msg))
-#
+
     elif input_filename.endswith('.json'):
         try:
             with open(input_filename) as infile:
@@ -129,11 +130,24 @@ def read_input(input_filename):
             print(e)
             msg = "Error: Error loading JSON. Assuming JSON input based on file extension."
             sys.exit(str(msg))
-#
+
     return config_dict
 
-def validate_config_dict(config_dict):
-    foo = 'bar'
+def validate_config_with_schema(config_dict, schema_filename):
+    try:
+        pipeline_basedir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
+        schema_filename = os.path.join(pipeline_basedir, 'tests', 'pipeline_config_schema.yaml')
+        with open(schema_filename) as infile:
+            schema_dict = yaml.load(infile, Loader=yaml.SafeLoader)
+    except:
+        msg = "Error loading schema file {}.".format(schema_filename)
+
+    try:
+        jsonschema.validate(config_dict, schema_dict)
+    except Exception as e:
+        #print(e)
+        msg = "Error validating config against schema:\nSchema file: {}\nReason: {}".format(schema_filename, e.message)
+        sys.exit(str(msg))
 
 
 if __name__ == '__main__':
@@ -158,5 +172,9 @@ if __name__ == '__main__':
     config_dict.update(per_lib)
 
     config_dict = json.loads(json.dumps(config_dict)) #Standardize dict type throughout object by using json as intermediate
+
+    pipeline_basedir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
+    schema_filename = os.path.join(pipeline_basedir, 'tests', 'pipeline_config_schema.yaml')
+    validate_config_with_schema(config_dict, schema_filename)
 
     yaml.dump(config_dict, sys.stdout, default_flow_style=False)

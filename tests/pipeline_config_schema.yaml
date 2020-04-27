@@ -1,0 +1,40 @@
+title: Ryan lab pipeline config schema
+type: object
+properties:
+    lib_genome:
+        type: object
+        description: Contains key-value pairs relating library ID to genome build.
+    lib_paths:
+        type: object
+        description: Contains nested dictionary which relates library ID, lane number, and read number to a fastq filepath.
+    lib_samplename:
+        type: object
+        description: Contains key-value pairs relating library ID to sample name.
+    results_dir:
+        type: string
+    tmpdir:
+        type: string
+    samtools_prune_flags:
+        type: string
+    deeptools_bamcoverage_params:
+        type: string
+    blacklist:
+        type: object
+        description: Contains key-value pairs which relate genome builds to their blacklist bed files.
+    bwa_index:
+        type: object
+        description: Contains key-value pairs which relate genome builds to the path of the appropriate bwa indices. Note that these paths do not reference filenames, but prefixes which are passed to bwa.
+    chrom_sizes:
+        type: object
+        description: Contains key-value pairs which relate genome builds to their chromosome size files.
+required:
+    - lib_genome
+    - lib_paths
+    - lib_samplename
+    - results_dir
+    - tmpdir
+    - samtools_prune_flags
+    - deeptools_bamcoverage_params
+    - blacklist
+    - bwa_index
+    - chrom_sizes

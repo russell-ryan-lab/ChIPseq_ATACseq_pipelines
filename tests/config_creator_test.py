@@ -38,6 +38,10 @@ class ConfigCreatorTests(unittest.TestCase):
         invalid_yaml = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'invalid.yaml')
         invalid_json = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'invalid.json')
 
+        valid_yaml = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.yaml')
+        valid_json = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.json')
+
+        # Test error-handling
         self.assertRaisesRegex(SystemExit, 'Error loading YAML', config_creator.read_input, invalid_yaml)
         self.assertRaisesRegex(SystemExit, 'Error loading JSON', config_creator.read_input, invalid_json)
         self.assertRaises(FileNotFoundError, config_creator.read_input, 'foo.yaml')
