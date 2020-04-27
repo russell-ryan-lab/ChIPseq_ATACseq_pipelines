@@ -59,17 +59,7 @@ def assign_libpaths(lib_basepaths):
     libpaths_dict = dict()
     for row in lib_basepaths:
         lib, path = row
-        if args.simulate_single_lane:
-            #If simulating single lane and capture regex is default, replace it (disregard lane)
-            if args.capture_regex == ".*_L(\d+)_R(\d+).*\.fastq\.gz":
-                capture_regex = ".*_R(\d+).*\.fastq\.gz"
-            #Otherwise, use user-specified capture_regex
-            else:
-                capture_regex = args.capture_regex
-            #If samples do not contain lane information, use different capture regex which only captures read number
-            libpaths_dict[lib] = basepath_to_filepathsdict(path, args.file_glob, capture_regex)
-        else:
-            libpaths_dict[lib] = basepath_to_filepathsdict(path, args.file_glob, args.capture_regex)
+        libpaths_dict[lib] = basepath_to_filepathsdict(path, args.file_glob, args.capture_regex)
     return(libpaths_dict)
 
 

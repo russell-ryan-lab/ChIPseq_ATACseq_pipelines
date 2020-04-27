@@ -65,7 +65,7 @@ rule all:
 
 
 include:
-    "Snakefile_alignment_bwa_aln_pe"
+    "alignment_bwa_aln_pe.smk"
 
 
 rule concatenate_reads:

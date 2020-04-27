@@ -57,7 +57,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
             ########################################
             # Dryrun test
-            snakefile = os.path.join(PIPELINE_BASE_DIR, 'Snakefile_ATACseq')
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ATACseq.smk')
             configfile = os.path.join(temp_dir, 'config_test.yaml')
 
             dryrun_return_code = subprocess.call([
@@ -104,7 +104,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
             ########################################
             # End-to-end test
-            snakefile = os.path.join(PIPELINE_BASE_DIR, 'Snakefile_ATACseq')
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ATACseq.smk')
             configfile = os.path.join(temp_dir, 'config_test.yaml')
             slurm_status_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'slurm_status.py')
             cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')

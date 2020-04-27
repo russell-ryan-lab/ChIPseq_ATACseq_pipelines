@@ -15,6 +15,6 @@ ${repo_dir}/scripts/config_creator.py \
     > ${test_dir}/config.yaml
 
 # On GL
-snakemake -p --snakefile ${repo_dir}/Snakefile_ATACseq --configfile ${test_dir}/config.yaml \
+snakemake -p --snakefile ${repo_dir}/ATACseq.smk --configfile ${test_dir}/config.yaml \
     --latency-wait 60 --jobs 144 --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \
     --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'

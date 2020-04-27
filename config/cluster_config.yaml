@@ -8,19 +8,19 @@ __default__:
     time: 00:30:00
 bwa_aln:
     memory: '16384'
-    name: '{rule}_{wildcards.library}_L{wildcards.lane}_R{wildcards.read}'
+    name: '{rule}_{wildcards.library}_R{wildcards.read}'
     ntask: '8'
     time: 01:00:00
 bwa_mem:
     memory: '16384'
-    name: '{rule}_{wildcards.library}_L{wildcards.lane}'
+    name: '{rule}_{wildcards.library}'
     ntask: '8'
     time: 01:00:00
 bwa_sampe:
-    name: '{rule}_{wildcards.library}_L{wildcards.lane}'
+    name: '{rule}_{wildcards.library}'
     time: 04:00:00
 bwa_samse:
-    name: '{rule}_{wildcards.library}_L{wildcards.lane}'
+    name: '{rule}_{wildcards.library}'
     time: 04:00:00
 deeptools_bamcoverage_bw:
     time: 02:00:00
@@ -35,4 +35,4 @@ mark_duplicates:
     ntask: '2'
     time: 02:00:00
 picard_sort:
-    name: '{rule}_{wildcards.library}_L{wildcards.lane}'
+    name: '{rule}_{wildcards.library}'

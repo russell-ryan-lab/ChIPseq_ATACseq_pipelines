@@ -31,6 +31,6 @@ rule picard_sort:
     input:
         os.path.join(ALIGN_DIR, "{library}.aligned.sam")
     output:
-        temp(os.path.join(ALIGN_DIR, "{library}.sorted.sam"))
+        temp(os.path.join(ALIGN_DIR, "{library}.sorted.bam"))
     shell:
         "picard SortSam I={input} O={output} SO=coordinate VALIDATION_STRINGENCY=LENIENT"
