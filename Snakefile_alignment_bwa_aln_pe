@@ -6,7 +6,7 @@ import os
 # Rules
 
 rule bwa_aln:
-	input:
+    input:
         os.path.join(CONCAT_READS_DIR, "{library}_R{read}.fastq.gz")
     output:
         temp(os.path.join(ALIGN_DIR, "{library}_R{read}.sai"))
