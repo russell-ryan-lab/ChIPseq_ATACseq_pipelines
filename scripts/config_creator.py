@@ -90,6 +90,9 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
             #Add fastq to dict
             readgroups[readnum].append(fq)
 
+    for key in readgroups:
+        readgroups[key].sort()
+
     return(readgroups)
 
 def read_input(input_filename):

@@ -41,7 +41,7 @@ gzip *fastq
 rm *read_names
 
 # Create the test directory and move files into a MAGC-like structure
-for i in `seq 1 12`
+for i in `seq 1 4`
 do
     mkdir -p ${CORE_DIR}/Sample_${i}
     mv ${i}_L001_R*.fastq.gz ${CORE_DIR}/Sample_${i}/

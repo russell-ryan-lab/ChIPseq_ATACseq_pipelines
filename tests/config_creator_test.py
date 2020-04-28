@@ -46,3 +46,29 @@ class ConfigCreatorTests(unittest.TestCase):
         self.assertRaisesRegex(SystemExit, 'Error loading JSON', config_creator.read_input, invalid_json)
         self.assertRaises(FileNotFoundError, config_creator.read_input, 'foo.yaml')
         self.assertRaises(FileNotFoundError, config_creator.read_input, 'foo.json')
+
+    def test_basepath_to_filepathsdict(self):
+        default_glob = '*.fastq.gz'
+        default_capture_regex = '.*_R(\d+).*\.fastq\.gz'
+        sample_1_fastqs_dir = os.path.join(PIPELINE_BASE_DIR, 'data', 'atac_test_data', 'Sample_1')
+        sample_2_fastqs_dir = os.path.join(PIPELINE_BASE_DIR, 'data', 'atac_test_data', 'Sample_2')
+
+        no_fastqs_dir = os.path.join(PIPELINE_BASE_DIR, 'scripts')
+        wrong_glob = 'blue'
+        wrong_capture_regex = 'blue'
+
+        self.assertRaises(RuntimeError, config_creator.basepath_to_filepathsdict, no_fastqs_dir, default_glob, default_capture_regex)
+        self.assertRaises(RuntimeError, config_creator.basepath_to_filepathsdict, sample_1_fastqs_dir, wrong_glob, default_capture_regex)
+        self.assertRaises(RuntimeError, config_creator.basepath_to_filepathsdict, sample_1_fastqs_dir, default_glob, wrong_capture_regex)
+
+        expected_result_1 = {'1': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_1/1_L001_R1.fastq.gz'], '2': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_1/1_L001_R2.fastq.gz']}
+
+        actual_result_1 = config_creator.basepath_to_filepathsdict(sample_1_fastqs_dir, default_glob, default_capture_regex)
+
+        self.assertEqual(expected_result_1, actual_result_1)
+
+        expected_result_2 = {'1': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L001_R1.fastq.gz', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L002_R1.fastq.gz'], '2': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L001_R2.fastq.gz', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L002_R2.fastq.gz']}
+
+        actual_result_2 = config_creator.basepath_to_filepathsdict(sample_2_fastqs_dir, default_glob, default_capture_regex)
+
+        self.assertEqual(expected_result_2, actual_result_2)
