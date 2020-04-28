@@ -1,15 +1,12 @@
 title: Ryan lab pipeline config schema
 type: object
 properties:
-    lib_genome:
+    sample_genome:
         type: object
         description: Contains key-value pairs relating library ID to genome build.
-    lib_paths:
+    sample_paths:
         type: object
         description: Contains nested dictionary which relates library ID, lane number, and read number to a fastq filepath.
-    lib_samplename:
-        type: object
-        description: Contains key-value pairs relating library ID to sample name.
     results_dir:
         type: string
     tmpdir:
@@ -28,9 +25,8 @@ properties:
         type: object
         description: Contains key-value pairs which relate genome builds to their chromosome size files.
 required:
-    - lib_genome
-    - lib_paths
-    - lib_samplename
+    - sample_genome
+    - sample_paths
     - results_dir
     - tmpdir
     - samtools_prune_flags

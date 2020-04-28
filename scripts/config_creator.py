@@ -36,13 +36,13 @@ def parse_per_lib(lib_table):
 
     per_lib_dict = dict()
 
-    lib_basepaths = lib_table[['lib', 'basepath']].values
+    lib_basepaths = lib_table[['sample', 'basepath']].values
 
-    per_lib_dict['lib_paths'] = assign_libpaths(lib_basepaths)
+    per_lib_dict['sample_paths'] = assign_libpaths(lib_basepaths)
 
-    othercols = lib_table.columns.drop(['lib', 'basepath'])
+    othercols = lib_table.columns.drop(['lib', 'basepath', 'sample'])
     for c in othercols:
-        two_cols = ['lib', c]
+        two_cols = ['sample', c]
         combined_name = "_".join(two_cols)
         col_dict = dict(lib_table[two_cols].dropna().values)
         per_lib_dict[combined_name] = col_dict
@@ -58,8 +58,8 @@ def assign_libpaths(lib_basepaths):
     """
     libpaths_dict = dict()
     for row in lib_basepaths:
-        lib, path = row
-        libpaths_dict[lib] = basepath_to_filepathsdict(path, args.file_glob, args.capture_regex)
+        sample, path = row
+        libpaths_dict[sample] = basepath_to_filepathsdict(path, args.file_glob, args.capture_regex)
     return(libpaths_dict)
 
 

@@ -34,8 +34,8 @@ MACS2_GENOME_SIZE = {
 
 # Helper functions
 
-def get_genome(library):
-    return(config['lib_genome'][library])
+def get_genome(sample):
+    return(config['sample_genome'][sample])
 
 
 # RESULT PATHS
@@ -58,10 +58,10 @@ workdir:
 
 rule all:
     input:
-        expand(os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"), library=config['lib_paths'].keys()),
-        expand(os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed"), library=config['lib_paths'].keys()),
-        expand(os.path.join(ATAQV_DIR, "{library}.ataqv.out"), library=config['lib_paths'].keys()),
-        expand(os.path.join(DISP_DIR, "{library}.1m.bw"), library=config['lib_paths'].keys()),
+        expand(os.path.join(MACS2_DIR, "{sample}.BLfiltered.narrowPeak"), sample=config['sample_paths'].keys()),
+        expand(os.path.join(MACS2_DIR, "{sample}.summits.BLfiltered.bed"), sample=config['sample_paths'].keys()),
+        expand(os.path.join(ATAQV_DIR, "{sample}.ataqv.out"), sample=config['sample_paths'].keys()),
+        expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()),
 
 
 include:
@@ -70,19 +70,19 @@ include:
 
 rule concatenate_reads:
     input:
-        lambda wildcards: config['lib_paths'][wildcards.library][wildcards.read]
+        lambda wildcards: config['sample_paths'][wildcards.sample][wildcards.read]
     output:
-        os.path.join(CONCAT_READS_DIR, "{library}_R{read}.fastq.gz")
+        os.path.join(CONCAT_READS_DIR, "{sample}_R{read}.fastq.gz")
     shell:
         "cat {input} > {output}"
 
 rule mark_duplicates:
     input:
         # This input comes from rule included alignment module e.g. Snakefile_alignment_bwa_aln_pe
-        os.path.join(ALIGN_DIR, "{library}.sorted.bam")
+        os.path.join(ALIGN_DIR, "{sample}.sorted.bam")
     output:
-        bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-        metric = os.path.join(ALIGN_DIR, "{library}.mrkdup.metric")
+        bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
+        metric = os.path.join(ALIGN_DIR, "{sample}.mrkdup.metric")
     params:
         tmpdir = config['tmpdir']
     conda: "envs/picard.yaml"
@@ -96,22 +96,22 @@ rule mark_duplicates:
 
 rule index_dupmarked_bams:
     input:
-        os.path.join(ALIGN_DIR, "{library}.mrkdup.bam")
+        os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam")
     output:
-        os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+        os.path.join(ALIGN_DIR, "{sample}.mrkdup.bai")
     conda: "envs/samtools.yaml"
     shell:
         "samtools index {input} {output}"
 
 rule prune:
     input:
-        bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-        bai = os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+        bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
+        bai = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bai")
     output:
-        bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
-        bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+        bam = os.path.join(PRUNE_DIR, "{sample}.pruned.bam"),
+        bai = os.path.join(PRUNE_DIR, "{sample}.pruned.bai")
     params:
-        incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
+        incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.sample)],
         flags = config['samtools_prune_flags']
     conda: "envs/samtools.yaml"
     shell:
@@ -120,12 +120,12 @@ rule prune:
 
 rule deeptools_bamcoverage_bw:
     input:
-        bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
-        bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+        bam = os.path.join(PRUNE_DIR, "{sample}.pruned.bam"),
+        bai = os.path.join(PRUNE_DIR, "{sample}.pruned.bai")
     output:
-        os.path.join(DISP_DIR, "{library}.1m.bw")
+        os.path.join(DISP_DIR, "{sample}.1m.bw")
     params:
-        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)],
         args = config['deeptools_bamcoverage_params']
     conda: "envs/deeptools.yaml"
     shell:
@@ -133,14 +133,14 @@ rule deeptools_bamcoverage_bw:
 
 rule peaks:
     input:
-        os.path.join(PRUNE_DIR, "{library}.pruned.bam")
+        os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
-        temp(os.path.join(MACS2_DIR, "{library}_peaks.narrowPeak")),
-        os.path.join(MACS2_DIR, "{library}_peaks.xls"),
-        temp(os.path.join(MACS2_DIR, "{library}_summits.bed"))
+        temp(os.path.join(MACS2_DIR, "{sample}_peaks.narrowPeak")),
+        os.path.join(MACS2_DIR, "{sample}_peaks.xls"),
+        temp(os.path.join(MACS2_DIR, "{sample}_summits.bed"))
     params:
-        name = "{library}",
-        genome = lambda wildcards: MACS2_GENOME_SIZE[get_genome(wildcards.library)],
+        name = "{sample}",
+        genome = lambda wildcards: MACS2_GENOME_SIZE[get_genome(wildcards.sample)],
         outdir = MACS2_DIR
     conda: "envs/macs2.yaml"
     shell:
@@ -148,13 +148,13 @@ rule peaks:
 
 rule blacklist_filter:
     input:
-        narrowpeak = os.path.join(MACS2_DIR, "{library}_peaks.narrowPeak"),
-        summits = os.path.join(MACS2_DIR, "{library}_summits.bed")
+        narrowpeak = os.path.join(MACS2_DIR, "{sample}_peaks.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{sample}_summits.bed")
     output:
-        narrowpeak = os.path.join(MACS2_DIR, "{library}_BLfiltered.narrowPeak"),
-        summits = os.path.join(MACS2_DIR, "{library}_summits_BLfiltered.bed")
+        narrowpeak = os.path.join(MACS2_DIR, "{sample}.BLfiltered.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{sample}.summits.BLfiltered.bed")
     params:
-        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)]
     conda: "envs/bedtools.yaml"
     shell:
         "bedtools intersect -a {input.narrowpeak} -b {params.blacklist} -v > {output.narrowpeak} ; "
@@ -162,16 +162,16 @@ rule blacklist_filter:
 
 rule ataqv:
     input:
-        md_bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-        peaks = os.path.join(MACS2_DIR, '{library}_peaks.narrowPeak')
+        md_bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
+        peaks = os.path.join(MACS2_DIR, '{sample}_peaks.narrowPeak')
     output:
-        metrics = os.path.join(ATAQV_DIR, '{library}.ataqv.json.gz'),
-        stdout_destination = os.path.join(ATAQV_DIR, '{library}.ataqv.out')
+        metrics = os.path.join(ATAQV_DIR, '{sample}.ataqv.json.gz'),
+        stdout_destination = os.path.join(ATAQV_DIR, '{sample}.ataqv.out')
     params:
-        samplename = lambda wildcards: config['lib_samplename'][wildcards.library],
-        organism = lambda wildcards: ORGANISMS[get_genome(wildcards.library)],
-        tss_file = lambda wildcards: config['tss'][get_genome(wildcards.library)],
-        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+        samplename = '{wildcards.sample}',
+        organism = lambda wildcards: ORGANISMS[get_genome(wildcards.sample)],
+        tss_file = lambda wildcards: config['tss'][get_genome(wildcards.sample)],
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)]
     conda: "envs/ataqv.yaml"
     shell:
         "ataqv --peak-file {input.peaks} --name {params.samplename} --metrics-file {output.metrics} --excluded-region-file {params.blacklist} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"

@@ -7,12 +7,12 @@ import os
 
 rule bwa_mem:
     input:
-        os.path.join(CONCAT_READS_DIR, "{library}_R{read}.fastq.gz")
+        os.path.join(CONCAT_READS_DIR, "{sample}_R{read}.fastq.gz")
     output:
-        temp(os.path.join(ALIGN_DIR, "{library}.sorted.bam"))
+        temp(os.path.join(ALIGN_DIR, "{sample}.sorted.bam"))
     params:
-        index = lambda wildcards: config['bwa_index'][config['lib_genome'][wildcards.library]],  #nested config call has identical functionality to config['bwa_index'][get_genome(wildcards.library)]
-        sort_tmp = os.path.join(config['tmpdir'], '{library}.sort.tmp')
+        index = lambda wildcards: config['bwa_index'][config['sample_genome'][wildcards.sample]],  #nested config call has identical functionality to config['bwa_index'][get_genome(wildcards.sample)]
+        sort_tmp = os.path.join(config['tmpdir'], '{sample}.sort.tmp')
     threads: 8
     conda: "envs/bwa.yaml"
     shell:
