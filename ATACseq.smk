@@ -135,21 +135,25 @@ rule peaks:
     input:
         os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
-        temp(os.path.join(MACS2_DIR, "{sample}_peaks.narrowPeak")),
-        os.path.join(MACS2_DIR, "{sample}_peaks.xls"),
-        temp(os.path.join(MACS2_DIR, "{sample}_summits.bed"))
+        temp(os.path.join(MACS2_DIR, "{sample}.peaks.narrowPeak")),
+        os.path.join(MACS2_DIR, "{sample}.peaks.xls"),
+        temp(os.path.join(MACS2_DIR, "{sample}.summits.bed"))
     params:
         name = "{sample}",
         genome = lambda wildcards: MACS2_GENOME_SIZE[get_genome(wildcards.sample)],
         outdir = MACS2_DIR
     conda: "envs/macs2.yaml"
     shell:
-        "macs2 callpeak -t {input} --outdir {params.outdir} -n {params.name} -f BAMPE -g {params.genome} --keep-dup all"
+        "macs2 callpeak -t {input} --outdir {params.outdir} -n {params.name} -f BAMPE -g {params.genome} --keep-dup all ; "
+        # aligning filename formats - separated by '.'s preferred
+        "mv {params.outdir}/{wildcards.sample}_peaks.xls {params.outdir}/{wildcards.sample}.peaks.xls ; "
+        "mv {params.outdir}/{wildcards.sample}_peaks.narrowPeak {params.outdir}/{wildcards.sample}.peaks.narrowPeak ; "
+        "mv {params.outdir}/{wildcards.sample}_summits.bed {params.outdir}/{wildcards.sample}.summits.bed"
 
 rule blacklist_filter:
     input:
-        narrowpeak = os.path.join(MACS2_DIR, "{sample}_peaks.narrowPeak"),
-        summits = os.path.join(MACS2_DIR, "{sample}_summits.bed")
+        narrowpeak = os.path.join(MACS2_DIR, "{sample}.peaks.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{sample}.summits.bed")
     output:
         narrowpeak = os.path.join(MACS2_DIR, "{sample}.BLfiltered.narrowPeak"),
         summits = os.path.join(MACS2_DIR, "{sample}.summits.BLfiltered.bed")
@@ -163,7 +167,7 @@ rule blacklist_filter:
 rule ataqv:
     input:
         md_bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
-        peaks = os.path.join(MACS2_DIR, '{sample}_peaks.narrowPeak')
+        peaks = os.path.join(MACS2_DIR, '{sample}.peaks.narrowPeak')
     output:
         metrics = os.path.join(ATAQV_DIR, '{sample}.ataqv.json.gz'),
         stdout_destination = os.path.join(ATAQV_DIR, '{sample}.ataqv.out')

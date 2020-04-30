@@ -25,26 +25,24 @@ class _InputValidationError(Exception):
         super(_InputValidationError, self).__init__(msg, *args)
 
 
-def parse_per_lib(lib_table):
+def parse_per_lib(sample_table):
     """
     Takes a pandas df as input, and returns a dict of dicts reflecting the per-library data
     """
-    if not 'lib' in lib_table.columns:
-        raise RuntimeError("Missing required 'lib' column specifying library/sample IDs")
-    if not 'basepath' in lib_table.columns:
-        raise RuntimeError("Missing required 'basepath' column")
+
+    validate_sample_table(sample_table)
 
     per_lib_dict = dict()
 
-    lib_basepaths = lib_table[['sample', 'basepath']].values
+    lib_basepaths = sample_table[['sample', 'basepath']].values
 
     per_lib_dict['sample_paths'] = assign_libpaths(lib_basepaths)
 
-    othercols = lib_table.columns.drop(['lib', 'basepath', 'sample'])
+    othercols = sample_table.columns.drop(['lib', 'basepath', 'sample'])
     for c in othercols:
         two_cols = ['sample', c]
         combined_name = "_".join(two_cols)
-        col_dict = dict(lib_table[two_cols].dropna().values)
+        col_dict = dict(sample_table[two_cols].dropna().values)
         per_lib_dict[combined_name] = col_dict
 
     return(per_lib_dict)
@@ -131,6 +129,22 @@ def validate_config_with_schema(config_dict, schema_filename):
         #print(e)
         msg = "Error validating config against schema:\nSchema file: {}\nReason: {}".format(schema_filename, e.message)
         sys.exit(str(msg))
+
+def validate_sample_table(sample_table):
+    required_cols = set(['lib', 'sample', 'basepath'])
+    actual_cols = set(sample_table.columns)
+    missing_cols = required_cols - actual_cols
+    if missing_cols:
+        raise RuntimeError("Missing required {} column(s)".format(missing_cols))
+    # Error checking for samplenames - can only contain alphanumeric and _
+    samplenames = sample_table['sample'].to_list()
+    goodname_matches = [re.match(r'^[a-zA-Z0-9_]+$', x) for x in samplenames]
+    problematic_samples = []
+    for i, name in enumerate(goodname_matches):
+        if name == None:
+            problematic_samples.append(samplenames[i])
+    if problematic_samples:
+        raise RuntimeError("Samplenames contain invalid characters: {}".format(problematic_samples))
 
 
 if __name__ == '__main__':
