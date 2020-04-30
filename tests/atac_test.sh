@@ -14,6 +14,8 @@ ${repo_dir}/scripts/config_creator.py \
     --temp_dir ${test_dir}/tmp \
     > ${test_dir}/config.yaml
 
+conda activate snakemake
+
 # On GL
 snakemake -p --snakefile ${repo_dir}/ATACseq.smk --configfile ${test_dir}/config.yaml \
     --latency-wait 60 --jobs 144 --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \

@@ -29,7 +29,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
 
     def test_dryrun_passes(self):
-        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+        with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
 
             example_data_dir = os.path.join(PIPELINE_BASE_DIR, 'data')
@@ -70,6 +70,9 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             self.assertEqual(0, dryrun_return_code)
 
     def test_endtoend_passes(self):
+        # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
+        # can all access the same temp space. If this is not done, TemporaryDirectory creates them
+        # in /tmp, which is not shared between nodes
         with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
             os.chdir(temp_dir)
 
