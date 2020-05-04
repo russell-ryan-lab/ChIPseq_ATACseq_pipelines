@@ -94,6 +94,9 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
     return(readgroups)
 
 def read_input(input_filename):
+    """Takes input filename as argument, chooses to load json or yaml based on file extension,
+    and handles any errors that occur as the input file is loaded. Returns the loaded config dictionary.
+    """
     if input_filename.endswith('.yaml') or input_filename.endswith('.yml'):
         try:
             with open(input_filename) as infile:
@@ -112,16 +115,24 @@ def read_input(input_filename):
             msg = "Error: Error loading JSON. Assuming JSON input based on file extension."
             sys.exit(str(msg))
 
+    else:
+        msg = "Error: Cannot assume YAML or JSON based on file extension. Filename is {}.".format(input_filename)
+        sys.exit(str(msg))
+
     return config_dict
 
 def validate_config_with_schema(config_dict, schema_filename):
+    """Takes config dictionary and schema filename as arguments. Loads the schema file (assumes YAML format),
+    and uses jsonschema.validate to compare the config dictionary to the schema. Handles any
+    errors thrown by the validator.
+    """
     try:
         pipeline_basedir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
         schema_filename = os.path.join(pipeline_basedir, 'tests', 'pipeline_config_schema.yaml')
         with open(schema_filename) as infile:
             schema_dict = yaml.load(infile, Loader=yaml.SafeLoader)
     except:
-        msg = "Error loading schema file {}.".format(schema_filename)
+        msg = "Error loading schema file {}. Expecting YAML.".format(schema_filename)
 
     try:
         jsonschema.validate(config_dict, schema_dict)
@@ -131,6 +142,9 @@ def validate_config_with_schema(config_dict, schema_filename):
         sys.exit(str(msg))
 
 def validate_sample_table(sample_table):
+    """Takes pandas dataframe as input (loaded from per_lib_input), verifies that required colums are present,
+    and that samplenames don't contain invalid characters. Only alphanumeric and _ are allowed.
+    """
     required_cols = set(['lib', 'sample', 'basepath'])
     actual_cols = set(sample_table.columns)
     missing_cols = required_cols - actual_cols

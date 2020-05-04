@@ -8,6 +8,9 @@ import re
 import pandas as pd
 
 def get_fastqs(fastq_dir):
+    """
+    Takes a path containing fastqs ('.fastq*' or '.fq*') and returns a list of the paths to them.
+    """
     fastq_glob = glob.glob(os.path.join(fastq_dir, "*.fastq*"))
     fq_glob = glob.glob(os.path.join(fastq_dir, "*.fq*"))
 
@@ -20,6 +23,16 @@ def get_fastqs(fastq_dir):
     return(all_fastqs)
 
 def group_fastqs_by_metadata(fastqs, metadata, indiv_col, group_col, strip_regex):
+    """
+    Organize a folder of fastqs in a flat structure into a tree structure where the fastqs
+    are grouped in folders according to the samples to which they belong.
+
+    fastqs: The result of get_fastqs(), a list of paths to fastqs.
+    metadata: A pandas DataFrame relating samples labels to the consituent part labels.
+    indiv_col: Column to use for defining constituent parts of samples.
+    group_col: Column to use for defining sample names.
+    strip_regex: Regular expression to strip from all input filenames.
+    """
     # Strip filenames to get remaining identifiers
     fq_bnames_dict = defaultdict(list)
     fq_filenames = [os.path.basename(x) for x in fastqs]
@@ -38,6 +51,10 @@ def group_fastqs_by_metadata(fastqs, metadata, indiv_col, group_col, strip_regex
     return(grouping_dict)
 
 def validate_input_arguments(metadata, args):
+    """
+    Checks for existence of the fastq_dir passed to __main__, and that the group_col and indiv_col columns
+    are in the metadata DataFrame.
+    """
     required_cols = set([args.group_col, args.indiv_col])
     actual_cols = set(metadata.columns)
     missing_cols = required_cols - actual_cols
