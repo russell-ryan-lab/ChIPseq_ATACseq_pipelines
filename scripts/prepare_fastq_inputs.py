@@ -69,7 +69,14 @@ if __name__ == '__main__':
     groups = group_fastqs_by_metadata(fastqs, metadata, args.indiv_col, args.group_col, args.strip_regex)
     # Move the fastqs based on groupings separately?
 
-    import pdb; pdb.set_trace();
+    for key in groups:
+        # Create the tree structure
+        new_dir = os.path.join(args.fastq_dir, key)
+        os.mkdir(new_dir)
 
-    # TODO: Will ultimately need some way to match the files to the indiv_col values.
-    # Idea - Perform a uniform string strip on all input files, and exact match the remaining string with a value in indiv_col
+        for file in groups[key]:
+            # Create the hardlinks in the tree structure
+            src_file = os.path.join(args.fastq_dir, file)
+            dest_file = os.path.join(args.fastq_dir, key, file)
+
+            os.link(src_file, dest_file)
