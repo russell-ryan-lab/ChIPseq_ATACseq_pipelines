@@ -7,14 +7,14 @@ mkdir -p ${test_dir}/logs
 
 cd ${test_dir}
 
+conda activate snakemake
+
 ${repo_dir}/scripts/config_creator.py \
     --general_input ${repo_dir}/config/ATAC_general.yaml \
     --per_lib_input ${repo_dir}/data/atac_test_data/atac_test_samplesheet.csv \
     --results_dir ${test_dir} \
     --temp_dir ${test_dir}/tmp \
     > ${test_dir}/config.yaml
-
-conda activate snakemake
 
 # On GL
 snakemake -p --snakefile ${repo_dir}/ATACseq.smk --configfile ${test_dir}/config.yaml \
