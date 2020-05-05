@@ -19,7 +19,7 @@ The pipelines manage software dependencies using [conda](https://docs.conda.io/e
 
 After installation, create a conda environment containing snakemake and pandas by running:
 
-    conda create -n snakemake -c bioconda snakemake=5.10.0 pandas=0.24.2
+    conda create -n snakemake -c conda-forge -c bioconda snakemake=5.10.0 pandas=0.24.2
 
 To use snakemake, activate the environment by running:
 
@@ -48,7 +48,9 @@ Prior to using the pipeline, certain genome reference files are required. In par
 
 ##### BWA Indices
 
-Most iGenomes references ([link](https://support.illumina.com/sequencing/sequencing_software/igenome.html)) come with pre-built BWA indices. To build a BWA index for a new genome or genome build see the [bwa manual](http://bio-bwa.sourceforge.net/bwa.shtml). Briefly,
+Most iGenomes references ([link](https://support.illumina.com/sequencing/sequencing_software/igenome.html)) come with pre-built BWA indices. For example, in the hg19 download from iGenomes, the BWA index is located in `Homo_sapiens/UCSC/hg19/Sequence/BWAIndex`.
+
+To build a BWA index for a new genome or genome build see the [bwa manual](http://bio-bwa.sourceforge.net/bwa.shtml). Briefly,
 
     bwa index ref.fa
 
@@ -56,15 +58,46 @@ Most iGenomes references ([link](https://support.illumina.com/sequencing/sequenc
 
 Chromosome size files should be tab-delimited text with two columns, the first being the chromosome name (e.g. chr1) and the second being the chromosome length in bp (e.g. 249250621). These files can be downloaded using the `fetchChromSizes` tool ([Linux download](https://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/fetchChromSizes)). Alternatively, iGenomes references often contain this file in their folder hierarchy. The chromosome naming convention (i.e. chr1 or 1) must match those of the reference genome used.
 
+An example:
+
+    chr1	249250621
+    chr2	243199373
+    chr3	198022430
+    chr4	191154276
+    chr5	180915260
+    ...
+
 ##### Blacklist Regions
 
 Blacklist regions should be in the form of a [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) file. Version 2 blacklist regions can be downloaded from the Boyle Lab ([link](https://github.com/Boyle-Lab/Blacklist/tree/master/lists)). Version 1 blacklist regions can be downloaded from the Kundaje Lab ([link](https://sites.google.com/site/anshulkundaje/projects/blacklists)).
 
 The blacklist filtering step requires that the BED file used contains mutually disjoint regions. To ensure this is the case, one can use [`bedtools merge`](https://bedtools.readthedocs.io/en/latest/content/tools/merge.html) to create a final BED file for use in the pipeline.
 
+An example:
+
+    chr1	564449	570371
+    chr1	724136	727043
+    chr1	825006	825115
+    chr1	2583334	2634374
+    chr1	4363064	4363242
+    chr1	5725866	5736651
+    chr1	16839923	16841396
+    chr1	38077347	38077423
+    chr1	91852785	91853147
+    ...
+
 ##### TSS File
 
 TSS BED files are used to calculate TSS enrichment scores in the `ataqv` quality asseessment. The `ataqv` respository contains ready-made TSS files for hg19, mm9, and rn5 ([link](https://github.com/ParkerLab/ataqv/tree/master/data/tss)), but also includes the code used to generate them as an example for other references.
+
+An example:
+
+    chr1	11874	11874
+    chr1	69091	69091
+    chr1	321084	321084
+    chr1	321146	321146
+    chr1	322037	322037
+    ...
 
 #### Lab-specific customizations
 
