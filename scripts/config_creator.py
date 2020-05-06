@@ -25,18 +25,18 @@ class _InputValidationError(Exception):
         super(_InputValidationError, self).__init__(msg, *args)
 
 
-def parse_per_lib(sample_table):
+def parse_per_lib(args):
     """
     Takes a pandas df as input, and returns a dict of dicts reflecting the per-library data
     """
-
+    sample_table = pd.read_csv(args.per_lib_input, dtype=str)
     validate_sample_table(sample_table)
 
     per_lib_dict = dict()
 
     lib_basepaths = sample_table[['sample', 'basepath']].values
 
-    per_lib_dict['sample_paths'] = assign_libpaths(lib_basepaths)
+    per_lib_dict['sample_paths'] = assign_libpaths(args, lib_basepaths)
 
     othercols = sample_table.columns.drop(['lib', 'basepath', 'sample'])
     for c in othercols:
@@ -48,7 +48,7 @@ def parse_per_lib(sample_table):
     return(per_lib_dict)
 
 
-def assign_libpaths(lib_basepaths):
+def assign_libpaths(args, lib_basepaths):
     """
     Takes an array of arrays as input, each inner array having two items,
     library name and basepath. Calls basepath_to_filepathsdict for each library
@@ -73,24 +73,27 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
         raise RuntimeError("Input files not found in the directory " + basepath + "\nNote that inputs are found using the following shell glob: " + glob_regex)
 
     readgroups = defaultdict(list)
-
-    for fq in all_fastqs:
-        basename = os.path.basename(fq)
-        rmatch = re.match(capture_regex, basename)
-        if not rmatch:
-            msg_fmt = ("\nFile {} did not match regular expression {}. "
-                "Could not capture desired group(s).\n"
-                "Note that all input files should be formatted consistently. "
-                "File glob and capture regex can be controlled with --file_glob and --capture_regex if desired.")
-            raise RuntimeError(msg_fmt.format(basename, capture_regex))
-        if rmatch.group(0) == basename:
-            readnum = rmatch.group(1)
-            #Add fastq to dict
-            readgroups[readnum].append(fq)
-
-    for key in readgroups:
-        readgroups[key].sort()
-
+    import pdb ; pdb.set_trace()
+    # If no_capture was specified on the commandline, capture_regex will be False
+    if capture_regex == False:
+        readgroups[1] = all_fastqs
+    else:
+        for fq in all_fastqs:
+            basename = os.path.basename(fq)
+            rmatch = re.match(capture_regex, basename)
+            if not rmatch:
+                msg_fmt = ("\nFile {} did not match regular expression {}. "
+                    "Could not capture desired group(s).\n"
+                    "Note that all input files should be formatted consistently. "
+                    "File glob and capture regex can be controlled with --file_glob and --capture_regex if desired.")
+                raise RuntimeError(msg_fmt.format(basename, capture_regex))
+            if rmatch.group(0) == basename:
+                readnum = rmatch.group(1)
+                #Add fastq to dict
+                readgroups[readnum].append(fq)
+        for key in readgroups:
+            readgroups[key].sort()
+    pdb.set_trace()
     return(readgroups)
 
 def read_input(input_filename):
@@ -163,13 +166,14 @@ def validate_sample_table(sample_table):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(prog='python ngs_rawdata_config_creator.py', description = "")
+    parser = argparse.ArgumentParser(prog='python config_creator.py', description = "")
     parser.add_argument('-g', '--general_input', required=True, help="json or yaml file with general config information (results location, reference paths, etc)")
     parser.add_argument('-p', '--per_lib_input', required=True, help="CSV file with per-lib information")
     parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
     parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
     parser.add_argument('--file_glob', help="Override default file glob of '*.fastq.gz'", default='*.fastq.gz')
     parser.add_argument('--capture_regex', help="Override default capture regex of '.*_R(\d+).*\.fastq\.gz'", default='.*_R(\d+).*\.fastq\.gz')
+    parser.add_argument('--no_capture', dest = 'capture_regex', action='store_false', help="Treat all input fastqs as read1, do not attempt to capture read number from filename.")
 
     args = parser.parse_args()
 
@@ -177,7 +181,7 @@ if __name__ == '__main__':
 
     config_dict.update({'results_dir' : args.results_dir, 'tmpdir' : args.temp_dir})
 
-    per_lib = parse_per_lib(pd.read_csv(args.per_lib_input, dtype=str))
+    per_lib = parse_per_lib(args)
 
     config_dict.update(per_lib)
 
