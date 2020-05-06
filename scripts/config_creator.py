@@ -73,7 +73,6 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
         raise RuntimeError("Input files not found in the directory " + basepath + "\nNote that inputs are found using the following shell glob: " + glob_regex)
 
     readgroups = defaultdict(list)
-    import pdb ; pdb.set_trace()
     # If no_capture was specified on the commandline, capture_regex will be False
     if capture_regex == False:
         readgroups[1] = all_fastqs
@@ -93,7 +92,6 @@ def basepath_to_filepathsdict(basepath, glob_regex, capture_regex):
                 readgroups[readnum].append(fq)
         for key in readgroups:
             readgroups[key].sort()
-    pdb.set_trace()
     return(readgroups)
 
 def read_input(input_filename):
@@ -172,7 +170,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', '--results_dir', required=True, help="Results basepath to use in the config")
     parser.add_argument('-t', '--temp_dir', required=True, help="Temporary directory basepath to use in the config")
     parser.add_argument('--file_glob', help="Override default file glob of '*.fastq.gz'", default='*.fastq.gz')
-    parser.add_argument('--capture_regex', help="Override default capture regex of '.*_R(\d+).*\.fastq\.gz'", default='.*_R(\d+).*\.fastq\.gz')
+    parser.add_argument('--capture_regex', help="Override default regular expression which determines read number by filename. Default is '.*_R([12])(?=[_\.]).*\.fastq\.gz'", default='.*_R([12])(?=[_\.]).*\.fastq\.gz')
     parser.add_argument('--no_capture', dest = 'capture_regex', action='store_false', help="Treat all input fastqs as read1, do not attempt to capture read number from filename.")
 
     args = parser.parse_args()

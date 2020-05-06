@@ -64,7 +64,7 @@ class ConfigCreatorTests(unittest.TestCase):
 
     def test_basepath_to_filepathsdict(self):
         default_glob = '*.fastq.gz'
-        default_capture_regex = '.*_R(\d+).*\.fastq\.gz'
+        default_capture_regex = '.*_R([12])(?=[_\.]).*\.fastq\.gz'
         sample_1_fastqs_dir = os.path.join(PIPELINE_BASE_DIR, 'data', 'atac_test_data', 'Sample_1')
         sample_2_fastqs_dir = os.path.join(PIPELINE_BASE_DIR, 'data', 'atac_test_data', 'Sample_2')
 
