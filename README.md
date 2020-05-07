@@ -124,6 +124,10 @@ After installation, certain configuration files require editing for the pipeline
 - `config/ChIP_TF_general.yaml`: The paths to bwa indices, chromosome sizes, and blacklists should be changed.
 - `config/ChIP_TF_se_general.yaml`: The paths to bwa indices, chromosome sizes, and blacklists should be changed.
 
+#### Input files
+
+Fastq inputs must have filenames in the form `_R1.fastq.gz` or `_R2.fastq.gz`, and all fastqs for a given sample must be contained in their own directories. These directories are listed in the sample sheet that is given to config_creator.py. [Here is a link to some helpful notes and tools](#fastq-inputs) available if your input files are not yet 'pipeline-ready'.
+
 ### Quick-start example: Processing raw reads from an ATAC-seq experiment
 
 First, create the directory where you'd like to save the results of the pipeline:
@@ -203,11 +207,24 @@ Results will be located where they were specified in the configuration - in this
 
 In the script `config_creator.py`, one of the inputs is a CSV file which has a row for each sample, and among other things, a column containing a directory path which contains the FASTQs for a given sample. This configuration offers great flexibility and control. Various scenarios are exemplified here where we can take various actions to prepare inputs so that they are pipeline-ready.
 
-##### A note on filename restrictions
+##### Notes on filename restrictions
 
-One requirement for the input fastq files is that the read number must be discernable based on the filename (.e.g `_R1.fastq.gz`, `_1.fastq`, etc.), so that they can be appropriately placed as read 1 or read 2 in the configuration file. Since all three scenarios outlined here ultimately rely on the same config_creator script, they will all have this same restriction.
+Fastq files must be gzipped, and must have the extension `.fastq.gz` for the config_creator script and the pipeline to work.
 
-If your fastq files are single-end and do not explicitly have `_1` or `_R1` in the filenames, use the option `--no_capture` in `config_creator.py` to treat all fastqs in a subdirectory as read 1.
+To gzip all fastqs in a directory recursively, you can use the following one-liner. This will work in all cases - if fastqs are all in a single directory, if they are located within subdirectories, or a mixture of the two.
+
+    # Assuming fastq filenames end in ".fastq" here: If they end in ".fq", change the argument to -name "*.fq"
+    find /path/to/fastq_dir -type f -name "*.fastq" -exec gzip {} \;
+
+If your file extensions are not `.fastq.gz`, for example if they are `.fq.gz`, you can rename them all with the following command. Once again, this operates recursively in the fastq directory.
+
+    find /path/to/fastq_dir -type f -name "*.fq.gz" -exec rename .fq.gz .fastq.gz {} \;
+
+
+Another requirement for the input fastq files is that the read number must be discernable based on the filename in the form `_R1.fastq.gz` or `_R2.fastq.gz`, so that they can be appropriately placed as read 1 or read 2 in the configuration file.
+
+[TODO: flesh this out]
+
 
 
 ##### Fastq files already in separate directories for each sample
