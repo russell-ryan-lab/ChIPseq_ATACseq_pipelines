@@ -1,5 +1,5 @@
 base_dir=/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1
-test_dir=${base_dir}/atac_test_run2
+test_dir=${base_dir}/atac_test_run
 repo_dir=${base_dir}/ChIPseq_ATACseq_pipelines
 
 mkdir -p ${test_dir}/tmp
