@@ -1,15 +1,14 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
-
-import optparse
+import argparse
 import os
 import pysam
 import sys
 
 
 def keepBedEntriesInHpeaks(hpeaks_in_fn, hpeaks_out_fn, bed_fn):
-  ''' this function takes as an input a bed file and a hpeaks file, 
-  both with the same col4 (id) and outputs a hpeaks file WITH matching 
+  ''' this function takes as an input a bed file and a hpeaks file,
+  both with the same col4 (id) and outputs a hpeaks file WITH matching
   entries in the bed file '''
   hpeaks_in = open(hpeaks_in_fn, 'r')
   hpeaks_out = open(hpeaks_out_fn, 'w')
@@ -39,9 +38,9 @@ def keepBedEntriesInHpeaks(hpeaks_in_fn, hpeaks_out_fn, bed_fn):
 
 
 if __name__ == "__main__":
-    parser = optparse.OptionParser()
-    parser.add_option('-i', '--hpeaks_in_fn', help='hpeaks_in_fn')
-    parser.add_option('-o', '--hpeaks_out_fn', help='hpeaks_out_fn')
-    parser.add_option('-b', '--bed_fn', help='bed_fn')
-    opts, posargs = parser.parse_args()
-    keepBedEntriesInHpeaks(opts.hpeaks_in_fn, opts.hpeaks_out_fn, opts.bed_fn)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--hpeaks_in_fn', help='hpeaks_in_fn')
+    parser.add_argument('-o', '--hpeaks_out_fn', help='hpeaks_out_fn')
+    parser.add_argument('-b', '--bed_fn', help='bed_fn')
+    args = parser.parse_args()
+    keepBedEntriesInHpeaks(args.hpeaks_in_fn, args.hpeaks_out_fn, args.bed_fn)

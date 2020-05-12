@@ -32,34 +32,6 @@ HOMERPEAK_DIR = prefix_results('peaks')
 HOMERMOTIF_DIR = prefix_results('homer_motifs')
 
 
-# Load modules and setup software
-
-#Setup for non-module software
-try:
-    igvtools_loc = config['non_module_software']['igvtools']
-    wigToBigWig_loc = config['non_module_software']['wigToBigWig']
-except:
-    logger.info("Cannot find software locations in config. Defaulting to rjhryan_turbo locations")
-
-    igvtools_loc = "/nfs/turbo/path-rjhryan-turbo/software/igvtools/v2_3_98/igvtools.jar"
-    wigToBigWig_loc = "/nfs/turbo/path-rjhryan-turbo/software/ucsc/wigToBigWig"
-
-
-#The loaded software versions are explicitly stated here.
-#If additional functions are added above without explicit versions in the string, add inline comments to indicate
-software_strings = [
-    "function igvtools() {{ java -jar " + igvtools_loc + " $@ ; }} ;",
-    "function wigToBigWig() {{ " + wigToBigWig_loc + " $@ ; }} ;", #Version: wigToBigWig v 4
-    "module load Bioinformatics ;"
-    "module load picard-tools/2.8.1 ;",
-    "module load bwa/0.7.15 ;",
-    "module load samtools/1.5 ;",
-    "module load bedtools2/2.25.0 ;",
-    "module load homer/4.8 ;",
-    "module load python3.7-anaconda/2019.07 ;" #Provides access to deeptools bamCoverage - deeptools library may need upgrading depending on passed arguments. Tested using deeptools 3.2.1
-]
-shell.prefix("".join(software_strings))
-
 SCRIPTS_DIR = os.path.join(os.getcwd(), 'scripts')
 
 
@@ -79,7 +51,7 @@ rule all:
 
 
 include:
-    "Snakefile_alignment_bwa_aln_se"
+    "alignment_bwa_aln_se.smk"
 
 rule mark_duplicates:
     input:
@@ -89,9 +61,10 @@ rule mark_duplicates:
         metric = os.path.join(ALIGN_DIR, "{library}.mrkdup.metric")
     params:
         tmpdir = config['tmpdir']
+    conda: "envs/picard.yaml"
     shell:
         "export JAVA_OPTIONS=-Xmx12g ; "
-        "PicardCommandLine MarkDuplicates I={input} O={output.bam} "
+        "picard MarkDuplicates I={input} O={output.bam} "
         "METRICS_FILE={output.metric} "
         "ASSUME_SORTED=True "
         "VALIDATION_STRINGENCY=LENIENT "
@@ -102,6 +75,7 @@ rule index_dupmarked_bams:
         os.path.join(ALIGN_DIR, "{library}.mrkdup.bam")
     output:
         os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+    conda: "envs/samtools.yaml"
     shell:
         "samtools index {input} {output}"
 
@@ -114,6 +88,7 @@ rule samtools_prune:
     params:
         incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
         flags = config['samtools_prune_flags']
+    conda: "envs/samtools.yaml"
     shell:
         "samtools view -b {params.flags} {input.bam} {params.incl_chr} > {output.bam}"
 
@@ -122,6 +97,7 @@ rule index_pruned:
         bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam")
     output:
         bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+    conda: "envs/samtools.yaml"
     shell:
         "samtools index {input.bam} {output.bai}"
 
@@ -133,6 +109,7 @@ rule igvtools_count_tdf:
     params:
         genome = lambda wildcards: get_genome(wildcards.library),
         args = config['igvtools_count_params']
+    conda: "envs/igvtools.yaml"
     shell:
         "igvtools count {params.args} {input} {output} {params.genome}"
 
@@ -145,6 +122,7 @@ rule deeptools_bamcoverage_bw:
     params:
         blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
         args = config['deeptools_bamcoverage_params']
+    conda: "envs/deeptools.yaml"
     shell:
         "bamCoverage --bam {input.bam} -o {output} -bl {params.blacklist} {params.args}"
 
@@ -156,6 +134,7 @@ rule makeTagDirectory:
     params:
         genome = lambda wildcards: get_genome(wildcards.library),
         params = config['makeTagDir_params']
+    conda: "envs/homer.yaml"
     shell:
         "makeTagDirectory {output} {params.params} -genome {params.genome} {input}"
 
@@ -167,6 +146,7 @@ rule findPeaks:
         os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
     params:
         config['homer_findPeaks_params']
+    conda: "envs/homer.yaml"
     shell:
         "findPeaks {input.sample} -i {input.input} {params} -o {output}"
 
@@ -175,6 +155,7 @@ rule pos2bed:
         os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
     output:
         os.path.join(HOMERPEAK_DIR, "{library}.all.bed")
+    conda: "envs/homer.yaml"
     shell:
         "pos2bed.pl {input} > {output}"
 
@@ -185,6 +166,7 @@ rule blacklist_filter_bed:
         os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.bed"),
     params:
         blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+    conda: "envs/bedtools.yaml"
     shell:
         "bedtools intersect -a {input} -b {params.blacklist} -v > {output}"
 
@@ -194,6 +176,7 @@ rule keepBedEntriesInHpeaks:
         allhpeaks = os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
     output:
         os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
+    conda: "envs/pysam.yaml"
     shell:
         "python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
@@ -205,5 +188,6 @@ rule findMotifsGenome:
     params:
         genome = lambda wildcards: config['lib_homer_fmg_genome'][wildcards.library],
         params = config['homer_fmg_params']
+    conda: "envs/homer.yaml"
     shell:
         "findMotifsGenome.pl {input} {params.genome} {output} {params.params}"

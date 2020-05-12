@@ -51,6 +51,7 @@ rule findPeaks:
         os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
     params:
         config['homer_findPeaks_params']
+    conda: "envs/homer.yaml"
     shell:
         "findPeaks {input.sample} -i {input.input} {params} -o {output}"
 
@@ -59,6 +60,7 @@ rule pos2bed:
         os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
     output:
         os.path.join(HOMERPEAK_DIR, "{library}.all.bed")
+    conda: "envs/homer.yaml"
     shell:
         "pos2bed.pl {input} > {output}"
 
@@ -69,6 +71,7 @@ rule blacklist_filter_bed:
         os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.bed"),
     params:
         blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+    conda: "envs/betools.yaml"
     shell:
         "bedtools intersect -a {input} -b {params.blacklist} -v > {output}"
 
@@ -78,6 +81,7 @@ rule keepBedEntriesInHpeaks:
         allhpeaks = os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
     output:
         os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
+    conda: "envs/pysam.yaml"
     shell:
         "python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
@@ -89,5 +93,6 @@ rule findMotifsGenome:
     params:
         genome = lambda wildcards: config['lib_homer_fmg_genome'][wildcards.library],
         params = config['homer_fmg_params']
+    conda: "envs/homer.yaml"
     shell:
         "findMotifsGenome.pl {input} {params.genome} {output} {params.params}"
