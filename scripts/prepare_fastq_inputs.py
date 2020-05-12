@@ -119,4 +119,4 @@ if __name__ == '__main__':
             src_path = os.path.join(args.fastq_dir, src_file)
             dest_path = os.path.join(args.fastq_dir, key, dest_file)
 
-            os.link(src_file, dest_file)
+            os.link(src_path, dest_path)
