@@ -4,14 +4,12 @@
 * [Before Starting](#before-starting)
   * [Managing Software with Conda](#managing-software-with-conda)
   * [Installing the Pipelines](#installing-the-pipelines)
+    * [Lab-Specific Customizations](#lab-specific-customizations)
   * [Genome Reference Requirements](#genome-reference-requirements)
-  * [Lab-Specific Customizations](#lab-specific-customizations)
 * [Quick-Start Example](#quick-start-example-Processing-raw-reads-from-an-ATAC-seq-experiment)
 * [Additional Information](#additional-information)
   * [Fastq Inputs](#fastq-inputs)
   * [Examples](#examples)
-
-
 
 ## About
 
@@ -56,13 +54,33 @@ Finally, deactivate the environment with:
 #### Installing the Pipelines
 
     #Navigate to where you want this pipeline to be located
-    cd /nfs/turbo/path-rjhryan-turbo/lab-members/Travis/
+    cd /path/to/pipelines
 
     git clone https://github.com/russell-ryan-lab/ChIPseq_ATACseq_pipelines
 
+##### Lab-specific customizations
+
+After installation, the following paths need to be changed to be lab-specific:
+
+- In `data/atac_test_samplesheet.csv`, the `/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines` part of each basepath should be changed to point to the installation path of the pipeline.
+- In each of the `config/*_general.yaml` files, the paths in the `blacklist`, `chrom_sizes`, and `tss` sections should be modified as follows. Paths beginning with `/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines` should be changed to point to the installation path of the pipeline.
+- In each of the `config/*_general.yaml` files, the `bwa_index` section should point to a valid BWA index created by the user. See the [section](#bwa-indices) below for how to create a BWA index.
+- In `config/cluster_config.yaml`, the `account` attribute should be changed to the appropriate Great Lakes account.
+- In `tests/atac_test.sh`, lines 1-3 should be changed to point to the installation path of the pipeline.
+
+##### Quick Test of the installation
+
+If all the above are configured correctly, it should be possible to run a simple shell script to test the installation of the pipelines. These will create a test configuration file and call the pipeline with included test data.
+
+To test the ATACseq pipeline, simply run:
+
+    tests/atac_test.sh
+
+At the end of the run (~15 min) snakemake should return no errors if everything is configured correctly.
+
 #### Genome Reference Requirements
 
-Prior to using the pipeline, certain genome reference files are required. In particular, BWA indices, chromosome sizes, and blacklist regions are required for both the ATAC-seq and ChIP-seq pipelines. The ATAC-seq pipeline also requires a TSS file. Each is described in more detail below.
+Prior to using the pipeline, BWA indices, chromosome sizes, and blacklist regions are required for both the ATAC-seq and ChIP-seq pipelines, and the ATAC-seq pipeline requires a TSS file. Each is described in detail below, and they are included in `data/references` for hg19, hg38, and mm10. The sources are described in [`data/references/sources.md`](data/references/sources.md).
 
 ##### BWA Indices
 
@@ -81,8 +99,6 @@ An example:
     chr1	249250621
     chr2	243199373
     chr3	198022430
-    chr4	191154276
-    chr5	180915260
     ...
 
 ##### Blacklist Regions
@@ -91,17 +107,15 @@ Blacklist regions should be in the form of a [BED](https://genome.ucsc.edu/FAQ/F
 
 The blacklist filtering step requires that the BED file used contains mutually disjoint regions. To ensure this is the case, one can use [`bedtools merge`](https://bedtools.readthedocs.io/en/latest/content/tools/merge.html) to create a final BED file for use in the pipeline.
 
+Note: If you are using an organism that does not have a blacklist available, it is recommended to create a dummy placeholder blacklist and include its path in general config files (e.g. `config/ATAC_general.yaml`). To do this, you can use the following command:
+
+    echo 'chr1\t1\t2' > /path/to/dummy_blacklist.bed #Note: use appropriate chromosome identifiers for your organism.
+
 An example:
 
     chr1	564449	570371
     chr1	724136	727043
     chr1	825006	825115
-    chr1	2583334	2634374
-    chr1	4363064	4363242
-    chr1	5725866	5736651
-    chr1	16839923	16841396
-    chr1	38077347	38077423
-    chr1	91852785	91853147
     ...
 
 ##### TSS File
@@ -113,19 +127,7 @@ An example:
     chr1	11874	11874
     chr1	69091	69091
     chr1	321084	321084
-    chr1	321146	321146
-    chr1	322037	322037
     ...
-
-#### Lab-specific customizations
-
-After installation, certain configuration files require editing for the pipeline to function. These include:
-
-- `config/cluster_config.yaml`: The `account` attribute should be changed to the appropriate Great Lakes account.
-- `config/ATAC_general.yaml`: The paths to bwa indices, chromosome sizes, TSSs, and blacklists should be changed.
-- `config/ChIP_histone_general.yaml`: The paths to bwa indices, chromosome sizes, and blacklists should be changed.
-- `config/ChIP_TF_general.yaml`: The paths to bwa indices, chromosome sizes, and blacklists should be changed.
-- `config/ChIP_TF_se_general.yaml`: The paths to bwa indices, chromosome sizes, and blacklists should be changed.
 
 #### Input files
 
