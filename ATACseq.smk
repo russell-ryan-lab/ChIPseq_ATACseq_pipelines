@@ -60,7 +60,7 @@ rule all:
     input:
         expand(os.path.join(MACS2_DIR, "{sample}.BLfiltered.narrowPeak"), sample=config['sample_paths'].keys()),
         expand(os.path.join(MACS2_DIR, "{sample}.summits.BLfiltered.bed"), sample=config['sample_paths'].keys()),
-        expand(os.path.join(ATAQV_DIR, "{sample}.ataqv.out"), sample=config['sample_paths'].keys()),
+        expand(os.path.join(ATAQV_DIR, 'viewer', 'index.html')),
         expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()),
 
 
@@ -164,7 +164,7 @@ rule blacklist_filter:
         "bedtools intersect -a {input.narrowpeak} -b {params.blacklist} -v > {output.narrowpeak} ; "
         "bedtools intersect -a {input.summits} -b {params.blacklist} -v > {output.summits} ; "
 
-rule ataqv:
+rule ataqv_get_stats:
     input:
         md_bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
         peaks = os.path.join(MACS2_DIR, '{sample}.peaks.narrowPeak')
@@ -179,3 +179,14 @@ rule ataqv:
     conda: "envs/ataqv.yaml"
     shell:
         "ataqv --peak-file {input.peaks} --name {params.samplename} --metrics-file {output.metrics} --excluded-region-file {params.blacklist} --tss-file {params.tss_file} --ignore-read-groups {params.organism} {input.md_bam} > {output.stdout_destination}"
+
+rule ataqv_make_viewer:
+    input:
+        metrics = expand(os.path.join(ATAQV_DIR, '{sample}.ataqv.json.gz'), sample=config['sample_paths'].keys())
+    output:
+        index = os.path.join(ATAQV_DIR, 'viewer', 'index.html')
+    params:
+        output_dir = os.path.join(ATAQV_DIR, 'viewer')
+    conda: "envs/ataqv.yaml"
+    shell:
+        "mkarv --force {params.output_dir} {input.metrics}" # Use --force to overwrite the viewer/ directory or snakemake complains

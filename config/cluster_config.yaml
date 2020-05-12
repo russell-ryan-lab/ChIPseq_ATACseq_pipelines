@@ -6,6 +6,8 @@ __default__:
     ntask: '1'
     partition: standard
     time: 00:30:00
+ataqv_make_viewer:
+    name: '{rule}'
 bwa_aln:
     memory: '16384'
     name: '{rule}_{wildcards.sample}_R{wildcards.read}'
