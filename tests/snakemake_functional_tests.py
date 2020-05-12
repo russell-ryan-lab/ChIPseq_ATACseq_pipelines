@@ -8,7 +8,7 @@ import pandas as pd
 
 TEST_DIR = os.path.realpath(os.path.dirname(__file__))
 PIPELINE_BASE_DIR = os.path.abspath(os.path.join(TEST_DIR, '..'))
-TEST_TMP_DIR = '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/tmp'
+TEST_TMP_DIR = os.path.join(PIPELINE_BASE_DIR, '')
 
 class SnakemakeFunctionalTests(unittest.TestCase):
     def setUp(self):
@@ -41,14 +41,24 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             # Create the configfile
             config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
             general_input = atac_general_config
-            per_lib_input = os.path.join(example_data_dir, 'atac_test_data', 'atac_test_samplesheet.csv')
+
+            test_samplesheet = '''lib,sample,genome,basepath
+1,s1_control,mm10,{}/data/atac_test_data/Sample_1
+2,s1_treatment,mm10,{}/data/atac_test_data/Sample_2
+3,s2_treatment,mm10,{}/data/atac_test_data/Sample_3
+4,s3_treatment,mm10,{}/data/atac_test_data/Sample_4'''
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR, PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
             outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
 
             with open(outputfile_config, 'w') as outfile_handle:
                 cfg_create_return_code = subprocess.call([
                     config_creator_script,
                     '--general_input', general_input,
-                    '--per_lib_input', per_lib_input,
+                    '--per_lib_input', test_sheet_filename,
                     '--results_dir', results_dir,
                     '--temp_dir', results_temp_dir
                 ], stdout=outfile_handle)
@@ -91,14 +101,23 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             # Create the configfile
             config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
             general_input = atac_general_config
-            per_lib_input = os.path.join(example_data_dir, 'atac_test_data', 'atac_test_samplesheet.csv')
             outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            test_samplesheet = '''lib,sample,genome,basepath
+1,s1_control,mm10,{}/data/atac_test_data/Sample_1
+2,s1_treatment,mm10,{}/data/atac_test_data/Sample_2
+3,s2_treatment,mm10,{}/data/atac_test_data/Sample_3
+4,s3_treatment,mm10,{}/data/atac_test_data/Sample_4'''
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR, PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
 
             with open(outputfile_config, 'w') as outfile_handle:
                 cfg_create_return_code = subprocess.call([
                     config_creator_script,
                     '--general_input', general_input,
-                    '--per_lib_input', per_lib_input,
+                    '--per_lib_input', test_sheet_filename,
                     '--results_dir', results_dir,
                     '--temp_dir', results_temp_dir
                 ], stdout=outfile_handle)

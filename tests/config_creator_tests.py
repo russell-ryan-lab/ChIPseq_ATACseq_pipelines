@@ -76,13 +76,13 @@ class ConfigCreatorTests(unittest.TestCase):
         self.assertRaises(RuntimeError, config_creator.basepath_to_filepathsdict, sample_1_fastqs_dir, wrong_glob, default_capture_regex)
         self.assertRaises(RuntimeError, config_creator.basepath_to_filepathsdict, sample_1_fastqs_dir, default_glob, wrong_capture_regex)
 
-        expected_result_1 = {'1': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_1/1_L001_R1.fastq.gz'], '2': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_1/1_L001_R2.fastq.gz']}
+        expected_result_1 = {'1': [PIPELINE_BASE_DIR + '/data/atac_test_data/Sample_1/1_L001_R1.fastq.gz'], '2': [PIPELINE_BASE_DIR + '/data/atac_test_data/Sample_1/1_L001_R2.fastq.gz']}
 
         actual_result_1 = config_creator.basepath_to_filepathsdict(sample_1_fastqs_dir, default_glob, default_capture_regex)
 
         self.assertEqual(expected_result_1, actual_result_1)
 
-        expected_result_2 = {'1': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L001_R1.fastq.gz', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L002_R1.fastq.gz'], '2': ['/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L001_R2.fastq.gz', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2/2_L002_R2.fastq.gz']}
+        expected_result_2 = {'1': [PIPELINE_BASE_DIR + '/data/atac_test_data/Sample_2/2_L001_R1.fastq.gz', PIPELINE_BASE_DIR + '/data/atac_test_data/Sample_2/2_L002_R1.fastq.gz'], '2': [PIPELINE_BASE_DIR + '/data/atac_test_data/Sample_2/2_L001_R2.fastq.gz', PIPELINE_BASE_DIR + '/data/atac_test_data/Sample_2/2_L002_R2.fastq.gz']}
 
         actual_result_2 = config_creator.basepath_to_filepathsdict(sample_2_fastqs_dir, default_glob, default_capture_regex)
 
