@@ -76,7 +76,9 @@ To test the ATACseq pipeline, simply run:
 
     tests/atac_test.sh
 
-At the end of the run (~15 min) snakemake should return no errors if everything is configured correctly.
+At the end of the run (~15 min) snakemake should indicate that it is finished by printing:
+
+    54 of 54 steps (100%) done
 
 #### Genome Reference Requirements
 
