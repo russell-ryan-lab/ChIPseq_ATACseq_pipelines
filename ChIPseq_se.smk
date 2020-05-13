@@ -17,13 +17,14 @@ INCLUDE_CHRS = {
 
 # Helper functions
 
-def get_genome(library):
-    return(config['lib_genome'][library])
+def get_genome(sample):
+    return(config['sample_genome'][sample])
 
 
 # RESULT PATHS
 
 prefix_results = functools.partial(os.path.join, config['results_dir'])
+CONCAT_READS_DIR = prefix_results('concat_reads')
 ALIGN_DIR = prefix_results('aligned')
 PRUNE_DIR = prefix_results('pruned')
 DISP_DIR = prefix_results('display_tracks')
@@ -37,28 +38,36 @@ SCRIPTS_DIR = os.path.join(os.getcwd(), 'scripts')
 
 # Set workdir - If running on Flux cluster, logs will be placed in this location
 workdir:
-    config['flux_log_dir']
+    config['results_dir']
 
 
 # Rules
 
 rule all:
     input:
-        expand(os.path.join(DISP_DIR, "{library}.tdf"), library=config['lib_paths'].keys()), #Create tdfs for all samples
-        expand(os.path.join(DISP_DIR, "{library}.1m.bw"), library=config['lib_paths'].keys()), #Create bigwigs for all samples
-        expand(os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks"), library=config['lib_input'].keys()), #Call peaks for all samples with matched inputs
-        expand(os.path.join(HOMERMOTIF_DIR, "{library}"), library=config['lib_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
+        expand(os.path.join(DISP_DIR, "{sample}.tdf"), sample=config['sample_paths'].keys()), #Create tdfs for all samples
+        expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()), #Create bigwigs for all samples
+        expand(os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.hpeaks"), sample=config['sample_input'].keys()), #Call peaks for all samples with matched inputs
+        expand(os.path.join(HOMERMOTIF_DIR, "{sample}"), sample=config['sample_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
 
 
 include:
     "alignment_bwa_aln_se.smk"
 
+rule concatenate_reads:
+    input:
+        lambda wildcards: config['sample_paths'][wildcards.sample][wildcards.read]
+    output:
+        os.path.join(CONCAT_READS_DIR, "{sample}_R{read}.fastq.gz")
+    shell:
+        "cat {input} > {output}"
+
 rule mark_duplicates:
     input:
-        os.path.join(ALIGN_DIR, "{library}.merged.bam")
+        os.path.join(ALIGN_DIR, "{sample}.sorted.bam")
     output:
-        bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-        metric = os.path.join(ALIGN_DIR, "{library}.mrkdup.metric")
+        bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
+        metric = os.path.join(ALIGN_DIR, "{sample}.mrkdup.metric")
     params:
         tmpdir = config['tmpdir']
     conda: "envs/picard.yaml"
@@ -72,21 +81,21 @@ rule mark_duplicates:
 
 rule index_dupmarked_bams:
     input:
-        os.path.join(ALIGN_DIR, "{library}.mrkdup.bam")
+        os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam")
     output:
-        os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+        os.path.join(ALIGN_DIR, "{sample}.mrkdup.bai")
     conda: "envs/samtools.yaml"
     shell:
         "samtools index {input} {output}"
 
 rule samtools_prune:
     input:
-        bam = os.path.join(ALIGN_DIR, "{library}.mrkdup.bam"),
-        bai = os.path.join(ALIGN_DIR, "{library}.mrkdup.bai")
+        bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
+        bai = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bai")
     output:
-        bam = temp(os.path.join(PRUNE_DIR, "{library}.pruned.bam"))
+        bam = temp(os.path.join(PRUNE_DIR, "{sample}.pruned.bam"))
     params:
-        incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.library)],
+        incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.sample)],
         flags = config['samtools_prune_flags']
     conda: "envs/samtools.yaml"
     shell:
@@ -94,20 +103,20 @@ rule samtools_prune:
 
 rule index_pruned:
     input:
-        bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam")
+        bam = os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
-        bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+        bai = os.path.join(PRUNE_DIR, "{sample}.pruned.bai")
     conda: "envs/samtools.yaml"
     shell:
         "samtools index {input.bam} {output.bai}"
 
 rule igvtools_count_tdf:
     input:
-        os.path.join(PRUNE_DIR, "{library}.pruned.bam")
+        os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
-        os.path.join(DISP_DIR, "{library}.tdf")
+        os.path.join(DISP_DIR, "{sample}.tdf")
     params:
-        genome = lambda wildcards: get_genome(wildcards.library),
+        genome = lambda wildcards: get_genome(wildcards.sample),
         args = config['igvtools_count_params']
     conda: "envs/igvtools.yaml"
     shell:
@@ -115,12 +124,12 @@ rule igvtools_count_tdf:
 
 rule deeptools_bamcoverage_bw:
     input:
-        bam = os.path.join(PRUNE_DIR, "{library}.pruned.bam"),
-        bai = os.path.join(PRUNE_DIR, "{library}.pruned.bai")
+        bam = os.path.join(PRUNE_DIR, "{sample}.pruned.bam"),
+        bai = os.path.join(PRUNE_DIR, "{sample}.pruned.bai")
     output:
-        os.path.join(DISP_DIR, "{library}.1m.bw")
+        os.path.join(DISP_DIR, "{sample}.1m.bw")
     params:
-        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)],
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)],
         args = config['deeptools_bamcoverage_params']
     conda: "envs/deeptools.yaml"
     shell:
@@ -128,11 +137,11 @@ rule deeptools_bamcoverage_bw:
 
 rule makeTagDirectory:
     input:
-        os.path.join(PRUNE_DIR, "{library}.pruned.bam")
+        os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
-        directory(os.path.join(HOMERTAG_DIR, "{library}"))
+        directory(os.path.join(HOMERTAG_DIR, "{sample}"))
     params:
-        genome = lambda wildcards: get_genome(wildcards.library),
+        genome = lambda wildcards: get_genome(wildcards.sample),
         params = config['makeTagDir_params']
     conda: "envs/homer.yaml"
     shell:
@@ -140,10 +149,10 @@ rule makeTagDirectory:
 
 rule findPeaks:
     input:
-        sample = os.path.join(HOMERTAG_DIR, "{library}"),
-        input = lambda wildcards: os.path.join(HOMERTAG_DIR, config['lib_input'][wildcards.library])
+        sample = os.path.join(HOMERTAG_DIR, "{sample}"),
+        input = lambda wildcards: os.path.join(HOMERTAG_DIR, config['sample_input'][wildcards.sample])
     output:
-        os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
     params:
         config['homer_findPeaks_params']
     conda: "envs/homer.yaml"
@@ -152,41 +161,41 @@ rule findPeaks:
 
 rule pos2bed:
     input:
-        os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
     output:
-        os.path.join(HOMERPEAK_DIR, "{library}.all.bed")
+        os.path.join(HOMERPEAK_DIR, "{sample}.all.bed")
     conda: "envs/homer.yaml"
     shell:
         "pos2bed.pl {input} > {output}"
 
 rule blacklist_filter_bed:
     input:
-        os.path.join(HOMERPEAK_DIR, "{library}.all.bed"),
+        os.path.join(HOMERPEAK_DIR, "{sample}.all.bed"),
     output:
-        os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.bed"),
+        os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.bed"),
     params:
-        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.library)]
+        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)]
     conda: "envs/bedtools.yaml"
     shell:
         "bedtools intersect -a {input} -b {params.blacklist} -v > {output}"
 
 rule keepBedEntriesInHpeaks:
     input:
-        filtbed = os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.bed"),
-        allhpeaks = os.path.join(HOMERPEAK_DIR, "{library}.all.hpeaks")
+        filtbed = os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.bed"),
+        allhpeaks = os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
     output:
-        os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.hpeaks")
     conda: "envs/pysam.yaml"
     shell:
         "python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
 rule findMotifsGenome:
     input:
-        os.path.join(HOMERPEAK_DIR, "{library}_BLfiltered.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.hpeaks")
     output:
-        directory(os.path.join(HOMERMOTIF_DIR, "{library}"))
+        directory(os.path.join(HOMERMOTIF_DIR, "{sample}"))
     params:
-        genome = lambda wildcards: config['lib_homer_fmg_genome'][wildcards.library],
+        genome = lambda wildcards: config['sample_homer_fmg_genome'][wildcards.sample],
         params = config['homer_fmg_params']
     conda: "envs/homer.yaml"
     shell:
