@@ -33,10 +33,10 @@ HOMERPEAK_DIR = prefix_results('peaks')
 HOMERMOTIF_DIR = prefix_results('homer_motifs')
 
 
-SCRIPTS_DIR = os.path.join(os.getcwd(), 'scripts')
+SCRIPTS_DIR = os.path.join(workflow.basedir, 'scripts')
 
 
-# Set workdir - If running on cluster, logs will be placed in this location
+# Set workdir - Snakemake will be run from this location.
 workdir:
     config['results_dir']
 
