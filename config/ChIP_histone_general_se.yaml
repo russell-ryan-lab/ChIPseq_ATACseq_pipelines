@@ -13,8 +13,8 @@ chrom_sizes:
     hg38: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/chromsize/h38.chrom.sizes
     mm10: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/chromsize/mm10.chrom.sizes
 
-deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads"
-samtools_prune_flags: "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x200 -F 0x400 -F 0x800"
+deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads 150"
+samtools_prune_flags: "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800"
 igvtools_count_params: "--includeDuplicates"
 makeTagDir_params: "-keepAll -checkGC"
 homer_findPeaks_params: "-style histone"

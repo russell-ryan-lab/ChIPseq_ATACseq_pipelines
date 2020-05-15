@@ -33,6 +33,9 @@ The pipelines manage software dependencies using [conda](https://docs.conda.io/e
     # Run the installer (choosing default options is fine)
     bash Miniconda3-latest-Linux-x86_64.sh
 
+    # You may need to source the .bashrc file to initialize conda after it is first installed
+    source ~/.bashrc
+
 After installation, create a conda environment containing snakemake and pandas by running:
 
     conda create -n snakemake -c conda-forge -c bioconda snakemake=5.10.0 pandas=0.24.2
@@ -54,7 +57,7 @@ Finally, deactivate the environment with:
 #### Installing the Pipelines
 
     #Navigate to where you want this pipeline to be located
-    cd /path/to/pipelines
+    cd /nfs/turbo/<lab-turbo>/pipelines
 
     git clone https://github.com/russell-ryan-lab/ChIPseq_ATACseq_pipelines
 
@@ -62,7 +65,7 @@ Finally, deactivate the environment with:
 
 After installation, the following paths need to be changed to be lab-specific:
 
-- In `data/atac_test_samplesheet.csv`, the `/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines` part of each basepath should be changed to point to the installation path of the pipeline.
+- In `data/atac_test_data/atac_test_samplesheet.csv`, the `/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines` part of each basepath should be changed to point to the installation path of the pipeline.
 - In each of the `config/*_general.yaml` files, the paths in the `blacklist`, `chrom_sizes`, and `tss` sections should be modified as follows. Paths beginning with `/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines` should be changed to point to the installation path of the pipeline.
 - In each of the `config/*_general.yaml` files, the `bwa_index` section should point to a valid BWA index created by the user. See the [section](#bwa-indices) below for how to create a BWA index.
 - In `config/cluster_config.yaml`, the `account` attribute should be changed to the appropriate Great Lakes account.
