@@ -7,7 +7,7 @@ mkdir -p ${test_dir}/logs
 
 cd ${test_dir}
 
-conda activate snakemake
+conda activate atac_chip_pipeline
 
 ${repo_dir}/scripts/config_creator.py \
     --general_input ${repo_dir}/config/ChIP_histone_general_se.yaml \

@@ -36,15 +36,15 @@ The pipelines manage software dependencies using [conda](https://docs.conda.io/e
     # You may need to source the .bashrc file to initialize conda after it is first installed
     source ~/.bashrc
 
-After installation, create a conda environment containing snakemake and pandas by running:
+After installation, create a parent conda environment for running the pipeline with:
 
-    conda create -n snakemake -c conda-forge -c bioconda snakemake=5.10.0 pandas=0.24.2
+    conda create -n atac_chip_pipeline -c conda-forge -c bioconda snakemake-minimal=5.10.0 pandas=0.24.2 pytest=5.4.1 nose=1.3.7
 
-To use snakemake, activate the environment by running:
+To use the pipeline, activate the environment by running:
 
-    conda activate snakemake
+    conda activate atac_chip_pipeline
 
-To ensure that snakemake is installed in the environment, run:
+Check that snakemake was installed by running:
 
     snakemake --version
 
@@ -168,7 +168,7 @@ Next, generate a pipeline configuration file using the `scripts/config_creator.p
 Along with this quick example, there are several more configuration files which are included in the example subdirectory. These may be useful for tutorial purposes, and general (partial) configs can be re-used for analyses with similar parameter requirements.
 
     # Activate the snakemake environment from above
-    conda activate snakemake
+    conda activate atac_chip_pipeline
 
     #Use the config creator script
     /path/to/repository/scripts/config_creator.py \
@@ -182,7 +182,7 @@ This will generate the file `/path/to/results/test_config.yaml`.
 
 It may be instructive to open the example general input, per-lib input, and the resulting configuration file to understand what the config creator script has done. Using modified versions of the example CSVs and/or general configs in this same manner should allow users to create pipeline-ready configuration files for their experiments.
 
-    # Assuming the snakemake environment is activated
+    # Assuming the atac_chip_pipeline environment is activated
 
     # Running a dry-run (-n flag)
     snakemake -n --snakefile /path/to/repository/ATACseq.smk --configfile /path/to/results/test_config.yaml
