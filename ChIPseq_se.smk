@@ -199,8 +199,9 @@ rule findMotifsGenome:
         directory(os.path.join(HOMERMOTIF_DIR, "{sample}"))
     params:
         genome = lambda wildcards: config['sample_homer_fmg_genome'][wildcards.sample],
-        params = config['homer_fmg_params']
+        params = config['homer_fmg_params'],
+        tmpdir = config['tmpdir']
     shell:
         "module load Bioinformatics; module load homer/4.10;"
-        "findMotifsGenome.pl {input} {params.genome} {output} {params.params};"
+        "findMotifsGenome.pl {input} {params.genome} {output} {params.params} -preparsedDir {params.tmpdir};"
         "module purge;"
