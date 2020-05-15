@@ -65,7 +65,7 @@ rule all:
 
 
 include:
-    "alignment_bwa_aln_pe.smk"
+    "rules/alignment_bwa_aln_pe.smk"
 
 
 rule concatenate_reads:

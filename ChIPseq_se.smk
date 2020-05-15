@@ -52,7 +52,7 @@ rule all:
 
 
 include:
-    "alignment_bwa_aln_se.smk"
+    "rules/alignment_bwa_aln_se.smk"
 
 rule concatenate_reads:
     input:
