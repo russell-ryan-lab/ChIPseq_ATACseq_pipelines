@@ -47,7 +47,7 @@ rule all:
     input:
         expand(os.path.join(DISP_DIR, "{sample}.tdf"), sample=config['sample_paths'].keys()), #Create tdfs for all samples
         expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()), #Create bigwigs for all samples
-        expand(os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.hpeaks"), sample=config['sample_input'].keys()), #Call peaks for all samples with matched inputs
+        expand(os.path.join(HOMERPEAK_DIR, "{params}", "{sample}_BLfiltered.hpeaks"), params=config['homer_findPeaks_params'].keys(), sample=config['sample_input'].keys()), #Call peaks for all samples with matched inputs
         expand(os.path.join(HOMERMOTIF_DIR, "{sample}"), sample=config['sample_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
 
 
@@ -173,7 +173,7 @@ rule findPeaks:
         sample = os.path.join(HOMERTAG_DIR, "{sample}"),
         input = lambda wildcards: os.path.join(HOMERTAG_DIR, config['sample_input'][wildcards.sample])
     output:
-        os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}.all.hpeaks")
     params:
         config['homer_findPeaks_params']
     shell:
@@ -181,17 +181,17 @@ rule findPeaks:
 
 rule pos2bed:
     input:
-        os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}.all.hpeaks")
     output:
-        os.path.join(HOMERPEAK_DIR, "{sample}.all.bed")
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}.all.bed")
     shell:
         "pos2bed.pl {input} > {output}"
 
 rule blacklist_filter_bed:
     input:
-        os.path.join(HOMERPEAK_DIR, "{sample}.all.bed"),
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}.all.bed"),
     output:
-        os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.bed"),
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}_BLfiltered.bed"),
     params:
         blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)]
     conda: "envs/bedtools.yaml"
@@ -200,17 +200,17 @@ rule blacklist_filter_bed:
 
 rule keepBedEntriesInHpeaks:
     input:
-        filtbed = os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.bed"),
-        allhpeaks = os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
+        filtbed = os.path.join(HOMERPEAK_DIR, "{params}", "{sample}_BLfiltered.bed"),
+        allhpeaks = os.path.join(HOMERPEAK_DIR, "{params}", "{sample}.all.hpeaks")
     output:
-        os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}_BLfiltered.hpeaks")
     conda: "envs/pysam.yaml"
     shell:
         "python {SCRIPTS_DIR}/keepBedEntriesInHpeaks.py -i {input.allhpeaks} -b {input.filtbed} -o {output}"
 
 rule findMotifsGenome:
     input:
-        os.path.join(HOMERPEAK_DIR, "{sample}_BLfiltered.hpeaks")
+        os.path.join(HOMERPEAK_DIR, "{params}", "{sample}_BLfiltered.hpeaks")
     output:
         directory(os.path.join(HOMERMOTIF_DIR, "{sample}"))
     params:

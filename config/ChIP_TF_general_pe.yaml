@@ -18,5 +18,6 @@ samtools_prune_flags: "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x200 -F 0x400 -F
 X0_pair_filter_params: "-x 2 -m both"
 igvtools_count_params: "--includeDuplicates --pairs"
 makeTagDir_params: "-keepAll -checkGC"
-homer_findPeaks_params: "-style factor"
+homer_findPeaks_params:
+    default_params: "-style factor"
 homer_fmg_params: "-bits"

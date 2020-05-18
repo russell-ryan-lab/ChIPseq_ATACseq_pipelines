@@ -17,5 +17,6 @@ deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads 1
 samtools_prune_flags: "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800"
 igvtools_count_params: "--includeDuplicates"
 makeTagDir_params: "-keepAll -checkGC"
-homer_findPeaks_params: "-style histone"
+homer_findPeaks_params:
+    default_params: "-style histone"
 homer_fmg_params: "-bits"
