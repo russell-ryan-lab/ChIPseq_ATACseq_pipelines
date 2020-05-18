@@ -144,9 +144,7 @@ rule makeTagDirectory:
         genome = lambda wildcards: get_genome(wildcards.sample),
         params = config['makeTagDir_params']
     shell:
-        "module load Bioinformatics; module load homer/4.10;"
-        "makeTagDirectory {output} {params.params} -genome {params.genome} {input};"
-        "module purge;"
+        "makeTagDirectory {output} {params.params} -genome {params.genome} {input}"
 
 rule findPeaks:
     input:
@@ -157,9 +155,7 @@ rule findPeaks:
     params:
         config['homer_findPeaks_params']
     shell:
-        "module load Bioinformatics; module load homer/4.10;"
-        "findPeaks {input.sample} -i {input.input} {params} -o {output};"
-        "module purge;"
+        "findPeaks {input.sample} -i {input.input} {params} -o {output}"
 
 rule pos2bed:
     input:
@@ -167,9 +163,7 @@ rule pos2bed:
     output:
         os.path.join(HOMERPEAK_DIR, "{sample}.all.bed")
     shell:
-        "module load Bioinformatics; module load homer/4.10;"
-        "pos2bed.pl {input} > {output};"
-        "module purge;"
+        "pos2bed.pl {input} > {output}"
 
 rule blacklist_filter_bed:
     input:
@@ -202,6 +196,4 @@ rule findMotifsGenome:
         params = config['homer_fmg_params'],
         tmpdir = config['tmpdir']
     shell:
-        "module load Bioinformatics; module load homer/4.10;"
-        "findMotifsGenome.pl {input} {params.genome} {output} {params.params} -preparsedDir {params.tmpdir};"
-        "module purge;"
+        "findMotifsGenome.pl {input} {params.genome} {output} {params.params} -preparsedDir {params.tmpdir}"

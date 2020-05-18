@@ -165,7 +165,6 @@ rule makeTagDirectory:
     params:
         genome = lambda wildcards: get_genome(wildcards.sample),
         params = config['makeTagDir_params']
-    conda: "envs/homer.yaml"
     shell:
         "makeTagDirectory {output} {params.params} -genome {params.genome} {input}"
 
@@ -177,7 +176,6 @@ rule findPeaks:
         os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
     params:
         config['homer_findPeaks_params']
-    conda: "envs/homer.yaml"
     shell:
         "findPeaks {input.sample} -i {input.input} {params} -o {output}"
 
@@ -186,7 +184,6 @@ rule pos2bed:
         os.path.join(HOMERPEAK_DIR, "{sample}.all.hpeaks")
     output:
         os.path.join(HOMERPEAK_DIR, "{sample}.all.bed")
-    conda: "envs/homer.yaml"
     shell:
         "pos2bed.pl {input} > {output}"
 
@@ -219,6 +216,5 @@ rule findMotifsGenome:
     params:
         genome = lambda wildcards: config['sample_homer_fmg_genome'][wildcards.sample],
         params = config['homer_fmg_params']
-    conda: "envs/homer.yaml"
     shell:
         "findMotifsGenome.pl {input} {params.genome} {output} {params.params}"

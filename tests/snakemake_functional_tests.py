@@ -28,11 +28,10 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             raise self.failureException(msg) from e
 
 
-    def test_dryrun_passes(self):
+    def test_atac_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
 
-            example_data_dir = os.path.join(PIPELINE_BASE_DIR, 'data')
             results_dir = os.path.join(temp_dir, 'results')
             results_temp_dir = os.path.join(results_dir, 'tmp')
             atac_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.yaml')
@@ -79,14 +78,61 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
             self.assertEqual(0, dryrun_return_code)
 
-    def test_endtoend_passes(self):
+    def test_chip_se_dryrun_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_histone_general_se.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+SRR2051009,OCILY_input,hg19,,,{}/data/sra_chip_test_data/SAMN03761463/
+SRR2051008,OCILY_H3K27ac,hg19,OCILY_input,hg19r,{}/data/sra_chip_test_data/SAMN03761462/''' # FIXME: make these samples match new chip test data when we have it
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # Dryrun test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_se.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+
+            dryrun_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '-np'
+            ])
+
+            self.assertEqual(0, dryrun_return_code)
+
+    def test_atac_endtoend_passes(self):
         # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
         # can all access the same temp space. If this is not done, TemporaryDirectory creates them
         # in /tmp, which is not shared between nodes
         with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
             os.chdir(temp_dir)
 
-            example_data_dir = os.path.join(PIPELINE_BASE_DIR, 'data')
             results_dir = os.path.join(temp_dir, 'results')
             results_temp_dir = os.path.join(results_dir, 'tmp')
             results_log_dir = os.path.join(results_dir, 'logs')
