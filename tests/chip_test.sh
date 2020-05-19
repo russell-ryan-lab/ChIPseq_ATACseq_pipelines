@@ -25,9 +25,9 @@ ${repo_dir}/scripts/config_creator.py \
 
 # On GL
 snakemake -p --snakefile ${repo_dir}/ChIPseq_se.smk --configfile ${test_dir}/config_histone.yaml \
-    --latency-wait 60 --jobs 144 --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \
+    --latency-wait 60 --jobs 144 --cluster-status ${repo_dir}/scripts/slurm_status.py --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \
     --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
 
 snakemake -p --snakefile ${repo_dir}/ChIPseq_se.smk --configfile ${test_dir}/config_TF.yaml \
-    --latency-wait 60 --jobs 144 --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \
+    --latency-wait 60 --jobs 144 --cluster-status ${repo_dir}/scripts/slurm_status.py --cluster-config ${repo_dir}/config/cluster_config.yaml --use-conda \
     --cluster 'sbatch --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'

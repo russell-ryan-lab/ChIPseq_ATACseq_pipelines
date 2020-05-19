@@ -213,6 +213,7 @@ It may be instructive to open the example general input, per-lib input, and the 
         --configfile /path/to/results/test_config.yaml \
         --use-conda \
         --latency-wait 60 \
+        --cluster-status /path/to/repository/scripts/slurm_status.py \
         --cluster-config /path/to/repository/config/cluster_config.json \
         --cluster 'sbatch \
             --job-name={cluster.name} \
@@ -222,6 +223,7 @@ It may be instructive to open the example general input, per-lib input, and the 
             --ntasks-per-node={cluster.ntask} \
             --mem={cluster.memory} \
             --time={cluster.time} \
+            --parsable \
             --output=logs/%x-%j.out'
 
 Results will be located where they were specified in the configuration - in this example, they are located in `/path/to/results`. These include bams (aligned, filtered), called peaks, display files, ataqv results, and cluster logs.
