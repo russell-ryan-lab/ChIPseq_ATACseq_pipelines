@@ -179,6 +179,11 @@ if __name__ == '__main__':
 
     config_dict.update({'results_dir' : args.results_dir, 'tmpdir' : args.temp_dir})
 
+    # Section to add results, logs, temp dir (logs is within results)
+    logs_dir = os.path.join(args.results_dir, 'logs')
+    os.makedirs(logs_dir, exist_ok=True)
+    os.makedirs(args.temp_dir, exist_ok=True)
+
     per_lib = parse_per_lib(args)
 
     config_dict.update(per_lib)
