@@ -3,6 +3,7 @@ channels:
     - conda-forge
     - bioconda
 dependencies:
+    - samtools=1.9
     - snakemake-minimal=5.10.0
     - pandas=0.24.2
     - pytest=5.4.1
