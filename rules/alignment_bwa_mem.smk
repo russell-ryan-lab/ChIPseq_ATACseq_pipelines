@@ -14,6 +14,6 @@ rule bwa_mem:
         index = lambda wildcards: config['bwa_index'][config['sample_genome'][wildcards.sample]],  #nested config call has identical functionality to config['bwa_index'][get_genome(wildcards.sample)]
         sort_tmp = os.path.join(config['tmpdir'], '{sample}.sort.tmp')
     threads: 8
-    conda: "envs/bwa.yaml"
+    conda: "../envs/bwa.yaml"
     shell:
         "bwa mem -M -t {threads} {params.index} {input} | samtools sort -m 1g -@ {threads} -O bam -T {params.sort_tmp} -o {output} -"
