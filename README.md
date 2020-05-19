@@ -8,6 +8,7 @@
   * [Genome Reference Requirements](#genome-reference-requirements)
 * [Quick-Start Example](#quick-start-example-Processing-raw-reads-from-an-ATAC-seq-experiment)
 * [Additional Information](#additional-information)
+  * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
   * [Fastq Inputs](#fastq-inputs)
   * [Examples](#examples)
 
@@ -229,6 +230,10 @@ It may be instructive to open the example general input, per-lib input, and the 
 Results will be located where they were specified in the configuration - in this example, they are located in `/path/to/results`. These include bams (aligned, filtered), called peaks, display files, ataqv results, and cluster logs.
 
 ### Additional Information
+
+#### Tuning cluster resource requirements
+
+The cluster resources enumerated in `config/cluster_config.yaml` are set with values which should handle normal datasets by default. If the data you're using are much larger, it may make sense to increase these values if your jobs are killed for exceeding the walltime. Setting longer times will not incur extra cost if the jobs complete before their scheduled time, but it may potentially cause jobs to wait longer in the queue.
 
 #### Fastq inputs
 
