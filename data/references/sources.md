@@ -2,7 +2,7 @@
 
 ## blacklist
 
-Data for version 2 ENCODE blacklists were downloaded from the Boyle Lab at the University of Michigan (https://github.com/Boyle-Lab/Blacklist/tree/master/lists).
+Data for versions 2 and 1 of ENCODE blacklists were downloaded from the Boyle Lab at the University of Michigan (https://github.com/Boyle-Lab/Blacklist/tree/master/lists).
 
 ## chromsize
 
