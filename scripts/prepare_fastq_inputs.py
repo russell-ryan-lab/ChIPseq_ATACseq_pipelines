@@ -91,6 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--indiv_col', default = 'Run', help="Column to use for defining constituent parts of samples. Default 'Run'")
     parser.add_argument('-r', '--strip_regex', default = '_R?[12]_?[0-9]{0,3}\.fastq\.gz$', help="Regular expression to strip from all input filenames. The remaining filename text after stripping can then be matched to the values in the indiv_col of the metadata_csv. Default '_R?[12]_?[0-9]{0,3}\.fastq\.gz$'")
     parser.add_argument('--add_R', default = False, action = 'store_true', help = "Use this option to transform _1.fastq.gz to _R1.fastq.gz in preparation for config_creator.py")
+    parser.add_argument('-n', '--dryrun', default = False, action = 'store_true', help="Perform a dry-run. Do not actually move any files.")
 
     args = parser.parse_args()
 
@@ -108,7 +109,8 @@ if __name__ == '__main__':
     for key in groups:
         # Create the tree structure
         new_dir = os.path.join(args.fastq_dir, key)
-        os.makedirs(new_dir, exist_ok=True)
+        if not args.dryrun:
+            os.makedirs(new_dir, exist_ok=True)
 
         for src_file in groups[key]:
             if args.add_R:
@@ -118,5 +120,7 @@ if __name__ == '__main__':
             # Create the hardlinks in the tree structure
             src_path = os.path.join(args.fastq_dir, src_file)
             dest_path = os.path.join(args.fastq_dir, key, dest_file)
-
-            os.link(src_path, dest_path)
+            if args.dryrun:
+                print('{} -> {}'.format(src_path, dest_path))
+            else:
+                os.link(src_path, dest_path)
