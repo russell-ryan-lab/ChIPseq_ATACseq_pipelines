@@ -9,6 +9,7 @@
 * [Quick-Start Example](#quick-start-example-Processing-raw-reads-from-an-ATAC-seq-experiment)
 * [Additional Information](#additional-information)
   * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
+  * [Testing additional homer findPeaks parameters](#testing-additional-homer-findPeaks-parameters)
   * [Fastq Inputs](#fastq-inputs)
   * [Examples](#examples)
 
@@ -234,6 +235,29 @@ Results will be located where they were specified in the configuration - in this
 #### Tuning cluster resource requirements
 
 The cluster resources enumerated in `config/cluster_config.yaml` are set with values which should handle normal datasets by default. If the data you're using are much larger, it may make sense to increase these values if your jobs are killed for exceeding the walltime. Setting longer times will not incur extra cost if the jobs complete before their scheduled time, but it may potentially cause jobs to wait longer in the queue.
+
+#### Testing additional homer findPeaks parameters
+
+It may be useful to try different parameters when running Homer findPeaks. To achieve this, additional sets of parameters can be specified in the configuration file, and they will be placed in separate subfolders adjacent to the default results. For example:
+
+    homer_findPeaks_params:
+        default_params: "-style histone"
+        new_params: "-style histone -minDist 150 -fdr 0.01"
+
+Will create two sets of results and place them in their corresponding subfolders. Downstream steps will also be placed in subfolders. For example, the above configuration will create the following peak results, and similarly for homer motifs.
+
+    /path/to/results/peaks
+    ├── default_params
+    │   ├── OCILY_H3K27ac.all.bed
+    │   ├── OCILY_H3K27ac.all.hpeaks
+    │   ├── OCILY_H3K27ac.BLfiltered.bed
+    │   └── OCILY_H3K27ac.BLfiltered.hpeaks
+    └── new_params
+        ├── OCILY_H3K27ac.all.bed
+        ├── OCILY_H3K27ac.all.hpeaks
+        ├── OCILY_H3K27ac.BLfiltered.bed
+        └── OCILY_H3K27ac.BLfiltered.hpeaks
+
 
 #### Fastq inputs
 

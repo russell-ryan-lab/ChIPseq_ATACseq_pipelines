@@ -5,7 +5,7 @@ __default__:
     nodes: '1'
     ntask: '1'
     partition: standard
-    time: '00:30:00'
+    time: '04:00:00'
 ataqv_make_viewer:
     name: '{rule}'
 bwa_aln:
