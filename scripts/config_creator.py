@@ -30,15 +30,19 @@ def parse_per_lib(args):
     Takes a pandas df as input, and returns a dict of dicts reflecting the per-library data
     """
     sample_table = pd.read_csv(args.per_lib_input, dtype=str)
-    validate_sample_table(sample_table)
+    validate_sample_table(sample_table, args.homer_only)
 
     per_lib_dict = dict()
 
-    lib_basepaths = sample_table[['sample', 'basepath']].values
+    if not args.homer_only:
+        lib_basepaths = sample_table[['sample', 'basepath']].values
 
-    per_lib_dict['sample_paths'] = assign_libpaths(args, lib_basepaths)
+        per_lib_dict['sample_paths'] = assign_libpaths(args, lib_basepaths)
 
-    othercols = sample_table.columns.drop(['lib', 'basepath', 'sample'])
+        othercols = sample_table.columns.drop(['lib', 'basepath', 'sample'])
+    else:
+        othercols = sample_table.columns.drop(['lib', 'sample']) # For homer_only, basepath isn't present, so can't drop it
+
     for c in othercols:
         two_cols = ['sample', c]
         combined_name = "_".join(two_cols)
@@ -128,8 +132,6 @@ def validate_config_with_schema(config_dict, schema_filename):
     errors thrown by the validator.
     """
     try:
-        pipeline_basedir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-        schema_filename = os.path.join(pipeline_basedir, 'tests', 'pipeline_config_schema.yaml')
         with open(schema_filename) as infile:
             schema_dict = yaml.load(infile, Loader=yaml.SafeLoader)
     except:
@@ -142,11 +144,14 @@ def validate_config_with_schema(config_dict, schema_filename):
         msg = "Error validating config against schema:\nSchema file: {}\nReason: {}".format(schema_filename, e.message)
         sys.exit(str(msg))
 
-def validate_sample_table(sample_table):
+def validate_sample_table(sample_table, homer_only):
     """Takes pandas dataframe as input (loaded from per_lib_input), verifies that required colums are present,
     and that samplenames don't contain invalid characters. Only alphanumeric and _ are allowed.
     """
-    required_cols = set(['lib', 'sample', 'basepath'])
+    if not homer_only:
+        required_cols = set(['lib', 'sample', 'basepath'])
+    else:
+        required_cols = set(['sample'])
     actual_cols = set(sample_table.columns)
     missing_cols = required_cols - actual_cols
     if missing_cols:
@@ -172,6 +177,7 @@ if __name__ == '__main__':
     parser.add_argument('--file_glob', help="Override default file glob of '*.fastq.gz'", default='*.fastq.gz')
     parser.add_argument('--capture_regex', help="Override default regular expression which determines read number by filename. Default is '.*_R([12])(?=[_\.]).*\.fastq\.gz'", default='.*_R([12])(?=[_\.]).*\.fastq\.gz')
     parser.add_argument('--no_capture', dest = 'capture_regex', action='store_false', help="Treat all input fastqs as read1, do not attempt to capture read number from filename.")
+    parser.add_argument('--homer_only', action='store_true', help="Create a config for running only the Homer portion of the pipeline. Default is False.", default=False)
 
     args = parser.parse_args()
 
@@ -190,8 +196,15 @@ if __name__ == '__main__':
 
     config_dict = json.loads(json.dumps(config_dict)) #Standardize dict type throughout object by using json as intermediate
 
+    if args.homer_only: # Remove unnecessary keys from the config_dict in the homer_only case
+        [config_dict.pop(x, None) for x in ['samtools_prune_flags','deeptools_bamcoverage_params','bwa_index','chrom_sizes']]
+
     pipeline_basedir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-    schema_filename = os.path.join(pipeline_basedir, 'tests', 'pipeline_config_schema.yaml')
+    if not args.homer_only:
+        schema_filename = os.path.join(pipeline_basedir, 'tests', 'full_config_schema.yaml')
+    else:
+        schema_filename = os.path.join(pipeline_basedir, 'tests', 'homer_config_schema.yaml')
+
     validate_config_with_schema(config_dict, schema_filename)
 
     yaml.dump(config_dict, sys.stdout, default_flow_style=False)

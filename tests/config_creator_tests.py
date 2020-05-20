@@ -39,14 +39,14 @@ class ConfigCreatorTests(unittest.TestCase):
         'basepath' : pd.Series(['foo', 'bar', 'baz', 'bin'])
         }
         sample_table_missingcol = pd.DataFrame(dat_missingcol)
-        self.assertRaises(RuntimeError, config_creator.validate_sample_table, sample_table_missingcol)
+        self.assertRaises(RuntimeError, config_creator.validate_sample_table, sample_table_missingcol, homer_only=False)
 
         dat_badname = {'sample': pd.Series(['s1_foo', 's1_2*(@%', 's2_bar', 's3_biz']),
         'lib' : pd.Series(['1234', '2345', '3456', '4567']),
         'basepath' : pd.Series(['foo', 'bar', 'baz', 'bin'])
         }
         sample_table_badname = pd.DataFrame(dat_badname)
-        self.assertRaises(RuntimeError, config_creator.validate_sample_table, sample_table_badname)
+        self.assertRaises(RuntimeError, config_creator.validate_sample_table, sample_table_badname, homer_only=False)
 
     def test_read_input(self):
         invalid_yaml = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'invalid.yaml')

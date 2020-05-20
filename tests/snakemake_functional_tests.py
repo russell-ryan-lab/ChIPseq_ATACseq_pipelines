@@ -174,6 +174,62 @@ SRR5112307,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/SAMN06122176/''' # FI
 
             self.assertEqual(0, dryrun_return_code)
 
+    def test_homer_only_dryrun_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_histone_general_pe.yaml')
+
+            ########################################
+            # Create the expected file structure in the temporary results_dir
+            os.makedirs(results_dir)
+
+            pruned_dir = os.path.join(PIPELINE_BASE_DIR, 'data', 'homer_test_data', 'pruned')
+            shutil.copytree(pruned_dir, os.path.join(results_dir, 'pruned'))
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome
+IP,IP,hg19,input,hg19r
+input,input,hg19,,'''
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir,
+                    '--homer_only'
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # Dryrun test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'homer_only.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+
+            dryrun_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '-np'
+            ])
+
+            self.assertEqual(0, dryrun_return_code)
+
     def test_atac_endtoend_passes(self):
         # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
         # can all access the same temp space. If this is not done, TemporaryDirectory creates them
