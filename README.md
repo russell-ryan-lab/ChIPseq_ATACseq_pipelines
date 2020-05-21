@@ -68,7 +68,7 @@ Finally, deactivate the environment with:
     git clone https://github.com/russell-ryan-lab/ChIPseq_ATACseq_pipelines
 
 ##### Setup Homer
-Peak calling in the ChIP-seq pipeline is done with [Homer](http://homer.ucsd.edu/homer/). Homer requires some genome reference information of its own for peak calling and motif finding. This requires some additional setup, outlined below. The resulting Homer references will be installed in the `atac_chip_pipeline` environment. This is a peculiarity of installing Homer with Conda. We define the environment variable $HOMER_DIR in the following example to flexibly handle different conda installation locations. If miniconda was installed in your home directory as outlined [above](#managing-software-with-conda), then `$HOMER_DIR` will be `~/miniconda3/envs/atac_chip_pipeline/share/homer-4.10-0`.
+Peak calling in the ChIP-seq pipeline is done with [Homer](http://homer.ucsd.edu/homer/). Homer requires some genome reference information of its own for peak calling and motif finding. This requires some additional setup, outlined below. The resulting Homer references will be installed in the `atac_chip_pipeline` environment. It is a peculiarity of installing Homer with Conda that this step must be done separately. We define the environment variable $HOMER_DIR in the following example to flexibly handle different conda environment locations.
 
     # Activate the pipeline atac_chip_pipeline
     conda activate atac_chip_pipeline
