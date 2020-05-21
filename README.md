@@ -38,13 +38,17 @@ The pipelines manage software dependencies using [conda](https://docs.conda.io/e
     # You may need to source the .bashrc file to initialize conda after it is first installed
     source ~/.bashrc
 
-After installation, create a parent conda environment for running the pipeline with:
+After installation, create a parent conda environment for running the pipeline with the command below. Note that we're setting a prefix pointing to an `/nfs/turbo` location; This will place this single environment into that location, which may be separate from your other conda environments.
+This due to the Homer package, which will require a large amount of space. Command:
 
-    conda create -n atac_chip_pipeline -c conda-forge -c bioconda snakemake-minimal=5.10.0 pandas=0.24.2 pytest=5.4.1 nose=1.3.7
+    conda create \
+        --prefix /nfs/turbo/<lab-turbo>/atac_chip_pipeline \
+        --channel conda-forge --channel bioconda \
+        snakemake-minimal=5.10.0 pandas=0.24.2 homer=4.10 pytest=5.4.1 nose=1.3.7
 
 To use the pipeline, activate the environment by running:
 
-    conda activate atac_chip_pipeline
+    conda activate /nfs/turbo/<lab-turbo>/atac_chip_pipeline
 
 Check that snakemake was installed by running:
 
