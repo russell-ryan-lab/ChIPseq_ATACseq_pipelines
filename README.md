@@ -68,7 +68,7 @@ Finally, deactivate the environment with:
     git clone https://github.com/russell-ryan-lab/ChIPseq_ATACseq_pipelines
 
 ##### Setup Homer
-Peak calling in the ChIP-seq pipeline is done with [Homer](http://homer.ucsd.edu/homer/). Homer requires some genome reference information of its own for peak calling and motif finding. This requires some additional setup, outlined below. The resulting Homer references will be installed in the `atac_chip_pipeline` environment. It is a peculiarity of installing Homer with Conda that this step must be done separately. We define the environment variable $HOMER_DIR in the following example to flexibly handle different conda environment locations.
+Peak calling in the ChIP-seq pipeline is done with [Homer](http://homer.ucsd.edu/homer/). Homer requires some additional setup of genome references, outlined below. The resulting Homer references will be installed in the `atac_chip_pipeline` environment. It is a peculiarity of installing Homer with Conda that this step must be done separately. We define the environment variable $HOMER_DIR in the following example to flexibly handle different conda environment locations.
 
     # Activate the pipeline atac_chip_pipeline
     conda activate atac_chip_pipeline
@@ -106,7 +106,7 @@ At the end of the run (~15 min) snakemake should indicate that it is finished by
 
 #### Genome Reference Requirements
 
-Prior to using the pipeline, BWA indices, chromosome sizes, and blacklist regions are required for both the ATAC-seq and ChIP-seq pipelines, and the ATAC-seq pipeline requires a TSS file. Each is described in detail below, and they are included in `data/references` for hg19, hg38, and mm10. The sources are described in [`data/references/sources.md`](data/references/sources.md).
+Prior to using the pipeline, BWA indices, chromosome sizes, and blacklist regions are required for both the ATAC-seq and ChIP-seq pipelines, and the ATAC-seq pipeline requires a TSS file. Each is described in detail below, and all except the BWA indices are included in the repository for hg19, hg38, and mm10 (under `data/references`). The sources are described in [`data/references/sources.md`](data/references/sources.md).
 
 ##### BWA Indices
 
@@ -118,7 +118,7 @@ To build a BWA index for a new genome or genome build see the [bwa manual](http:
 
 ##### Chromosome Sizes
 
-Chromosome size files should be tab-delimited text with two columns, the first being the chromosome name (e.g. chr1) and the second being the chromosome length in bp (e.g. 249250621). These files can be downloaded using the `fetchChromSizes` tool ([Linux download](https://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/fetchChromSizes)). Alternatively, iGenomes references often contain this file in their folder hierarchy. The chromosome naming convention (i.e. chr1 or 1) must match those of the reference genome used.
+Chromosome size files should be tab-delimited text with two columns, the first being the chromosome name (e.g. chr1) and the second being the chromosome length in bp (e.g. 249250621). These files are included in the repository, but can be downloaded using the `fetchChromSizes` tool ([Linux download](https://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/fetchChromSizes)). Alternatively, iGenomes references often contain this file in their folder hierarchy. The chromosome naming convention (i.e. chr1 or 1) must match those of the reference genome used.
 
 An example:
 
@@ -129,7 +129,7 @@ An example:
 
 ##### Blacklist Regions
 
-Blacklist regions should be in the form of a [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) file. Version 2 blacklist regions can be downloaded from the Boyle Lab ([link](https://github.com/Boyle-Lab/Blacklist/tree/master/lists)). Version 1 blacklist regions can be downloaded from the Kundaje Lab ([link](https://sites.google.com/site/anshulkundaje/projects/blacklists)).
+Blacklist regions should be in the form of a [BED](https://genome.ucsc.edu/FAQ/FAQformat.html#format1) file. Version 2 blacklist regions are included in the repository, but can be downloaded from the Boyle Lab ([link](https://github.com/Boyle-Lab/Blacklist/tree/master/lists)). Version 1 blacklist regions are also included, and can be downloaded from the Kundaje Lab ([link](https://sites.google.com/site/anshulkundaje/projects/blacklists)).
 
 The blacklist filtering step requires that the BED file used contains mutually disjoint regions. To ensure this is the case, one can use [`bedtools merge`](https://bedtools.readthedocs.io/en/latest/content/tools/merge.html) to create a final BED file for use in the pipeline.
 
@@ -137,18 +137,18 @@ Note: If you are using an organism that does not have a blacklist available, it 
 
     echo 'chr1\t1\t2' > /path/to/dummy_blacklist.bed #Note: use appropriate chromosome identifiers for your organism.
 
-An example:
+An example blacklist bedfile:
 
-    chr1	564449	570371
-    chr1	724136	727043
-    chr1	825006	825115
+    chr1    0       750100  High Signal Region
+    chr1    814500  845200  High Signal Region
+    chr1    2052400 2056000 High Signal Region
     ...
 
 ##### TSS File
 
 TSS BED files are used to calculate TSS enrichment scores in the `ataqv` quality asseessment. The `ataqv` respository contains ready-made TSS files for hg19, mm9, and rn5 ([link](https://github.com/ParkerLab/ataqv/tree/master/data/tss)), but also includes the code used to generate them as an example for other references.
 
-An example:
+An example TSS bedfile:
 
     chr1	11874	11874
     chr1	69091	69091
@@ -157,7 +157,11 @@ An example:
 
 #### Input files
 
-Fastq inputs must have filenames in the form `_R1.fastq.gz` or `_R2.fastq.gz`, and all fastqs for a given sample must be contained in their own directories. These directories are listed in the sample sheet that is given to config_creator.py. [Here is a link to some helpful notes and tools](#fastq-inputs) available if your input files are not yet 'pipeline-ready'.
+Fastq inputs must have filenames in the form `_R1.fastq.gz`, `_R2.fastq.gz`, `_R1_001.fastq.gz`, `_R2_001.fastq.gz`, etc. This is so the config creator script can determine read number based on the filename. Specifically, the filenames should each contain an `_R1.`, `_R1_`, `_R2.`, or `_R2_` element.
+
+Additionally, all fastqs for a given sample must be contained in their own directories. These directories are listed in the sample sheet that is given to config_creator.py.
+
+[See the section with helpful notes and tools](#fastq-inputs) for situations where your input files are not yet 'pipeline-ready'.
 
 ### Quick-start example: Processing raw reads from an ATAC-seq experiment
 
@@ -235,6 +239,10 @@ It may be instructive to open the example general input, per-lib input, and the 
 Results will be located where they were specified in the configuration - in this example, they are located in `/path/to/results`. These include bams (aligned, filtered), called peaks, display files, ataqv results, and cluster logs.
 
 ### Additional Information
+
+#### Notes on conditional outputs for ChIPseq
+
+The ChIPseq pipeline is configured so that it will produce peak calls for all samples which have a matched input. This also means that the generation of these output files can be decided by the contents of the CSV used during config creation. For example, if a ChIPseq sample CSV contains no values in the `input` column, the resulting configuration file will not have matched inputs. Thus, when the pipeline is run with this configuration file, it will not produce peak calls. Similarly, Homer findMotifsGenome will only be run for samples which have a specified `homer_fmg_genome` in the CSV.
 
 #### Tuning cluster resource requirements
 
@@ -329,7 +337,8 @@ Example: Sequencing runs downloaded from NCBI Sequence Read Archive
     ├── SRR5799447_1.fastq
     └── SRR5799447_2.fastq
 
-This is another common case, where the fastqs from multiple samples reside within a single directory. For this scenario, an additional step is taken to place the fastq files into separate subdirectories on a per-sample basis; we've created the prepare_fastq_inputs.py script to simplify this process. After the fastqs are placed in subdirectories, they can be fed to `config_creator.py` via the sample info CSV as exemplified in the main readme
+This is another common case, where the fastqs from multiple samples reside within a single directory. For this scenario, an additional step is taken to place the fastq files into separate subdirectories on a per-sample basis; we've created the prepare_fastq_inputs.py script to simplify this process. After the fastqs are placed in subdirectories, they can be fed to `config_creator.py` via the sample info CSV as exemplified in the main readme.
+
 In this case, an additional requirement is that filenames must be similar enough that they can be parsed uniformly to identify files to be grouped together as a sample. With this script, a table is supplied which maps sample names to the unique portion of the fastq filenames (the portion that remains after uniformly parsing them). In case of SRA files, we can group BioSamples which are comprised of multiple sequencing runs (multiple SRR accessions). In a more general use-case, we could group samples that have fastqs performed over multiple lanes of sequencing.
 
 Note: prepare_fastq_inputs.py hardlinks the files into the proper locations, instead of moving them. This preserves the original flat structure in the given fastq directory in case that is desired, but also introduces in that location the nested structure needed for `config_creator.py`. These links do not consume any extra storage space.
@@ -339,7 +348,7 @@ Note: prepare_fastq_inputs.py hardlinks the files into the proper locations, ins
 Example: Some samples from a collaborator, some samples internal, etc.
 
 If your input samples are not in one of the two structures above, it is still possible to make them pipeline-ready.
-Once again, the read number information must be discernible from the filename [as noted above](#a-note-on-filename-restrictions). However, that's the only restriction. The key objective is to get each sample's fastq files into their own directory. If you are able to manually create directories and move the appropriate fastqs into those locations, then that is the extent of the work to be done. After that, `config_creator.py` can be run exactly as described in the first scenario above, by supplying the appropriate fastq directory for each sample in the CSV.
+Once again, the read number information must be discernible from the filename [as noted above](#notes-on-filename-restrictions). However, that's the only restriction. The key objective is to get each sample's fastq files into their own directory. If you are able to manually create directories and move the appropriate fastqs into those locations, then that is the extent of the work to be done. After that, `config_creator.py` can be run exactly as described in the first scenario above, by supplying the appropriate fastq directory for each sample in the CSV.
 
 #### Examples
 
