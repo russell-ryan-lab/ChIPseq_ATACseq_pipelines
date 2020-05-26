@@ -79,15 +79,16 @@ rule mark_duplicates:
         "VALIDATION_STRINGENCY=LENIENT "
         "TMP_DIR={params.tmpdir}"
 
+# samtools is available in the parent environment atac_chip_pipeline
 rule index_dupmarked_bams:
     input:
         os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam")
     output:
         os.path.join(ALIGN_DIR, "{sample}.mrkdup.bai")
-    conda: "envs/samtools.yaml"
     shell:
         "samtools index {input} {output}"
 
+# samtools is available in the parent environment atac_chip_pipeline
 rule samtools_prune:
     input:
         bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
@@ -97,16 +98,15 @@ rule samtools_prune:
     params:
         incl_chr = lambda wildcards: INCLUDE_CHRS[get_genome(wildcards.sample)],
         flags = config['samtools_prune_flags']
-    conda: "envs/samtools.yaml"
     shell:
         "samtools view -b {params.flags} {input.bam} {params.incl_chr} > {output.bam}"
 
+# samtools is available in the parent environment atac_chip_pipeline
 rule index_pruned:
     input:
         bam = os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
         bai = os.path.join(PRUNE_DIR, "{sample}.pruned.bai")
-    conda: "envs/samtools.yaml"
     shell:
         "samtools index {input.bam} {output.bai}"
 
