@@ -2,4 +2,6 @@
 flux_config_ChIPseq.json
 *__pycache__*
 *.pyc
-data/sra_chip_test_data/
+atac_test_run/*
+test_sra_chip_tf_pe/*
+chip_test_mixed/*
