@@ -27,6 +27,7 @@ class SnakemakeFunctionalTests(unittest.TestCase):
         except AssertionError as e:
             raise self.failureException(msg) from e
 
+### ATAC dryrun test
 
     def test_atac_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -78,7 +79,9 @@ class SnakemakeFunctionalTests(unittest.TestCase):
 
             self.assertEqual(0, dryrun_return_code)
 
-    def test_chip_se_dryrun_passes(self):
+### ChIP dryrun tests
+
+    def test_chip_histone_se_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
 
@@ -92,8 +95,8 @@ class SnakemakeFunctionalTests(unittest.TestCase):
             general_input = chip_general_config
 
             test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
-SRR6214070,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/SAMN06121956/
-SRR5112307,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/SAMN06122176/''' # FIXME: make these samples match new chip test data when we have it
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' # FIXME: make these samples match new chip test data when we have it
             test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
             test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
             with open(test_sheet_filename, 'w') as test_sheet_filehandle:
@@ -126,7 +129,7 @@ SRR5112307,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/SAMN06122176/''' # FI
 
             self.assertEqual(0, dryrun_return_code)
 
-    def test_chip_pe_dryrun_passes(self):
+    def test_chip_histone_pe_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
 
@@ -140,8 +143,8 @@ SRR5112307,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/SAMN06122176/''' # FI
             general_input = chip_general_config
 
             test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
-SRR6214070,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/SAMN06121956/
-SRR5112307,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/SAMN06122176/''' # FIXME: make these samples match new chip test data when we have it
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
             test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
             with open(test_sheet_filename, 'w') as test_sheet_filehandle:
@@ -173,6 +176,104 @@ SRR5112307,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/SAMN06122176/''' # FI
             ])
 
             self.assertEqual(0, dryrun_return_code)
+
+    def test_chip_tf_se_dryrun_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_TF_general_se.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' # FIXME: make these samples match new chip test data when we have it
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # Dryrun test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_se.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+
+            dryrun_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '-np'
+            ])
+
+            self.assertEqual(0, dryrun_return_code)
+
+    def test_chip_tf_pe_dryrun_passes(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_TF_general_pe.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # Dryrun test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_pe.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+
+            dryrun_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '-np'
+            ])
+
+            self.assertEqual(0, dryrun_return_code)
+
+### Homer only dryrun test
 
     def test_homer_only_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -230,6 +331,8 @@ input,input,hg19,,'''
 
             self.assertEqual(0, dryrun_return_code)
 
+### ATAC end to end test
+
     def test_atac_endtoend_passes(self):
         # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
         # can all access the same temp space. If this is not done, TemporaryDirectory creates them
@@ -239,13 +342,7 @@ input,input,hg19,,'''
 
             results_dir = os.path.join(temp_dir, 'results')
             results_temp_dir = os.path.join(results_dir, 'tmp')
-            results_log_dir = os.path.join(results_dir, 'logs')
             atac_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.yaml')
-
-            # Create /logs and /tmp folder in results_dir
-            os.mkdir(results_dir)
-            os.mkdir(results_temp_dir)
-            os.mkdir(results_log_dir)
 
             ########################################
             # Create the configfile
@@ -289,7 +386,249 @@ input,input,hg19,,'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run2/.snakemake/conda',
+                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run2/.snakemake/conda', # Remove before release
+                '--cluster-status', slurm_status_script,
+                '--cluster',
+                'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
+            ])
+
+            self.assertEqual(0, endtoend_return_code)
+
+### ChIP end to end tests
+
+    def test_chip_histone_se_endtoend_passes(self):
+        # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
+        # can all access the same temp space. If this is not done, TemporaryDirectory creates them
+        # in /tmp, which is not shared between nodes
+        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_histone_general_se.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' # FIXME: make these samples match new chip test data when we have it
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # End-to-end test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_se.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+            slurm_status_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'slurm_status.py')
+            cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')
+
+            endtoend_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '--latency-wait', '60',
+                '--jobs', '144',
+                '--cluster-config', cluster_config,
+                '--use-conda',
+                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                '--cluster-status', slurm_status_script,
+                '--cluster',
+                'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
+            ])
+
+            self.assertEqual(0, endtoend_return_code)
+
+    def test_chip_histone_pe_endtoend_passes(self):
+        # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
+        # can all access the same temp space. If this is not done, TemporaryDirectory creates them
+        # in /tmp, which is not shared between nodes
+        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_histone_general_pe.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # End-to-end test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_pe.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+            slurm_status_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'slurm_status.py')
+            cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')
+
+            endtoend_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '--latency-wait', '60',
+                '--jobs', '144',
+                '--cluster-config', cluster_config,
+                '--use-conda',
+                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                '--cluster-status', slurm_status_script,
+                '--cluster',
+                'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
+            ])
+
+            self.assertEqual(0, endtoend_return_code)
+
+    def test_chip_tf_se_endtoend_passes(self):
+        # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
+        # can all access the same temp space. If this is not done, TemporaryDirectory creates them
+        # in /tmp, which is not shared between nodes
+        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_TF_general_se.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' # FIXME: make these samples match new chip test data when we have it
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # End-to-end test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_se.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+            slurm_status_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'slurm_status.py')
+            cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')
+
+            endtoend_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '--latency-wait', '60',
+                '--jobs', '144',
+                '--cluster-config', cluster_config,
+                '--use-conda',
+                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                '--cluster-status', slurm_status_script,
+                '--cluster',
+                'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
+            ])
+
+            self.assertEqual(0, endtoend_return_code)
+
+    def test_chip_tf_pe_endtoend_passes(self):
+        # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
+        # can all access the same temp space. If this is not done, TemporaryDirectory creates them
+        # in /tmp, which is not shared between nodes
+        with tempfile.TemporaryDirectory(prefix = TEST_TMP_DIR) as temp_dir:
+            os.chdir(temp_dir)
+
+            results_dir = os.path.join(temp_dir, 'results')
+            results_temp_dir = os.path.join(results_dir, 'tmp')
+            chip_general_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'ChIP_TF_general_pe.yaml')
+
+            ########################################
+            # Create the configfile
+            config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
+            general_input = chip_general_config
+
+            test_samplesheet = '''lib,sample,genome,input,homer_fmg_genome,basepath
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
+            test_samplesheet = test_samplesheet.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
+            test_sheet_filename = os.path.join(temp_dir, 'samplesheet_test.csv')
+            with open(test_sheet_filename, 'w') as test_sheet_filehandle:
+                test_sheet_filehandle.write(test_samplesheet)
+
+            outputfile_config = os.path.join(temp_dir, 'config_test.yaml')
+
+            with open(outputfile_config, 'w') as outfile_handle:
+                cfg_create_return_code = subprocess.call([
+                    config_creator_script,
+                    '--general_input', general_input,
+                    '--per_lib_input', test_sheet_filename,
+                    '--results_dir', results_dir,
+                    '--temp_dir', results_temp_dir
+                ], stdout=outfile_handle)
+
+                self.assertEqual(0, cfg_create_return_code)
+
+            ########################################
+            # End-to-end test
+            snakefile = os.path.join(PIPELINE_BASE_DIR, 'ChIPseq_pe.smk')
+            configfile = os.path.join(temp_dir, 'config_test.yaml')
+            slurm_status_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'slurm_status.py')
+            cluster_config = os.path.join(PIPELINE_BASE_DIR, 'config', 'cluster_config.yaml')
+
+            endtoend_return_code = subprocess.call([
+                'snakemake',
+                '--snakefile', snakefile,
+                '--configfile', configfile,
+                '--latency-wait', '60',
+                '--jobs', '144',
+                '--cluster-config', cluster_config,
+                '--use-conda',
+                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
