@@ -166,7 +166,7 @@ We create some bash environment variables to point to the conda environment, rep
 
     conda_env_dir=/path/to/atac_chip_pipeline
     repo_dir=/path/to/ChIPseq_ATACseq_pipelines
-    results_dir=/path/to/results
+    results_dir=/path/to/atac_results
 
 Create the directory where you'd like to save the results of the pipeline:
 
@@ -190,7 +190,7 @@ Next, generate a pipeline configuration file using the `scripts/config_creator.p
 The configuration file is then created by running:
 
     # Activate the snakemake environment from above
-    conda activate /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
+    conda activate ${conda_env_dir}
 
     #Use the config creator script
     ${repo_dir}/scripts/config_creator.py \
@@ -255,10 +255,16 @@ Running ChIP-seq experiments from raw reads is similar to ATAC-seq with some min
     - `config/ChIP_TF_general_pe.yaml`, or
     - `config/ChIP_TF_general_se.yaml`
 
+We create some bash environment variables to point to the conda environment, repository directory, and results directory.
+
+    conda_env_dir=/path/to/atac_chip_pipeline
+    repo_dir=/path/to/ChIPseq_ATACseq_pipelines
+    results_dir=/path/to/chip_results
+
 The configuration file is then created by running the following, similar to ATACseq:
 
     # Activate the snakemake environment from above
-    conda activate /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
+    conda activate ${conda_env_dir}
 
     #Use the config creator script
     ${repo_dir}/scripts/config_creator.py \
