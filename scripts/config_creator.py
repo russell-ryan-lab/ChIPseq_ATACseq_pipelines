@@ -197,7 +197,7 @@ if __name__ == '__main__':
     config_dict = json.loads(json.dumps(config_dict)) #Standardize dict type throughout object by using json as intermediate
 
     if args.homer_only: # Remove unnecessary keys from the config_dict in the homer_only case
-        [config_dict.pop(x, None) for x in ['samtools_prune_flags','deeptools_bamcoverage_params','bwa_index','chrom_sizes']]
+        [config_dict.pop(x, None) for x in ['samtools_prune_flags','deeptools_bamcoverage_params','bwa_index']]
 
     pipeline_basedir = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
     if not args.homer_only:
