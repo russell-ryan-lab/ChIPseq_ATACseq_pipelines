@@ -91,7 +91,7 @@ Peak calling in the ChIP-seq pipeline is done with [Homer](http://homer.ucsd.edu
 After installation, run the following script to adjust the default base paths in various files. For the `--hpc_account` flag, users can see which accounts they have access to by calling `my_accounts` on Great Lakes.
 
     cd /path/to/repository
-    python setup.py --hpc_account rcavalca --env_path /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
+    python setup.py --hpc_account account_name --env_path /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
 
 Finally, change the following items
 
