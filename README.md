@@ -8,7 +8,7 @@
     * [Genome Reference Requirements](#genome-reference-requirements)
 * [Quick-Start ATAC](#quick-start-example-processing-raw-reads-from-an-atac-seq-experiment)
 * [Quick-Start ChIP](#quick-start-example-processing-raw-reads-from-chip-seq-experiment)
-* [Quick-Start Homer Only](#quick-start-homer-only)
+* [Quick-Start Homer Only](#quick-start-example-homer-only)
 * [Additional Information](#additional-information)
     * [Genome Reference Files](#genome-reference-files)
     * [Notes on Control Samples for ChIPseq](#notes-on-control-samples-for-chipseq)
