@@ -53,7 +53,7 @@ class ConfigCreatorTests(unittest.TestCase):
         invalid_json = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'invalid.json')
 
         valid_yaml = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.yaml')
-        valid_json = os.path.join(PIPELINE_BASE_DIR, 'config', 'ATAC_general.json')
+        valid_json = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'ATAC_general.json')
 
         # Test error-handling
         self.assertRaisesRegex(SystemExit, 'assume YAML or JSON', config_creator.read_input, 'blue')

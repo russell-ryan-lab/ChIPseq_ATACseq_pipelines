@@ -21,9 +21,6 @@ properties:
     bwa_index:
         type: object
         description: Contains key-value pairs which relate genome builds to the path of the appropriate bwa indices. Note that these paths do not reference filenames, but prefixes which are passed to bwa.
-    chrom_sizes:
-        type: object
-        description: Contains key-value pairs which relate genome builds to their chromosome size files.
 required:
     - sample_genome
     - sample_paths
@@ -33,4 +30,3 @@ required:
     - deeptools_bamcoverage_params
     - blacklist
     - bwa_index
-    - chrom_sizes

@@ -8,11 +8,6 @@ bwa_index:
     hg38 : /nfs/turbo/epicore-active/genomes/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex/genome.fa
     mm10 : /nfs/turbo/epicore-active/genomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa
 
-chrom_sizes:
-    hg19: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/chromsize/hg19.chrom.sizes
-    hg38: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/chromsize/h38.chrom.sizes
-    mm10: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/chromsize/mm10.chrom.sizes
-
 deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads 150"
 samtools_prune_flags: "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800"
 igvtools_count_params: "--includeDuplicates"

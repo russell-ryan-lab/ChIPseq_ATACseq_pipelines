@@ -6,11 +6,15 @@
     * [Installing the Pipelines](#installing-the-pipelines)
         * [Lab-Specific Customizations](#lab-specific-customizations)
     * [Genome Reference Requirements](#genome-reference-requirements)
-* [Quick-Start Example](#quick-start-example-Processing-raw-reads-from-an-ATAC-seq-experiment)
+* [Quick-Start ATAC](#quick-start-example-processing-raw-reads-from-an-atac-seq-experiment)
+* [Quick-Start ChIP](#quick-start-example-processing-raw-reads-from-chip-seq-experiment)
+* [Quick-Start Homer Only](#quick-start-homer-only)
 * [Additional Information](#additional-information)
     * [Genome Reference Files](#genome-reference-files)
-    * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
+    * [Notes on Control Samples for ChIPseq](#notes-on-control-samples-for-chipseq)
+    * [Notes on conditional outputs for ChIPseq](#notes-on-conditional-outputs-for-chipseq)
     * [Testing additional homer findPeaks parameters](#testing-additional-homer-findPeaks-parameters)
+    * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
     * [Fastq Inputs](#fastq-inputs)
     * [Examples](#examples)
 
@@ -157,13 +161,16 @@ Additionally, all fastqs for a given sample must be contained in their own direc
 
 ### Quick-start Example: Processing Raw Reads from an ATAC-seq Experiment
 
-First, create the directory where you'd like to save the results of the pipeline:
+We create some bash environment variables to point to the conda environment, repository directory, and results directory.
 
-    mkdir -p /path/to/results
+    conda_env_dir=/path/to/atac_chip_pipeline
+    repo_dir=/path/to/ChIPseq_ATACseq_pipelines
+    results_dir=/path/to/results
 
-Next, create `tmp/` and `logs/` directories for the pipeline to use:
+Create the directory where you'd like to save the results of the pipeline:
 
-    cd /path/to/results
+    mkdir -p ${results_dir}
+    cd ${results_dir}
 
 Next, generate a pipeline configuration file using the `scripts/config_creator.py` script. The following need to be specified:
 
@@ -185,21 +192,21 @@ The configuration file is then created by running:
     conda activate /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
 
     #Use the config creator script
-    /path/to/repository/scripts/config_creator.py \
-        --general_input config/ATAC_general.yaml \
-        --per_lib_input data/atac_test_data/atac_test_samplesheet.csv \
-        --results_dir /path/to/results \
-        --temp_dir /path/to/results/tmp \
-    > /path/to/results/test_config.yaml
+    ${repo_dir}/scripts/config_creator.py \
+        --general_input ${repo_dir}/config/ATAC_general.yaml \
+        --per_lib_input ${repo_dir}/data/atac_test_data/atac_test_samplesheet.csv \
+        --results_dir ${results_dir} \
+        --temp_dir ${results_dir}/tmp \
+    > ${results_dir}/test_atac_config.yaml
 
-This will generate the file `/path/to/results/test_config.yaml`.
+This will generate the file `${results_dir}/test_atac_config.yaml`.
 
 It may be instructive to open the example general input, per-lib input, and the resulting configuration file to understand what the config creator script has done.
 
     # Assuming the atac_chip_pipeline environment is activated
 
     # Running a dry-run (-n flag)
-    snakemake -n --snakefile /path/to/repository/ATACseq.smk --configfile /path/to/results/test_config.yaml
+    snakemake -n --snakefile ${repo_dir}/ATACseq.smk --configfile ${results_dir}/test_atac_config.yaml
 
     # If the dry-run succeeds, then proceed to run the ATACseq pipeline on the cluster
 
@@ -208,12 +215,12 @@ It may be instructive to open the example general input, per-lib input, and the 
 
     # Launch the pipeline
     snakemake -p \
-        --snakefile /path/to/repository/ATACseq.smk \
-        --configfile /path/to/results/test_config.yaml \
+        --snakefile ${repo_dir}/ATACseq.smk \
+        --configfile ${results_dir}/test_atac_config.yaml \
         --use-conda \
         --latency-wait 60 \
-        --cluster-status /path/to/repository/scripts/slurm_status.py \
-        --cluster-config /path/to/repository/config/cluster_config.json \
+        --cluster-status ${repo_dir}/scripts/slurm_status.py \
+        --cluster-config ${repo_dir}/config/cluster_config.json \
         --cluster 'sbatch \
             --job-name={cluster.name} \
             --account={cluster.account} \
@@ -225,11 +232,104 @@ It may be instructive to open the example general input, per-lib input, and the 
             --parsable \
             --output=logs/%x-%j.out'
 
-Results will be located where they were specified in the configuration - in this example, they are located in `/path/to/results`. These include bams (aligned, filtered), called peaks, display files, ataqv results, and cluster logs.
+Results will be located where they were specified in the configuration - in this example, they are located in `/path/to/atac_results`. These include bams (aligned, filtered), called peaks, display files, ataqv results, and cluster logs.
+
+### Quick-start Example: Processing Raw Reads from ChIP-seq Experiment
+
+Running ChIP-seq experiments from raw reads is similar to ATAC-seq with some minor changes.
+
+1. The samplesheet passed to the `config_creator.py` script. In particular, the samplesheet should look like:
+
+    |lib|sample|genome|input|homer_fmg_genome|basepath|
+    |---|------|------|-----|----------------|--------|
+    |GM12878_NKRF|GM12878_NKRF|hg19|GM12878_Input|hg19r|data/sra_chip_test_data/GM12878_NKRF/|
+    |GM12878_Input|GM12878_Input|hg19|||data/sra_chip_test_data/GM12878_Input/|
+
+    Note the addition of the `input` and `homer_fmg_genome` columns. The `input` column indicates which library `sample` is to be used as the control sample when finding peaks with Homer. The `homer_fmg_genome` indicates the Homer coded genome reference that is to be used when finding motifs, if that rule is applicable. For more additional information about the `input` column see [notes on control samples for ChIPseq](#notes-on-control-samples-for-chipseq).
+
+2. The `--general_input` flag to the `config_creator.py` function has four options for ChIPseq, depending on whether the data is paired- or single-end and whether the data is a histone or transcription factor (TF). The options are:
+
+    - `config/ChIP_histone_general_pe.yaml`,
+    - `config/ChIP_histone_general_se.yaml`,
+    - `config/ChIP_TF_general_pe.yaml`, or
+    - `config/ChIP_TF_general_se.yaml`
+
+The configuration file is then created by running the following, similar to ATACseq:
+
+    # Activate the snakemake environment from above
+    conda activate /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
+
+    #Use the config creator script
+    ${repo_dir}/scripts/config_creator.py \
+        --general_input ${repo_dir}/config/ChIP_histone_pe.yaml \
+        --per_lib_input ${repo_dir}/data/sra_chip_test_data/sra_chip_samplesheet.csv \
+        --results_dir ${results_dir} \
+        --temp_dir ${results_dir}/tmp \
+    > ${results_dir}/test_chip_config.yaml
+
+This will generate the file `/path/to/results/test_chip_config.yaml`. The pipeline can now be executed. One difference from ATACseq is that there is a paired-end pipeline (`ChIPseq_pe.smk`) and a single-end pipeline (`ChIPseq_se.smk`). Be sure to select the correct one.
+
+    # Assuming the atac_chip_pipeline environment is activated
+
+    # Running a dry-run (-n flag)
+    snakemake -n --snakefile ${repo_dir}/ChIPseq_pe.smk --configfile ${results_dir}/test_chip_config.yaml
+
+    # If the dry-run succeeds, then proceed to run the ChIPseq pipeline on the cluster
+
+    # First start a persistent session with screen or tmux
+    screen -S chip_test
+
+    # Launch the pipeline
+    snakemake -p \
+        --snakefile ${repo_dir}/ChIPseq_pe.smk \
+        --configfile ${results_dir}/test_chip_config.yaml \
+        --use-conda \
+        --latency-wait 60 \
+        --cluster-status ${repo_dir}/scripts/slurm_status.py \
+        --cluster-config ${repo_dir}/config/cluster_config.json \
+        --cluster 'sbatch \
+            --job-name={cluster.name} \
+            --account={cluster.account} \
+            --partition={cluster.partition} \
+            --nodes={cluster.nodes} \
+            --ntasks-per-node={cluster.ntask} \
+            --mem={cluster.memory} \
+            --time={cluster.time} \
+            --parsable \
+            --output=logs/%x-%j.out'
+
+Results will be located where they were specified in the configuration - in this example, they are located in `/path/to/chip_results`. These include bams (aligned, filtered), called peaks, found motifs, display files, and cluster logs. It is possible to alter the flow of the pipeline to exclude peak calling (should a different peak caller be preferred) or motif finding. See notes on conditional outputs for ChIPseq, [below](#notes-on-conditional-outputs-for-chipseq). It is also possible to explore the effect of different peak calling parameters with Homer in one pipeline run, see the section on testing additional homer findPeaks parameters, [below](#testing-additional-homer-findpeaks-parameters).
+
+### Quick-Start Example: Homer Only
+
+It is possible to start with filtered bam files and perform only the downstream steps makeTagDirectory, findPeaks, blacklist filtering, and findMotifsGenome. A constraint for this use-case is that the input bam files must be named and structured in a way that is compatible with the pipeline at large.
+The filtered bams are assumed to have only properly aligned reads or read pairs, and removed PCR/optical duplicates.
+
+Input directory structure:
+
+    ${result_dir}/pruned/
+    ├── OCILY_H3K27ac.pruned.bam
+    └── OCILY_input.pruned.bam
+
+The filtered bam filenames should be `sample.pruned.bam`, and should be located in a directory called `pruned`. The `pruned` directory should be a subdirectory of the results path given to the config_creator script.
+
+The config_creator script has a flag `--homer_only` which will not perform any fastq-finding steps, and will instead produce a configuration file that has only the keys needed for that pipeline.
+
+    ${repo_dir}/scripts/config_creator.py \
+        --general_input ${repo_dir}/config/ChIP_histone_general_se.yaml \
+        --per_lib_input ${repo_dir}/data/sra_mixed_chip_test_data/sra_chip_histone_all.csv \
+        --results_dir ${result_dir} \
+        --temp_dir ${result_dir}/tmp \
+        --homer_only \
+        > ${result_dir}/config_histone_homer.yaml
+
+Note: The homer_only config won't end up containing any se or pe params, so either can be used to provide the general input information.
 
 ### Additional Information
 
 #### Genome Reference Files
+
+While blacklist and TSS files for hg19, hg38, and mm10 are included in the `data/references` folder, we describe the form they should take below should the need arise for custom versions of these files. Remember that the pipeline, by default, uses those in `data/references` so care should be taken to make sure general or project configurations are using the desired files.
 
 ##### Blacklist Regions
 
@@ -259,6 +359,10 @@ An example TSS bedfile:
     chr1	321084	321084
     ...
 
+#### Notes on control samples for ChIPseq
+
+The `input` column in the ChIPseq samplesheet allows users to use the same control for more than one pulldown library, or to use matched controls and pulldowns. Simply use the appropriate library `sample` entry.
+
 #### Notes on conditional outputs for ChIPseq
 
 The ChIPseq pipeline is flexible in the sense that including or excluding elements of the samplesheet can determine what steps of the pipeline are run. Two examples for the example samplesheet below:
@@ -280,10 +384,6 @@ Alternatively, the resulting configuration file from `config_creator.py` could b
 
 1. Remove the `sample_input` block.
 2. Remove the `sample_homer_fmg_genome` attribute.
-
-#### Tuning cluster resource requirements
-
-The cluster resources enumerated in `config/cluster_config.yaml` are set with values which should handle normal datasets by default. If the data you're using are much larger, it may make sense to increase these values if your jobs are killed for exceeding the walltime. Setting longer times will not incur extra cost if the jobs complete before their scheduled time, but it may potentially cause jobs to wait longer in the queue.
 
 #### Testing additional homer findPeaks parameters
 
@@ -307,6 +407,9 @@ Will create two sets of results and place them in their corresponding subfolders
         ├── OCILY_H3K27ac.BLfiltered.bed
         └── OCILY_H3K27ac.BLfiltered.hpeaks
 
+#### Tuning cluster resource requirements
+
+The cluster resources enumerated in `config/cluster_config.yaml` are set with values which should handle normal datasets by default. If the data you're using are much larger, it may make sense to increase these values if your jobs are killed for exceeding the walltime. Setting longer times will not incur extra cost if the jobs complete before their scheduled time, but it may potentially cause jobs to wait longer in the queue.
 
 #### Fastq Inputs
 
@@ -380,8 +483,3 @@ Example: Some samples from a collaborator, some samples internal, etc.
 If your input samples are not in one of the two structures above, it is still possible to make them pipeline-ready.
 
 Once again, the read number information must be discernible from the filename [as noted above](#notes-on-filename-restrictions). However, that's the only restriction. The key objective is to get each sample's fastq files into their own directory. If you are able to manually create directories and move the appropriate fastqs into those locations, then that is the extent of the work to be done. After that, `config_creator.py` can be run exactly as described in the first scenario above, by supplying the appropriate fastq directory for each sample in the CSV.
-
-#### Examples
-
-1. [Example with SRA data](doc/Example_running_SE_ChIPseq_from_SRA.md) - running single-end ChIPseq through se pipeline
-2. Example with in-house ChIPseq data - running paired-end ChIPseq reads through pe pipeline

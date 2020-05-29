@@ -636,7 +636,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
 
             self.assertEqual(0, endtoend_return_code)
 
-    def test_chip_histone_mixed_foobar_passes(self):
+    def test_chip_histone_mixed_endtoend_passes(self):
         # Using specific temporary directory prefix so that worker nodes on GreatLakes cluster
         # can all access the same temp space. If this is not done, TemporaryDirectory creates them
         # in /tmp, which is not shared between nodes
