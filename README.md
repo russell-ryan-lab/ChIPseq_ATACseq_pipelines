@@ -89,7 +89,7 @@ Peak calling in the ChIP-seq pipeline is done with [Homer](http://homer.ucsd.edu
 
 ##### Lab-specific Customizations
 
-After installation, run the following script to adjust the default base paths in various files.
+After installation, run the following script to adjust the default base paths in various files. For the `--hpc_account` flag, users can see which accounts they have access to by calling `my_accounts` on Great Lakes.
 
     cd /path/to/repository
     python setup.py --hpc_account rcavalca --env_path /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline
@@ -97,6 +97,8 @@ After installation, run the following script to adjust the default base paths in
 Finally, change the following items
 
 - In each of the `yaml` files in `config/`, change BWA indices to appropriate paths.
+
+Note, if the pipeline folder is moved after running `setup.py`, the internal paths will no longer be valid. Instead of moving the folder, users should follow the steps above in the new desired location.
 
 ##### Quick Test of the Installation
 
@@ -369,8 +371,8 @@ The ChIPseq pipeline is flexible in the sense that including or excluding elemen
 
 |lib|sample|genome|input|homer_fmg_genome|basepath|
 |---|------|------|-----|----------------|--------|
-|GM12878_NKRF|GM12878_NKRF|hg19|GM12878_Input|hg19r|/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/GM12878_NKRF/|
-|GM12878_Input|GM12878_Input|hg19|||/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/GM12878_Input/|
+|GM12878_NKRF|GM12878_NKRF|hg19|GM12878_Input|hg19r|data/sra_chip_test_data/GM12878_NKRF/|
+|GM12878_Input|GM12878_Input|hg19|||data/sra_chip_test_data/GM12878_Input/|
 
 1. If the `input` column is left blank for all samples, peaks will not be called.
 2. If the `homer_fmg_genome` column is left blank all samples, motifs will not be found.
