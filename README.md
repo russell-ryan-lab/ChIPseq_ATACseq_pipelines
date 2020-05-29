@@ -16,7 +16,6 @@
     * [Testing additional homer findPeaks parameters](#testing-additional-homer-findPeaks-parameters)
     * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
     * [Fastq Inputs](#fastq-inputs)
-    * [Examples](#examples)
 
 ## About
 
