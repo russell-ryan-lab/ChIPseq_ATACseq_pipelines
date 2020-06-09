@@ -220,8 +220,9 @@ It may be instructive to open the example general input, per-lib input, and the 
         --configfile ${results_dir}/test_atac_config.yaml \
         --use-conda \
         --latency-wait 60 \
+        --jobs 100 \
         --cluster-status ${repo_dir}/scripts/slurm_status.py \
-        --cluster-config ${repo_dir}/config/cluster_config.json \
+        --cluster-config ${repo_dir}/config/cluster_config.yaml \
         --cluster 'sbatch \
             --job-name={cluster.name} \
             --account={cluster.account} \
@@ -292,8 +293,9 @@ This will generate the file `/path/to/results/test_chip_config.yaml`. The pipeli
         --configfile ${results_dir}/test_chip_config.yaml \
         --use-conda \
         --latency-wait 60 \
+        --jobs 100 \
         --cluster-status ${repo_dir}/scripts/slurm_status.py \
-        --cluster-config ${repo_dir}/config/cluster_config.json \
+        --cluster-config ${repo_dir}/config/cluster_config.yaml \
         --cluster 'sbatch \
             --job-name={cluster.name} \
             --account={cluster.account} \
