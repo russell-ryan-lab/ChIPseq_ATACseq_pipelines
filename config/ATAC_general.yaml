@@ -14,4 +14,5 @@ tss:
     mm10: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/tss/mm10.tss.refseq.bed.gz
 
 deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads"
+deeptools_bamcoverage_use_blacklist: False
 samtools_prune_flags: "-f 0x1 -f 0x2 -F 0x4 -F 0x8 -F 0x100 -F 0x400 -F 0x800"

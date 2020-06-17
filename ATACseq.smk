@@ -125,11 +125,11 @@ rule deeptools_bamcoverage_bw:
     output:
         os.path.join(DISP_DIR, "{sample}.1m.bw")
     params:
-        blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)],
+        blacklist = lambda wildcards: "-bl {}".format(config['blacklist'][get_genome(wildcards.sample)]) if config.get('deeptools_bamcoverage_use_blacklist') == True else '', # deeptools_bamcoverage_use_blacklist should be True or False. If True, add `-bl /path/to/blacklist` to command. Otherwise empty string
         args = config['deeptools_bamcoverage_params']
     conda: "envs/deeptools.yaml"
     shell:
-        "bamCoverage --bam {input.bam} -o {output} -bl {params.blacklist} {params.args}"
+        "bamCoverage --bam {input.bam} -o {output} {params.blacklist} {params.args}"
 
 rule peaks:
     input:

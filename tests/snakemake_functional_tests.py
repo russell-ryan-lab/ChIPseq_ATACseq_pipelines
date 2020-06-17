@@ -368,7 +368,6 @@ input,input,hg19,,'''
                     '--results_dir', results_dir,
                     '--temp_dir', results_temp_dir
                 ], stdout=outfile_handle)
-
                 self.assertEqual(0, cfg_create_return_code)
 
             ########################################
@@ -391,7 +390,6 @@ input,input,hg19,,'''
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
             ])
-
             self.assertEqual(0, endtoend_return_code)
 
 ### ChIP end to end tests
