@@ -1,0 +1,22 @@
+title: Homer only pipeline config schema
+type: object
+properties:
+    sample_genome:
+        type: object
+        description: Contains key-value pairs relating library ID to genome build.
+    results_dir:
+        type: string
+    tmpdir:
+        type: string
+    blacklist:
+        type: object
+        description: Contains key-value pairs which relate genome builds to their blacklist bed files.
+    sample_input:
+        type: object
+        description: Contains key-value pairs matching IP samples to input samples.
+required:
+    - sample_genome
+    - results_dir
+    - tmpdir
+    - blacklist
+    - sample_input

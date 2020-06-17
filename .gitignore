@@ -1,3 +1,7 @@
 .snakemake/*
 flux_config_ChIPseq.json
-.gitignore
+*__pycache__*
+*.pyc
+atac_test_run/*
+test_sra_chip_tf_pe/*
+chip_test_mixed/*

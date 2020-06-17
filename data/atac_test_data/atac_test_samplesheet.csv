@@ -1,0 +1,5 @@
+lib,sample,genome,basepath
+1,s1_control,mm10,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_1
+2,s1_treatment,mm10,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_2
+3,s2_treatment,mm10,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_3
+4,s3_treatment,mm10,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/atac_test_data/Sample_4
