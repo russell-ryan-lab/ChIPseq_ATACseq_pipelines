@@ -41,6 +41,12 @@ workdir:
     config['results_dir']
 
 
+# Error-checking here produces informative error messages for missing config keys
+for key in ['sample_input', 'sample_homer_fmg_genome']:
+    if not config.get(key):
+        msg = "\nMissing required config value: {}\n".format(key)
+        raise(RuntimeError(msg))
+
 # Rules
 
 rule all:
