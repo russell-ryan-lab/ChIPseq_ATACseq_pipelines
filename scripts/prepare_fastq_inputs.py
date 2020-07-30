@@ -1,8 +1,10 @@
 #! /usr/bin/env python3
 
 import argparse
+import binascii
 from collections import defaultdict
 import glob
+import gzip
 import os
 import re
 import pandas as pd
@@ -70,7 +72,7 @@ def validate_input_arguments(metadata, args):
 def add_readnum_to_filename(filename):
     already_r_match = re.match(r'.*_R([12])(?=[_\.]).*\.fastq\.gz', filename)
     if already_r_match:
-        msg = "Warning: filename appears to already has _R preceding read number: {}. Using --add_R flag may be unnecessary.".format(filename)
+        msg = "Warning: filename appears to already have _R preceding read number: {}. Using --add_R flag may be unnecessary.".format(filename)
         warnings.warn(msg)
 
     sra_type_match = re.match('.*_[12]\.fastq\.gz', filename)
@@ -80,6 +82,21 @@ def add_readnum_to_filename(filename):
         modified_filename = re.sub(r"(.*)\.fastq\.gz", "\\1_R1.fastq.gz", filename)
 
     return(modified_filename)
+
+def check_problematic_readnames(filename):
+    ''' Very basic check within first line of gzipped fastq files for problematic read names -
+.1 & .2 suffixes on read names cause problems for bwa sampe.'''
+
+    with gzip.open(filename, 'rt') as fh:
+        for line in fh:
+            first_line = line.strip()
+            first_readname = first_line.split(" ")[0]
+            break
+
+    if re.match('\S+\.[12] ', first_readname):
+        msg = "Read name will cause issues with sampe due to .1 or .2 suffix: {}\nIf using fastq-dump, using the -F flag of fastq-dump will give original headers, preventing this issue."
+        warnings.warn(msg)
+
 
 
 if __name__ == '__main__':
@@ -102,9 +119,29 @@ if __name__ == '__main__':
 
     fastqs = get_fastqs(args.fastq_dir)
 
+    # If fastqs are SRR by filename, error-checking and warnings
+    if any([re.match("^SRR\d+_\d\.(fastq|fq)", fq) for fq in fastqs]):
+        # Warn if --add_R argument not used for SRA data
+        if not args.add_R:
+            msg = "Fastq files appear to appear to be from SRA. Make sure to use the --add_R argument as needed"
+            warnings.warn(msg)
+
+        # # Check that readnames within SRA fastq files are not problematic (.1 & .2 in read names cause bwa sampe to throw errors)
+        # # randomly check 2 fastq files
+        # if any(check_problematic_readnames(random.sample(fastqs, 2))):
+
+
     # Make the groupings and move the fastqs based on groupings
     groups = group_fastqs_by_metadata(fastqs, metadata, args.indiv_col, args.group_col, args.strip_regex)
     # Move the fastqs based on groupings separately?
+
+    # # Check if fastqs are SRR by filename. If so, :
+    # for group in groups.values():
+    #     if any([re.match("^SRR.*\.fastq.gz", fq) for fq in group]):
+    #         msg_fmt = "# Warning: Combining SRA fastqs can cause bwa sampe to throw errors. To remedy this, run the following: \n" + \
+    #         "for f in {} ; do BNAME=$(basename $f '.fastq.gz') ; echo $f ; gunzip -c $f | sed -E 's/(^[@+]SRR[0-9]+\.[0-9]+)\.[12]/\1/' | gzip -c > ${{BNAME.fastq.gz\n"
+    #         msg_fmt.format(" ".join(group))
+    #         import pdb; pdb.set_trace()
 
     for key in groups:
         # Create the tree structure
