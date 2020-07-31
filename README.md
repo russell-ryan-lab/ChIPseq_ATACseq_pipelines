@@ -16,6 +16,7 @@
     * [Testing additional peak parameters](#testing-additional-peak-parameters)
     * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
     * [Fastq Inputs](#fastq-inputs)
+        * [Example downloading and preparing SRA fastqs](#example-downloading-and-preparing-SRA-fastqs)
 * [Getting Help](#getting-help)
 
 ## About
@@ -501,11 +502,12 @@ Note: prepare_fastq_inputs.py hardlinks the files into the proper locations, ins
     cd SRA_data
     # Download them (Just download 10M spots for this example with -N & -X)
     for i in $(seq 6730191 1 6730200) ; do echo $i ; fastq-dump -F -N 10000 -X 10010000 --split-files SRR${i} ; done
-    # Run prepare_fastq_inputs.py - SraRunTable
+    gzip *.fastq
+    # Run prepare_fastq_inputs.py; SraRunTable.txt was downloaded from SRA run selector (metadata download)
     cd ../
     ${repo_dir}/scripts/prepare_fastq_inputs.py -d SRA_data/ -m SraRunTable.txt --add_R
 
-Note: When downloading fastqs from SRA using `fastq-dump`, supplying the `-F` flag preserves headers, preventing the use of SRA's read names. SRA read names with suffixes `.1` and `.2` cause bwa sampe to throw errors.
+Note: When downloading fastqs from SRA using `fastq-dump`, supplying the `-F` flag preserves headers, preventing the use of SRA's read names. SRA read names with suffixes `.1` and `.2` inside the fastqs cause bwa sampe to throw errors.
 
 ##### Fastq Files with Heterogeneous Directory Structure or Filenames
 
