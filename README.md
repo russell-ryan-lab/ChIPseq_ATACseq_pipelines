@@ -466,7 +466,7 @@ This is the simplest case, where no extra steps need to be performed. The direct
 
 ##### Fastq Files for All Samples in a Single Directory
 
-Example: Sequencing runs downloaded from NCBI Sequence Read Archive
+Example: Sequencing runs downloaded from NCBI Sequence Read Archive (SRA)
 
     sra_data/
     ├── SraRunTable.txt
@@ -479,11 +479,22 @@ Example: Sequencing runs downloaded from NCBI Sequence Read Archive
     ├── SRR5799447_1.fastq
     └── SRR5799447_2.fastq
 
-This is another common case, where the fastqs from multiple samples reside within a single directory. For this scenario, an additional step is taken to place the fastq files into separate subdirectories on a per-sample basis; we've created the prepare_fastq_inputs.py script to simplify this process. After the fastqs are placed in subdirectories, they can be fed to `config_creator.py` via the sample info CSV as exemplified in the main readme.
+This is another common case, where the fastqs from multiple samples reside within a single directory. For this scenario, an additional step is taken to place the fastq files into separate subdirectories on a per-sample basis; we've created the prepare_fastq_inputs.py script to simplify this process. After the fastqs are placed in subdirectories, they can be fed to `config_creator.py` via the sample info CSV as exemplified in the examples above.
 
 In this case, an additional requirement is that filenames must be similar enough that they can be parsed uniformly to identify files to be grouped together as a sample. With this script, a table is supplied which maps sample names to the unique portion of the fastq filenames (the portion that remains after uniformly parsing them). In case of SRA files, we can group BioSamples which are comprised of multiple sequencing runs (multiple SRR accessions). In a more general use-case, we could group samples that have fastqs performed over multiple lanes of sequencing.
 
 Note: prepare_fastq_inputs.py hardlinks the files into the proper locations, instead of moving them. This preserves the original flat structure in the given fastq directory in case that is desired, but also introduces in that location the nested structure needed for `config_creator.py`. These links do not consume any extra storage space.
+
+###### Example downloading and preparing SRA fastqs:
+
+    cd SRA_data
+    # Download them (Just download 10M spots for this example with -N & -X)
+    for i in $(seq 6730191 1 6730200) ; do echo $i ; fastq-dump -F -N 10000 -X 10010000 --split-files SRR${i} ; done
+    # Run prepare_fastq_inputs.py - SraRunTable
+    cd ../
+    ${repo_dir}/scripts/prepare_fastq_inputs.py -d SRA_data/ -m SraRunTable.txt --add_R
+
+Note: When downloading fastqs from SRA using `fastq-dump`, supplying the `-F` flag preserves headers, preventing the use of SRA's read names. SRA read names with suffixes `.1` and `.2` cause bwa sampe to throw errors.
 
 ##### Fastq Files with Heterogeneous Directory Structure or Filenames
 

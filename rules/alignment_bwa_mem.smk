@@ -7,7 +7,7 @@ import os
 
 rule bwa_mem:
     input:
-        os.path.join(CONCAT_READS_DIR, "{sample}_R{read}.fastq.gz")
+        expand(os.path.join(CONCAT_READS_DIR, "{{sample}}_R{read}.fastq.gz"), read=[1,2], allow_missing=True)
     output:
         temp(os.path.join(ALIGN_DIR, "{sample}.sorted.bam"))
     params:
@@ -16,4 +16,5 @@ rule bwa_mem:
     threads: 8
     conda: "../envs/bwa.yaml"
     shell:
-        "bwa mem -M -t {threads} {params.index} {input} | samtools sort -m 1g -@ {threads} -O bam -T {params.sort_tmp} -o {output} -"
+        "HALF_THREADS=$(( {threads} / 2 )); "
+        "bwa mem -M -t $HALF_THREADS {params.index} {input} | samtools sort -@ $HALF_THREADS -O bam -T {params.sort_tmp} -o {output} -"
