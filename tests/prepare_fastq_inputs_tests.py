@@ -118,5 +118,5 @@ class PrepareFastqInputsTests(unittest.TestCase):
         self.assertEqual(expected_result, actual_result)
 
     def test_check_problematic_readnames(self):
-        problem_file = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'SRR2932619_1.fastq.gz'),
+        problem_file = os.path.join(PIPELINE_BASE_DIR, 'tests', 'test_files', 'SRR2932619_1.fastq.gz')
         self.assertWarns(UserWarning, prepare_fastq_inputs.check_problematic_readnames(problem_file))
