@@ -40,6 +40,11 @@ SCRIPTS_DIR = os.path.join(workflow.basedir, 'scripts')
 workdir:
     config['results_dir']
 
+# Print pipeline version number to log
+include: "version.smk"
+version_string = "Pipeline version: {}\n".format(version)
+logger.logger.info(version_string)
+
 
 # Error-checking here produces informative error messages for missing config keys
 for key in ['sample_input', 'sample_homer_fmg_genome']:

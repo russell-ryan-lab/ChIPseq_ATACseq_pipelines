@@ -53,6 +53,11 @@ DISP_DIR = prefix_results('bigwig')
 workdir:
     config['results_dir']
 
+# Print pipeline version number to log
+include: "version.smk"
+version_string = "Pipeline version: {}\n".format(version)
+logger.logger.info(version_string)
+
 
 # Rules
 

@@ -77,7 +77,15 @@ class SnakemakeFunctionalTests(unittest.TestCase):
                 '-np'
             ])
 
+            # Check version is added to logs
             self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
 ### ChIP dryrun tests
 
@@ -129,6 +137,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
 
             self.assertEqual(0, dryrun_return_code)
 
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
+
     def test_chip_histone_pe_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
@@ -176,6 +194,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             ])
 
             self.assertEqual(0, dryrun_return_code)
+
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
     def test_chip_tf_se_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -225,6 +253,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
 
             self.assertEqual(0, dryrun_return_code)
 
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
+
     def test_chip_tf_pe_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
@@ -272,6 +310,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             ])
 
             self.assertEqual(0, dryrun_return_code)
+
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
 ### Homer only dryrun test
 
@@ -330,6 +378,16 @@ input,input,hg19,,'''
             ])
 
             self.assertEqual(0, dryrun_return_code)
+
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
 ### ATAC end to end test
 

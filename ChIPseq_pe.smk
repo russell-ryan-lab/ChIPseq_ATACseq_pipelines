@@ -47,6 +47,11 @@ for key in ['sample_input', 'sample_homer_fmg_genome']:
         msg = "\nMissing required config value: {}\n".format(key)
         raise(RuntimeError(msg))
 
+# Print pipeline version number to log
+include: "version.smk"
+version_string = "Pipeline version: {}\n".format(version)
+logger.logger.info(version_string)
+
 # Rules
 
 rule all:
