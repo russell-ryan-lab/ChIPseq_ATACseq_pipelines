@@ -63,9 +63,9 @@ logger.logger.info(version_string)
 
 rule all:
     input:
-        expand(os.path.join(MACS2_DIR, "{sample}.BLfiltered.narrowPeak"), sample=config['sample_paths'].keys()),
-        expand(os.path.join(MACS2_DIR, "{sample}.summits.BLfiltered.bed"), sample=config['sample_paths'].keys()),
-        expand(os.path.join(ATAQV_DIR, 'viewer', 'index.html')),
+        expand(os.path.join(MACS2_DIR, "{paramset}", "{sample}.BLfiltered.narrowPeak"), paramset=config['macs2_params'].keys(), sample=config['sample_paths'].keys()),
+        expand(os.path.join(MACS2_DIR, "{paramset}", "{sample}.summits.BLfiltered.bed"), paramset=config['macs2_params'].keys(), sample=config['sample_paths'].keys()),
+        expand(os.path.join(ATAQV_DIR, "{paramset}", "viewer", "index.html"), paramset=config['macs2_params'].keys()),
         expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()),
 
 
@@ -140,16 +140,17 @@ rule peaks:
     input:
         os.path.join(PRUNE_DIR, "{sample}.pruned.bam")
     output:
-        temp(os.path.join(MACS2_DIR, "{sample}.peaks.narrowPeak")),
-        os.path.join(MACS2_DIR, "{sample}.peaks.xls"),
-        temp(os.path.join(MACS2_DIR, "{sample}.summits.bed"))
+        temp(os.path.join(MACS2_DIR, "{paramset}", "{sample}.peaks.narrowPeak")),
+        os.path.join(MACS2_DIR, "{paramset}", "{sample}.peaks.xls"),
+        temp(os.path.join(MACS2_DIR, "{paramset}", "{sample}.summits.bed"))
     params:
         name = "{sample}",
         genome = lambda wildcards: MACS2_GENOME_SIZE[get_genome(wildcards.sample)],
-        outdir = MACS2_DIR
+        outdir = os.path.join(MACS2_DIR, "{paramset}"),
+        macs2_params = lambda wildcards: config['macs2_params'][wildcards.paramset]
     conda: "envs/macs2.yaml"
     shell:
-        "macs2 callpeak -t {input} --outdir {params.outdir} -n {params.name} -f BAMPE -g {params.genome} --keep-dup all ; "
+        "macs2 callpeak -t {input} --outdir {params.outdir} -n {params.name} -g {params.genome} {params.macs2_params} ; "
         # aligning filename formats - separated by '.'s preferred
         "mv {params.outdir}/{wildcards.sample}_peaks.xls {params.outdir}/{wildcards.sample}.peaks.xls ; "
         "mv {params.outdir}/{wildcards.sample}_peaks.narrowPeak {params.outdir}/{wildcards.sample}.peaks.narrowPeak ; "
@@ -157,11 +158,11 @@ rule peaks:
 
 rule blacklist_filter:
     input:
-        narrowpeak = os.path.join(MACS2_DIR, "{sample}.peaks.narrowPeak"),
-        summits = os.path.join(MACS2_DIR, "{sample}.summits.bed")
+        narrowpeak = os.path.join(MACS2_DIR, "{paramset}", "{sample}.peaks.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{paramset}", "{sample}.summits.bed")
     output:
-        narrowpeak = os.path.join(MACS2_DIR, "{sample}.BLfiltered.narrowPeak"),
-        summits = os.path.join(MACS2_DIR, "{sample}.summits.BLfiltered.bed")
+        narrowpeak = os.path.join(MACS2_DIR, "{paramset}", "{sample}.BLfiltered.narrowPeak"),
+        summits = os.path.join(MACS2_DIR, "{paramset}", "{sample}.summits.BLfiltered.bed")
     params:
         blacklist = lambda wildcards: config['blacklist'][get_genome(wildcards.sample)]
     conda: "envs/bedtools.yaml"
@@ -172,10 +173,10 @@ rule blacklist_filter:
 rule ataqv_get_stats:
     input:
         md_bam = os.path.join(ALIGN_DIR, "{sample}.mrkdup.bam"),
-        peaks = os.path.join(MACS2_DIR, '{sample}.peaks.narrowPeak')
+        peaks = os.path.join(MACS2_DIR, "{paramset}", '{sample}.peaks.narrowPeak')
     output:
-        metrics = os.path.join(ATAQV_DIR, '{sample}.ataqv.json.gz'),
-        stdout_destination = os.path.join(ATAQV_DIR, '{sample}.ataqv.out')
+        metrics = os.path.join(ATAQV_DIR, "{paramset}", "{sample}.ataqv.json.gz"),
+        stdout_destination = os.path.join(ATAQV_DIR, "{paramset}", "{sample}.ataqv.out")
     params:
         samplename = '{wildcards.sample}',
         organism = lambda wildcards: ORGANISMS[get_genome(wildcards.sample)],
@@ -187,11 +188,11 @@ rule ataqv_get_stats:
 
 rule ataqv_make_viewer:
     input:
-        metrics = expand(os.path.join(ATAQV_DIR, '{sample}.ataqv.json.gz'), sample=config['sample_paths'].keys())
+        metrics = expand(os.path.join(ATAQV_DIR, "{paramset}", "{sample}.ataqv.json.gz"), sample=config['sample_paths'].keys(), paramset=config['macs2_params'].keys())
     output:
-        index = os.path.join(ATAQV_DIR, 'viewer', 'index.html')
+        index = os.path.join(ATAQV_DIR, "{paramset}", "viewer", "index.html")
     params:
-        output_dir = os.path.join(ATAQV_DIR, 'viewer')
+        output_dir = os.path.join(ATAQV_DIR, "{paramset}", "viewer")
     conda: "envs/ataqv.yaml"
     shell:
         "mkarv --force {params.output_dir} {input.metrics}" # Use --force to overwrite the viewer/ directory or snakemake complains

@@ -13,7 +13,7 @@
     * [Genome Reference Files](#genome-reference-files)
     * [Notes on Control Samples for ChIPseq](#notes-on-control-samples-for-chipseq)
     * [Notes on conditional outputs for ChIPseq](#notes-on-conditional-outputs-for-chipseq)
-    * [Testing additional homer findPeaks parameters](#testing-additional-homer-findPeaks-parameters)
+    * [Testing additional peak parameters](#testing-additional-peak-parameters)
     * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
     * [Fastq Inputs](#fastq-inputs)
 
@@ -394,15 +394,23 @@ Alternatively, the resulting configuration file from `config_creator.py` could b
 1. Remove the `sample_input` block.
 2. Remove the `sample_homer_fmg_genome` attribute.
 
-#### Testing additional homer findPeaks parameters
+#### Testing additional peak parameters
 
-It may be useful to try different parameters when running Homer findPeaks. To achieve this, additional sets of parameters can be specified in the configuration file, and they will be placed in separate subfolders adjacent to the default results. For example:
+It may be useful to try different parameters when running macs2 in the ATAC-seq pipeline or Homer findPeaks in the ChIP-seq pipeline. To achieve this, additional sets of parameters can be specified in the configuration file, and they will be placed in separate subfolders adjacent to the default results. For example, in the ATAC-seq case:
+
+    macs2_params:
+        default_params: "-f BAMPE --keep-dup all"
+        new_params: "-f BAMPE --keep-dup all --qvalue 0.1"
+
+And in the ChIP-seq case:
 
     homer_findPeaks_params:
         default_params: "-style histone"
         new_params: "-style histone -minDist 150 -fdr 0.01"
 
-Will create two sets of results and place them in their corresponding subfolders. Downstream steps will also be placed in subfolders. For example, the above configuration will create the following peak results, and similarly for homer motifs.
+Will create two sets of results and place them in their corresponding subfolders. Downstream steps will also be placed in subfolders. In particular, for each parameter set there will be an ATAQV report (in the ATAC-seq case) and Homer report (in the ChIP-seq case).
+
+In the ChIP-seq case, the peaks folder will have structure as below. The ATAC-seq case is similar.
 
     /path/to/results/peaks
     ├── default_params
@@ -415,6 +423,8 @@ Will create two sets of results and place them in their corresponding subfolders
         ├── OCILY_H3K27ac.all.hpeaks
         ├── OCILY_H3K27ac.BLfiltered.bed
         └── OCILY_H3K27ac.BLfiltered.hpeaks
+
+A warning, when selecting parameters for either macs2 or Homer findPeaks, care must be taken to avoid parameters which change the actual files that are output. For example, the `--broad` flag in macs2 will cause the pipeline to fail because the output will be `.broadPeak` instead of the expected `.narrowPeak`.
 
 #### Tuning cluster resource requirements
 
