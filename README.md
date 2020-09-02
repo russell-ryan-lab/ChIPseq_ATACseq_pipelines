@@ -16,6 +16,7 @@
     * [Testing additional peak parameters](#testing-additional-peak-parameters)
     * [Tuning cluster resource requirements](#tuning-cluster-resource-requirements)
     * [Fastq Inputs](#fastq-inputs)
+* [Getting Help](#getting-help)
 
 ## About
 
@@ -513,3 +514,13 @@ Example: Some samples from a collaborator, some samples internal, etc.
 If your input samples are not in one of the two structures above, it is still possible to make them pipeline-ready.
 
 Once again, the read number information must be discernible from the filename [as noted above](#notes-on-filename-restrictions). However, that's the only restriction. The key objective is to get each sample's fastq files into their own directory. If you are able to manually create directories and move the appropriate fastqs into those locations, then that is the extent of the work to be done. After that, `config_creator.py` can be run exactly as described in the first scenario above, by supplying the appropriate fastq directory for each sample in the CSV.
+
+## Getting Help
+
+Submit all usage issues and bugs to [Github Issues](https://github.com/russell-ryan-lab/ChIPseq_ATACseq_pipelines/issues). Please provide the following:
+- Complete Snakemake-ready config file (e.g. file in the project directory ending in .yaml).
+- Sample sheet (e.g. file in the project directory ending in .csv).
+- Relevant log file in the logs directory within the project directory.  If you are unsure which log file to attach, zip the entire logs directory and attach this.
+- Snakemake command used.
+
+
