@@ -52,4 +52,4 @@ The `Y` in semantic version's `X.Y.Z` if the feature is backwards compatible, or
 
 ### Merging
 
-Once a bugfix/patch or new feature is implemented in its issue branch, it should be merged into `develop` after `nosetests` complete without any failures (though exceptions can be made for merges into `develop`). It is a good rule that all `nosetests` pass, without exception, prior to merging into `master` and making a release.
+Once a bugfix/patch or new feature is implemented in its issue branch, it should be merged into `develop` after `nosetests` complete without any failures (though exceptions can be made for merges into `develop`). It is a good rule that all `nosetests` pass, without exception, prior to merging into `master` and making a release. Any relevant changes should be noted in the `CHANGELOG.md`.
