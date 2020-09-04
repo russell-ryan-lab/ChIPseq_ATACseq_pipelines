@@ -443,7 +443,7 @@ input,input,hg19,,'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run2/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run2/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -504,7 +504,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -564,7 +564,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -624,7 +624,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -684,7 +684,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -787,7 +787,7 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -810,7 +810,7 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -833,7 +833,7 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
