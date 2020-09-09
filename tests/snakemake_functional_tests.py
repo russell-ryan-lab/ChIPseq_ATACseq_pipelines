@@ -703,7 +703,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             results_temp_dir = os.path.join(results_dir, 'tmp')
 
             ########################################
-            # Create the configfiles
+            # Create the config file for PE IP
             config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
 
             test_samplesheet_IP = '''lib,sample,genome,input,homer_fmg_genome,basepath
@@ -728,6 +728,8 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
 
                 self.assertEqual(0, cfg_create_return_code)
 
+            ########################################
+            # Create the config file for SE input
             test_samplesheet_input = '''lib,sample,genome,input,homer_fmg_genome,basepath
             GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''.format(PIPELINE_BASE_DIR)
             test_sheet_input_fn = os.path.join(temp_dir, 'samplesheet_input.csv')
@@ -750,6 +752,8 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
 
                 self.assertEqual(0, cfg_create_return_code)
 
+            ########################################
+            # Create the config file homer only
             test_samplesheet_all = '''lib,sample,genome,input,homer_fmg_genome,basepath
 # GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
 # GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
