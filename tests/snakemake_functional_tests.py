@@ -77,7 +77,15 @@ class SnakemakeFunctionalTests(unittest.TestCase):
                 '-np'
             ])
 
+            # Check version is added to logs
             self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
 ### ChIP dryrun tests
 
@@ -129,6 +137,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
 
             self.assertEqual(0, dryrun_return_code)
 
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
+
     def test_chip_histone_pe_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
@@ -176,6 +194,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             ])
 
             self.assertEqual(0, dryrun_return_code)
+
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
     def test_chip_tf_se_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -225,6 +253,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
 
             self.assertEqual(0, dryrun_return_code)
 
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
+
     def test_chip_tf_pe_dryrun_passes(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             os.chdir(temp_dir)
@@ -272,6 +310,16 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             ])
 
             self.assertEqual(0, dryrun_return_code)
+
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
 
 ### Homer only dryrun test
 
@@ -331,6 +379,16 @@ input,input,hg19,,'''
 
             self.assertEqual(0, dryrun_return_code)
 
+            # Check version is added to logs
+            self.assertEqual(0, dryrun_return_code)
+            cmd_string = 'snakemake --snakefile {} --configfile {} -np'.format(snakefile, configfile)
+            actual_output = subprocess.check_output(cmd_string, shell = True)
+            actual_output = actual_output.decode("utf-8")
+            lines = actual_output.split('\n')
+
+            dryrun_version = lines[0].strip()
+            self.assertRegex(dryrun_version, "Pipeline version")
+
 ### ATAC end to end test
 
     def test_atac_endtoend_passes(self):
@@ -385,7 +443,7 @@ input,input,hg19,,'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run2/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/atac_test_run2/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -446,7 +504,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -506,7 +564,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -566,7 +624,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/''' 
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -626,7 +684,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -645,7 +703,7 @@ GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''
             results_temp_dir = os.path.join(results_dir, 'tmp')
 
             ########################################
-            # Create the configfiles
+            # Create the config file for PE IP
             config_creator_script = os.path.join(PIPELINE_BASE_DIR, 'scripts', 'config_creator.py')
 
             test_samplesheet_IP = '''lib,sample,genome,input,homer_fmg_genome,basepath
@@ -670,6 +728,8 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
 
                 self.assertEqual(0, cfg_create_return_code)
 
+            ########################################
+            # Create the config file for SE input
             test_samplesheet_input = '''lib,sample,genome,input,homer_fmg_genome,basepath
             GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''.format(PIPELINE_BASE_DIR)
             test_sheet_input_fn = os.path.join(temp_dir, 'samplesheet_input.csv')
@@ -692,6 +752,8 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
 
                 self.assertEqual(0, cfg_create_return_code)
 
+            ########################################
+            # Create the config file homer only
             test_samplesheet_all = '''lib,sample,genome,input,homer_fmg_genome,basepath
 # GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,{}/data/sra_chip_test_data/GM12878_NKRF/
 # GM12878_Input,GM12878_Input,hg19,,,{}/data/sra_chip_test_data/GM12878_Input/'''.format(PIPELINE_BASE_DIR, PIPELINE_BASE_DIR)
@@ -729,7 +791,7 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -752,7 +814,7 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'
@@ -775,7 +837,7 @@ GM12878_NKRF,GM12878_NKRF,hg19,,,{}/data/sra_chip_test_data/GM12878_NKRF/'''.for
                 '--jobs', '144',
                 '--cluster-config', cluster_config,
                 '--use-conda',
-                '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
+                # '--conda-prefix', '/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/test_sra_chip_histone_pe/.snakemake/conda', # Remove before release
                 '--cluster-status', slurm_status_script,
                 '--cluster',
                 'sbatch --parsable --job-name={cluster.name} --account={cluster.account} --partition={cluster.partition} --nodes={cluster.nodes} --ntasks-per-node={cluster.ntask} --mem={cluster.memory} --time={cluster.time} --output=logs/%x-%j.out'

@@ -40,22 +40,37 @@ SCRIPTS_DIR = os.path.join(workflow.basedir, 'scripts')
 workdir:
     config['results_dir']
 
-
-# Error-checking here produces informative error messages for missing config keys
-for key in ['sample_input', 'sample_homer_fmg_genome']:
-    if not config.get(key):
-        msg = "\nMissing required config value: {}\n".format(key)
-        raise(RuntimeError(msg))
+# Conditional inputs to all rule
+if config.get('sample_input'):
+    if config.get('sample_homer_fmg_genome'):
+        all_input = [
+            expand(os.path.join(DISP_DIR, "{sample}.tdf"), sample=config['sample_paths'].keys()), #Create tdfs for all samples
+            expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()), #Create bigwigs for all samples
+            expand(os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.BLfiltered.hpeaks"), paramset=config['homer_findPeaks_params'].keys(), sample=config['sample_input'].keys()), #Call peaks for all samples with matched inputs
+            expand(os.path.join(HOMERMOTIF_DIR, "{paramset}", "{sample}"), paramset=config['homer_findPeaks_params'].keys(), sample=config['sample_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
+        ]
+    else:
+        all_input = [
+            expand(os.path.join(DISP_DIR, "{sample}.tdf"), sample=config['sample_paths'].keys()), #Create tdfs for all samples
+            expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()), #Create bigwigs for all samples
+            expand(os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.BLfiltered.hpeaks"), paramset=config['homer_findPeaks_params'].keys(), sample=config['sample_input'].keys()), #Call peaks for all samples with matched inputs
+        ]
+else:
+    all_input = [
+        expand(os.path.join(DISP_DIR, "{sample}.tdf"), sample=config['sample_paths'].keys()), #Create tdfs for all samples
+        expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()), #Create bigwigs for all samples
+    ]
 
 # Rules
 
 rule all:
     input:
-        expand(os.path.join(DISP_DIR, "{sample}.tdf"), sample=config['sample_paths'].keys()), #Create tdfs for all samples
-        expand(os.path.join(DISP_DIR, "{sample}.1m.bw"), sample=config['sample_paths'].keys()), #Create bigwigs for all samples
-        expand(os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.BLfiltered.hpeaks"), paramset=config['homer_findPeaks_params'].keys(), sample=config['sample_input'].keys()), #Call peaks for all samples with matched inputs
-        expand(os.path.join(HOMERMOTIF_DIR, "{paramset}", "{sample}"), paramset=config['homer_findPeaks_params'].keys(), sample=config['sample_homer_fmg_genome'].keys()), #Homermotifs for all samples with a specified genome for homer findMotifsGenome
+        all_input
 
+# Print pipeline version number to log
+include: "version.smk"
+version_string = "Pipeline version: {}\n".format(version)
+logger.logger.info(version_string)
 
 include: "rules/alignment_bwa_aln_se.smk"
 include: "rules/homer.smk"
