@@ -318,7 +318,7 @@ The filtered bams are assumed to have only properly aligned reads or read pairs,
 
 Input directory structure:
 
-    ${result_dir}/pruned/
+    ${results_dir}/pruned/
     ├── OCILY_H3K27ac.pruned.bam
     └── OCILY_input.pruned.bam
 
@@ -329,10 +329,10 @@ The config_creator script has a flag `--homer_only` which will not perform any f
     ${repo_dir}/scripts/config_creator.py \
         --general_input ${repo_dir}/config/ChIP_histone_general_se.yaml \
         --per_lib_input ${repo_dir}/data/sra_mixed_chip_test_data/sra_chip_histone_all.csv \
-        --results_dir ${result_dir} \
-        --temp_dir ${result_dir}/tmp \
+        --results_dir ${results_dir} \
+        --temp_dir ${results_dir}/tmp \
         --homer_only \
-        > ${result_dir}/config_histone_homer.yaml
+        > ${results_dir}/config_histone_homer.yaml
 
 Note: The homer_only config won't end up containing any se or pe params, so either can be used to provide the general input information.
 
