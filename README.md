@@ -50,7 +50,7 @@ This due to the Homer package, which will require a large amount of space. Comma
     conda create \
         --prefix /nfs/turbo/<lab-turbo>/envs/atac_chip_pipeline \
         --channel conda-forge --channel bioconda \
-        snakemake-minimal=5.10.0 pandas=0.24.2 homer=4.10 samtools=1.9 pytest=5.4.1 nose=1.3.7
+        python=3.7.1 snakemake-minimal=5.10.0 pandas=0.24.2 homer=4.10 samtools=1.9 pytest=5.4.1 nose=1.3.7
 
 To use the pipeline, activate the environment by running:
 
