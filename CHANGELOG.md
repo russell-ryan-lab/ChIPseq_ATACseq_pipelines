@@ -1,3 +1,9 @@
+# v1.0.1 (01/07/2021)
+
+-updated igvtools version from 2.3.93 to 2.5.3 (igvtools.yaml)
+-bugfix: file naming issue in sampe rule that caused incorrect output from ATACV (alignment_bwa_aln_pe.smk)
+-README reflects Python 3.7 requirement for conda environment. This fix is only relevant to developers.  Python 3.8 caused errors in nosetests.
+
 # v1.0.0 (09/04/2020)
 
 Initial release of combined ChIP-seq and ATAC-seq pipeline.
