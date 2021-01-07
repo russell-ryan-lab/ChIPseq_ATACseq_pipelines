@@ -19,8 +19,8 @@ rule bwa_aln:
 
 rule bwa_sampe:
     input:
-        fq_left = lambda wildcards: config['sample_paths'][wildcards.sample]['1'],
-        fq_right = lambda wildcards: config['sample_paths'][wildcards.sample]['2'],
+        fq_left = os.path.join(CONCAT_READS_DIR, "{sample}_R1.fastq.gz"),
+        fq_right = os.path.join(CONCAT_READS_DIR, "{sample}_R2.fastq.gz"),
         sai_left = os.path.join(ALIGN_DIR, "{sample}_R1.sai"),
         sai_right = os.path.join(ALIGN_DIR, "{sample}_R2.sai")
     output:
