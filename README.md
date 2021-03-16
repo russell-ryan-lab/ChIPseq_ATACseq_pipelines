@@ -501,13 +501,13 @@ Note: prepare_fastq_inputs.py hardlinks the files into the proper locations, ins
 
     cd SRA_data
     # Download them (Just download 10M spots for this example with -N & -X)
-    for i in $(seq 6730191 1 6730200) ; do echo $i ; fastq-dump -F -N 10000 -X 10010000 --split-files SRR${i} ; done
+    for i in $(seq 6730191 1 6730200) ; do echo $i ; fastq-dump -F -N 10000 -X 10010000 --split-3 SRR${i} ; done
     gzip *.fastq
     # Run prepare_fastq_inputs.py; SraRunTable.txt was downloaded from SRA run selector (metadata download)
     cd ../
     ${repo_dir}/scripts/prepare_fastq_inputs.py -d SRA_data/ -m SraRunTable.txt --add_R
 
-Note: When downloading fastqs from SRA using `fastq-dump`, supplying the `-F` flag preserves headers, preventing the use of SRA's read names. SRA read names with suffixes `.1` and `.2` inside the fastqs cause bwa sampe to throw errors.
+Note: When downloading fastqs from SRA using `fastq-dump`, supplying the `-F` flag preserves headers, preventing the use of SRA's read names. SRA read names with suffixes `.1` and `.2` inside the fastqs cause bwa sampe to throw errors. The `--split-3` flag generates up to 3 separate files contining paired read 1, paired read 2, and singleton reads. Singleton read files can be deleted, but using `--split-3` will avoid bwa sampe errors that can occur with the alternative `--split-files` flag, which only generates 2 files, and can include singleton reads in the read 1 or read 2 files (either flag will work for most SRA datasets).
 
 ##### Fastq Files with Heterogeneous Directory Structure or Filenames
 
