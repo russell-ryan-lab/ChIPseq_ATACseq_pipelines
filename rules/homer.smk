@@ -39,13 +39,13 @@ rule findPeaks:
     params:
         lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
     shell:
-    """
-    if [[ {input.sample} == {input.input} ]]; then
-        findPeaks {input.sample} {params} -o {output}"
-    else
-        findPeaks {input.sample} -i {input.input} {params} -o {output}
-    fi
-    """
+        """
+        if [[ {input.sample} == {input.input} ]]; then
+            findPeaks {input.sample} {params} -o {output}"
+        else
+            findPeaks {input.sample} -i {input.input} {params} -o {output}
+        fi
+        """
 
 rule pos2bed:
     input:
