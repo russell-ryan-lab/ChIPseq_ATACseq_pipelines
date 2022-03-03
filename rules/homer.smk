@@ -9,15 +9,15 @@ rule makeTagDirectory:
     shell:
         "makeTagDirectory {output} {params.params} -genome {params.genome} {input}"
 
-rule findPeaks_noinput:
-    input:
-        sample = os.path.join(HOMERTAG_DIR, "{sample}"),
-    output:
-        os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.all.hpeaks")
-    params:
-        lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
-    shell:
-        "findPeaks {input.sample} {params} -o {output}"
+# rule findPeaks_noinput:
+#     input:
+#         sample = os.path.join(HOMERTAG_DIR, "{sample}"),
+#     output:
+#         os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.all.hpeaks")
+#     params:
+#         lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
+#     shell:
+#         "findPeaks {input.sample} {params} -o {output}"
 
 # rule findPeaks:
 #     input:
@@ -29,6 +29,17 @@ rule findPeaks_noinput:
 #         lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
 #     shell:
 #         "findPeaks {input.sample} -i {input.input} {params} -o {output}"
+
+rule findPeaks:
+    input:
+        sample = os.path.join(HOMERTAG_DIR, "{sample}"),
+        input = lambda wildcards: os.path.join(HOMERTAG_DIR, config['sample_input'][wildcards.sample])
+    output:
+        os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.all.hpeaks")
+    params:
+        lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
+    shell:
+        "findPeaks {input.sample} {params} -o {output}" if sample == input else "findPeaks {input.sample} -i {input.input} {params} -o {output}"
 
 rule pos2bed:
     input:
