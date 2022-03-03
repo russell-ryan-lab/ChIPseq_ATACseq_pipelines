@@ -29,6 +29,13 @@ rule makeTagDirectory:
 #         lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
 #     shell:
 #         "findPeaks {input.sample} -i {input.input} {params} -o {output}"
+# """
+# if [[ '{input.sample}' == '{input.input}' ]]; then
+#     findPeaks {input.sample} {params} -o {output}"
+# else
+#     findPeaks {input.sample} -i {input.input} {params} -o {output}
+# fi
+# """
 
 rule findPeaks:
     input:
@@ -38,14 +45,11 @@ rule findPeaks:
         os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.all.hpeaks")
     params:
         lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
-    shell:
-        """
-        if [[ {input.sample} == {input.input} ]]; then
-            findPeaks {input.sample} {params} -o {output}"
-        else
-            findPeaks {input.sample} -i {input.input} {params} -o {output}
-        fi
-        """
+    run:
+        if input.sample == input.input:
+            shell("findPeaks {input.sample} {params} -o {output}")
+        else:
+            shell("findPeaks {input.sample} -i {input.input} {params} -o {output}")
 
 rule pos2bed:
     input:
