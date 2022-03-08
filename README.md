@@ -396,6 +396,12 @@ Alternatively, the resulting configuration file from `config_creator.py` could b
 1. Remove the `sample_input` block.
 2. Remove the `sample_homer_fmg_genome` attribute.
 
+Additionally as of v1.1.0, peaks can be called by HOMER without an input control by supplying a sample as its own input in the `input` column of the sample sheet. As a consequence, this will also allow motifs to be found as long as a valid `homer_fmg_genome` column entry is present. For example:
+
+|lib|sample|genome|input|homer_fmg_genome|basepath|
+|---|------|------|-----|----------------|--------|
+|GM12878_NKRF|GM12878_NKRF|hg19|GM12878_NKRF|hg19r|data/sra_chip_test_data/GM12878_NKRF/|
+
 #### Testing additional peak parameters
 
 It may be useful to try different parameters when running macs2 in the ATAC-seq pipeline or Homer findPeaks in the ChIP-seq pipeline. To achieve this, additional sets of parameters can be specified in the configuration file, and they will be placed in separate subfolders adjacent to the default results. For example, in the ATAC-seq case:
