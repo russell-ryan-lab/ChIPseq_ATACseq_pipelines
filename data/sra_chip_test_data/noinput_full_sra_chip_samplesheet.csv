@@ -1,2 +1,2 @@
 lib,sample,genome,input,homer_fmg_genome,basepath
-SRR6214070,GM12878_NKRF,hg19,,hg19r,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/SAMN06121956/
+SRR6214070,GM12878_NKRF,hg19,GM12878_NKRF,hg19r,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/SAMN06121956/

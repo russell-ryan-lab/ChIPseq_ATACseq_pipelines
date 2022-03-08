@@ -1,3 +1,3 @@
 lib,sample,genome,input,homer_fmg_genome,basepath
-GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,/gpfs/accounts/rjhryan_root/rjhryan1/monovich/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/GM12878_NKRF/
-GM12878_Input,GM12878_Input,hg19,,,/gpfs/accounts/rjhryan_root/rjhryan1/monovich/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/GM12878_Input/
+GM12878_NKRF,GM12878_NKRF,hg19,GM12878_Input,hg19r,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/GM12878_NKRF/
+GM12878_Input,GM12878_Input,hg19,,,/nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/sra_chip_test_data/GM12878_Input/
