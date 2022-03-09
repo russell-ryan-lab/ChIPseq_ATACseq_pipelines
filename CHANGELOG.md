@@ -1,6 +1,8 @@
 # v1.1.0 (03/08/2022)
 
 - Tweaked SE and PE ChIP-Seq pipelines to allow for peak calling and motif analysis on samples without an Input control (e.g. public data without controls). No input peak calling can be accessed by supplying the sample's name as its own input in the sample sheet.
+- Updated README to reflect new features.
+- Fixed outdated/missing information in README.
 - Iterated version to 1.1.0
 
 # v1.0.1 (01/07/2021)
