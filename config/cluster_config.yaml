@@ -1,5 +1,5 @@
 __default__:
-    account: cgates1
+    account: rjhryan1
     memory: '6144'
     name: '{rule}_{wildcards.sample}'
     nodes: '1'
