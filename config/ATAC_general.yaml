@@ -9,9 +9,9 @@ bwa_index:
     mm10 : /nfs/turbo/epicore-active/genomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa
 
 tss:
-    hg19: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/tss/hg19.tss.refseq.bed.gz
-    hg38: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/tss/hg38.tss.refseq.bed.gz
-    mm10: /nfs/med-bfx-activeprojects/Ryan_rjhryan_CU1/ChIPseq_ATACseq_pipelines/data/references/tss/mm10.tss.refseq.bed.gz
+    hg19: /nfs/turbo/path-rjhryan-turbo/data-public/tss/hg19.tss.refseq.bed.gz
+    hg38: /nfs/turbo/path-rjhryan-turbo/data-public/tss/hg38.tss.refseq.bed.gz
+    mm10: /nfs/turbo/path-rjhryan-turbo/data-public/tss/mm10.tss.refseq.bed.gz
 
 deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads"
 deeptools_bamcoverage_use_blacklist: False
