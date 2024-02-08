@@ -6,7 +6,7 @@ blacklist:
 bwa_index:
     hg19 : /nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/iGenomes/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex/genome.fa
     hg38 : /nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/iGenomes/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex/genome.fa
-    mm10 : /nfs/turbo/epicore-active/genomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa
+    mm10 : /nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/iGenomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa
 
 deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads"
 deeptools_bamcoverage_use_blacklist: False
