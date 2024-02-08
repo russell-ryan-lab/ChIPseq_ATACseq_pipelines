@@ -2,6 +2,5 @@ channels:
     - conda-forge
     - bioconda
 dependencies:
-    - bwa=0.7.17
-    - samtools=1.5
-    - openssl=1.0
+    - bwa=0.7.17=h7132678_9
+    - samtools>=1.5

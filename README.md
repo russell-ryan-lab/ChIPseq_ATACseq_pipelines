@@ -25,7 +25,7 @@ This repository contains snakefiles, configuration files, and a config generator
 
 The ATACseq pipeline takes raw fastq files as input, performs alignment, filtering, and QC, calls peaks using MACS2, and produces bigwig files for viewing.
 
-The ChIPseq pipeline has two portions. The first portion is similar to the ATAC-seq pipeline, in that it performs alignment, filtering, and produces bigwig files (though the tools and procedures sometimes differ from ATACseq). The second portion takes filtered bam files, and performs peak-calling and motif enrichment steps. These two portions can be run separately. See below for details.
+The ChIPseq pipeline has two portions. The first portion is similar to the ATAC-seq pipeline, in that it performs alignment, filtering, and produces bigwig files (though the tools and procedures sometimes differ from ATACseq). The second portion takes filtered bam files, and performs peak-calling and motif enrichment steps using HOMER. These two portions can be run separately. See below for details.
 
 
 ### Before Starting
@@ -271,7 +271,7 @@ The configuration file is then created by running the following, similar to ATAC
 
     #Use the config creator script
     ${repo_dir}/scripts/config_creator.py \
-        --general_input ${repo_dir}/config/ChIP_histone_pe.yaml \
+        --general_input ${repo_dir}/config/ChIP_histone_general_pe.yaml \
         --per_lib_input ${repo_dir}/data/sra_chip_test_data/sra_chip_samplesheet.csv \
         --results_dir ${results_dir} \
         --temp_dir ${results_dir}/tmp \
@@ -336,6 +336,40 @@ The config_creator script has a flag `--homer_only` which will not perform any f
 
 Note: The homer_only config won't end up containing any se or pe params, so either can be used to provide the general input information.
 
+This will generate the file `/path/to/results/config_histone_homer.yaml`. The pipeline can now be executed.
+
+    # Assuming the atac_chip_pipeline environment is activated
+
+    # Running a dry-run (-n flag)
+    snakemake -n --snakefile ${repo_dir}/homer_only.smk --configfile ${results_dir}/config_histone_homer.yaml
+
+    # If the dry-run succeeds, then proceed to run the ChIPseq pipeline on the cluster
+
+    # First start a persistent session with screen or tmux
+    screen -S chip_test
+
+    # Launch the pipeline
+    snakemake -p \
+        --snakefile ${repo_dir}/homer_only.smk \
+        --configfile ${results_dir}/config_histone_homer.yaml \
+        --use-conda \
+        --latency-wait 60 \
+        --jobs 100 \
+        --cluster-status ${repo_dir}/scripts/slurm_status.py \
+        --cluster-config ${repo_dir}/config/cluster_config.yaml \
+        --cluster 'sbatch \
+            --job-name={cluster.name} \
+            --account={cluster.account} \
+            --partition={cluster.partition} \
+            --nodes={cluster.nodes} \
+            --ntasks-per-node={cluster.ntask} \
+            --mem={cluster.memory} \
+            --time={cluster.time} \
+            --parsable \
+            --output=logs/%x-%j.out'
+
+Results will be located where they were specified in the configuration. These include called peaks, found motifs, display files, and cluster logs. It is possible to explore the effect of different peak calling parameters with Homer in one pipeline run, see the section on testing additional homer findPeaks parameters, [below](#testing-additional-homer-findpeaks-parameters).
+
 ### Additional Information
 
 #### Genome Reference Files
@@ -395,6 +429,12 @@ Alternatively, the resulting configuration file from `config_creator.py` could b
 
 1. Remove the `sample_input` block.
 2. Remove the `sample_homer_fmg_genome` attribute.
+
+Additionally as of v1.1.0, peaks can be called by HOMER without an input control by supplying a sample as its own input in the `input` column of the sample sheet. As a consequence, this will also allow motifs to be found as long as a valid `homer_fmg_genome` column entry is present. For example:
+
+|lib|sample|genome|input|homer_fmg_genome|basepath|
+|---|------|------|-----|----------------|--------|
+|GM12878_NKRF|GM12878_NKRF|hg19|GM12878_NKRF|hg19r|data/sra_chip_test_data/GM12878_NKRF/|
 
 #### Testing additional peak parameters
 

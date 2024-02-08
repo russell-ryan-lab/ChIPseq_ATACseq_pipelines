@@ -17,8 +17,11 @@ rule findPeaks:
         os.path.join(HOMERPEAK_DIR, "{paramset}", "{sample}.all.hpeaks")
     params:
         lambda wildcards: config['homer_findPeaks_params'][wildcards.paramset]
-    shell:
-        "findPeaks {input.sample} -i {input.input} {params} -o {output}"
+    run:
+        if input.sample == input.input:
+            shell("findPeaks {input.sample} {params} -o {output}")
+        else:
+            shell("findPeaks {input.sample} -i {input.input} {params} -o {output}")
 
 rule pos2bed:
     input:
