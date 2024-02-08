@@ -1,0 +1,18 @@
+blacklist:
+    hg19: /nfs/turbo/path-rjhryan-turbo/data-public/blacklist/hg19-blacklist.v2.bed.gz
+    hg38: /nfs/turbo/path-rjhryan-turbo/data-public/blacklist/hg38-blacklist.v2.bed.gz
+    mm10: /nfs/turbo/path-rjhryan-turbo/data-public/blacklist/mm10-blacklist.v2.bed.gz
+
+bwa_index:
+    hg19 : /nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/iGenomes/Homo_sapiens/UCSC/hg19/Sequence/BWAIndex/genome.fa
+    hg38 : /nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/iGenomes/Homo_sapiens/UCSC/hg38/Sequence/BWAIndex/genome.fa
+    mm10 : /nfs/turbo/path-rjhryan-turbo/data-public/reference_genomes/iGenomes/Mus_musculus/UCSC/mm10/Sequence/BWAIndex/genome.fa
+
+deeptools_bamcoverage_params: "--binSize 25 --normalizeUsing CPM --extendReads 150"
+deeptools_bamcoverage_use_blacklist: False
+samtools_prune_flags: "-F 0x4 -F 0x100 -F 0x200 -F 0x400 -F 0x800"
+igvtools_count_params: "--includeDuplicates -e 150"
+makeTagDir_params: "-keepAll -checkGC"
+homer_findPeaks_params:
+    default_params: "-style factor -fdr 0.01"
+homer_fmg_params: "-bits"
